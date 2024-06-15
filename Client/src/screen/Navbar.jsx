@@ -7,7 +7,7 @@ function Navbar() {
   const [isClicked, setisClicked] = useState(false);
   return (
     <>
-      <header className="mx-3 mt-4 border border-black">
+      <header className="mx-3 mt-4 border border-black ">
         <div className="flex items-center justify-between">
           <div className="leftside">
             <h2 className="ml-4">LOGO</h2>
