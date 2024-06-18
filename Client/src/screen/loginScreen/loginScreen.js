@@ -96,7 +96,11 @@ const LoginUnit = () => {
               placeholder="Password"
               iconName={<MailOutlinedIcon />}
             />
-            <button className="px-3 py-2 my-3 mb-6 font-semibold text-white bg-purple-500 border rounded-lg">
+            <button
+              type="submit"
+              className="px-3 py-2 my-3 mb-6 font-semibold text-white bg-purple-500 border rounded-lg"
+              disabled={!canSubmit}
+            >
               Login Now
             </button>
           </form>
@@ -154,7 +158,19 @@ const RegisterUnit = () => {
               placeholder="Confirm Password"
               iconName={<LockResetOutlinedIcon />}
             />
-            <button className="px-3 py-2 my-3 mb-6 font-semibold text-white bg-purple-500 border rounded-lg">
+            <button
+              type="submit"
+              className="px-3 py-2 my-3 mb-6 font-semibold text-white bg-purple-500 border rounded-lg"
+              onClick={(e) => {
+                e.preventDefault();
+                if (canSubmit) {
+                  console.log("Login successful");
+                } else {
+                  console.log("Please fix the validation errors");
+                }
+              }}
+              disabled={!canSubmit}
+            >
               Sign up Now
             </button>
           </form>
