@@ -1,6 +1,5 @@
 import "./App.css";
 import LoginScreen from "./screen/loginScreen/loginScreen";
-import Navbar from "./screen/Navbar";
 
 function App() {
   return (

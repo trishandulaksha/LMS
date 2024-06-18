@@ -4,7 +4,11 @@ import MailOutlinedIcon from "@mui/icons-material/MailOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import login2 from "../../assets/images/login2.png";
+import { InputFieldUnit } from "../../component/InputFieldComponent/InputFieldComponent";
 
+// ///////////
+// Login and Register Screen
+// ///////////
 function LoginScreen() {
   const [checkClicked, setCheckCliked] = useState(true);
   return (
@@ -60,7 +64,13 @@ function LoginScreen() {
 
 export default LoginScreen;
 
+// ///////////
+// Login Unit
+// ///////////
 const LoginUnit = () => {
+  const [dbResponse, setDbResponse] = useState({});
+  const [canSubmit, setCanSubmit] = useState(false);
+
   return (
     <>
       <div className="text-center">
@@ -70,6 +80,8 @@ const LoginUnit = () => {
             <InputFieldUnit
               type="text"
               name="username"
+              errMsgBase="username"
+              setCanSubmit={setCanSubmit}
               label="User Name"
               placeholder="User Name"
               iconName={<PersonOutlineOutlinedIcon />}
@@ -78,6 +90,8 @@ const LoginUnit = () => {
             <InputFieldUnit
               type="password"
               name="password"
+              setCanSubmit={setCanSubmit}
+              errMsgBase="password"
               label="Password"
               placeholder="Password"
               iconName={<MailOutlinedIcon />}
@@ -92,7 +106,12 @@ const LoginUnit = () => {
   );
 };
 
+// ///////////
+//  Register Unit
+// ///////////
 const RegisterUnit = () => {
+  const [dbResponse, setDbResponse] = useState({});
+  const [canSubmit, setCanSubmit] = useState(false);
   return (
     <>
       <div className="text-center">
@@ -102,6 +121,8 @@ const RegisterUnit = () => {
             <InputFieldUnit
               type="text"
               name="username"
+              setCanSubmit={setCanSubmit}
+              errMsgBase="username"
               label="User Name"
               placeholder="User Name"
               iconName={<PersonOutlineOutlinedIcon />}
@@ -109,6 +130,8 @@ const RegisterUnit = () => {
             <InputFieldUnit
               type="email"
               name="email"
+              setCanSubmit={setCanSubmit}
+              errMsgBase="email"
               label="Email"
               placeholder="Email"
               iconName={<MailOutlinedIcon />}
@@ -116,6 +139,8 @@ const RegisterUnit = () => {
             <InputFieldUnit
               type="password"
               name="password"
+              setCanSubmit={setCanSubmit}
+              errMsgBase="password"
               label="Password"
               placeholder="Password"
               iconName={<LockOutlinedIcon />}
@@ -123,6 +148,8 @@ const RegisterUnit = () => {
             <InputFieldUnit
               type="password"
               name="confirmpassword"
+              setCanSubmit={setCanSubmit}
+              errMsgBase="confirmpassword"
               label="Confirm Password"
               placeholder="Confirm Password"
               iconName={<LockResetOutlinedIcon />}
@@ -131,24 +158,6 @@ const RegisterUnit = () => {
               Sign up Now
             </button>
           </form>
-        </div>
-      </div>
-    </>
-  );
-};
-
-const InputFieldUnit = ({ iconName, type, name, placeholder }) => {
-  return (
-    <>
-      <div className="flex items-center justify-center my-2 border rounded-lg shadow-lg">
-        <div className="flex items-center justify-center py-2 ">
-          <div className="ml-2 -mr-2">{iconName}</div>
-          <input
-            type={type}
-            name={name}
-            placeholder={placeholder}
-            className="mx-4 outline-none"
-          />
         </div>
       </div>
     </>
