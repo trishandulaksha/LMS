@@ -8,24 +8,44 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
-const sidebar = () => {
+const handleClick = (iconName) => {
+  console.log(`${iconName} icon clicked`);
+};
+
+const icons = [
+  { icon: <DashboardIcon />, name: "Dashboard" },
+  { icon: <CalendarMonthIcon />, name: "Calendar" },
+  { icon: <ArticleIcon />, name: "Articles" },
+  { icon: <TimelineIcon />, name: "Timeline" },
+  { icon: <LeaderboardIcon />, name: "Leaderboard" },
+  { icon: <SettingsIcon />, name: "Settings" },
+];
+
+const bottomIcons = [
+  { icon: <LogoutIcon />, name: "Logout" },
+  { icon: <AccountCircleIcon />, name: "Account" },
+];
+
+const Sidebar = () => {
   return (
-    <div className="flex flex-col justify-between float-left p-2 text-justify h-lvh">
+    <div className="flex flex-col justify-between float-left h-screen p-2 text-justify">
       <div className="flex flex-col gap-5">
-        <DashboardIcon />
-        <CalendarMonthIcon />
-        <ArticleIcon />
-        <TimelineIcon />
-        <LeaderboardIcon />
-        <SettingsIcon />
+        {icons.map(({ icon, name }) => (
+          <div key={name} className="hover:text-orange-700" onClick={() => handleClick(name)}>
+            {icon}
+          </div>
+        ))}
       </div>
-      
+
       <div className="flex flex-col gap-5">
-        <LogoutIcon />
-        <AccountCircleIcon />
+        {bottomIcons.map(({ icon, name }) => (
+          <div key={name} className="hover:text-orange-700" onClick={() => handleClick(name)}>
+            {icon}
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default sidebar;
+export default Sidebar;
