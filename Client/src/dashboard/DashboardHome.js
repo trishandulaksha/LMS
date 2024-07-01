@@ -1,4 +1,5 @@
 import React from "react";
+<<<<<<< HEAD
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import Sidebar from "./sidebar";
 import LogoDevIcon from '@mui/icons-material/LogoDev';
@@ -32,6 +33,11 @@ function DashboardHome() {
       </div>
     </div>
   );
+=======
+
+function DashboardHome() {
+  return <div>Gobbayassssss</div>;
+>>>>>>> 8414ab91a75c3279623b7b7f673d7fad5c196bf7
 }
 
 export default DashboardHome;
