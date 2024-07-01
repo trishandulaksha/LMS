@@ -74,10 +74,7 @@ const LoginUnit = () => {
               placeholder="User Name"
               iconName={<PersonOutlineOutlinedIcon />}
             />
-<<<<<<< HEAD
-=======
 
->>>>>>> 8414ab91a75c3279623b7b7f673d7fad5c196bf7
             <InputFieldUnit
               type="password"
               name="password"
