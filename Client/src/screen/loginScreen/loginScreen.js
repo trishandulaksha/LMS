@@ -5,6 +5,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import login2 from "../../assets/images/login2.png";
 import { InputFieldUnit } from "../../component/InputFieldComponent/InputFieldComponent";
+import { registerDataHandler } from "../../Utils/InputDataHandler/loginDataHandler";
 
 // ///////////
 // Login and Register Screen
@@ -70,13 +71,14 @@ export default LoginScreen;
 const LoginUnit = () => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
+  const [username, setuserName] = useState("");
 
   return (
     <>
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-11">Sign In</h1>
         <div>
-          <form>
+          <form onSubmit={(e) => registerDataHandler(e, setDbResponse)}>
             <InputFieldUnit
               type="text"
               name="username"
