@@ -27,7 +27,7 @@ function DashboardHome() {
         </div>
         
         <div className="bg-slate-400">
-          <p>Second</p>
+          <p>Second Line</p>
         </div>
       </div>
     </div>
