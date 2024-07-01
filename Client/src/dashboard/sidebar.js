@@ -31,7 +31,7 @@ const Sidebar = () => {
     <div className="flex flex-col justify-between float-left h-screen p-2 text-justify">
       <div className="flex flex-col gap-5">
         {icons.map(({ icon, name }) => (
-          <div key={name} className="hover:text-orange-700" onClick={() => handleClick(name)}>
+          <div key={name} className="cursor-pointer hover:text-orange-700" onClick={() => handleClick(name)}>
             {icon}
           </div>
         ))}
@@ -39,7 +39,7 @@ const Sidebar = () => {
 
       <div className="flex flex-col gap-5">
         {bottomIcons.map(({ icon, name }) => (
-          <div key={name} className="hover:text-orange-700" onClick={() => handleClick(name)}>
+          <div key={name} className="cursor-pointer hover:text-orange-700" onClick={() => handleClick(name)}>
             {icon}
           </div>
         ))}
