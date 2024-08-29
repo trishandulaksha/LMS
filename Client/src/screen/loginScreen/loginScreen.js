@@ -34,7 +34,10 @@ function LoginScreen() {
                     </span>
                   </p>
                 </div>
-                <input type="checkbox" /> Remember Me
+                <div className="flex items-center justify-center mt-2">
+                  <input type="checkbox" />{" "}
+                  <span className="ml-2 font-bold">Remember Me</span>
+                </div>
               </div>
             </>
           ) : (
