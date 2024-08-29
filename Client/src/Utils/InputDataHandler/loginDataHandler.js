@@ -1,5 +1,13 @@
-export const registerDataHandler = (e, setDbResponse) => {
+import { userLoginAPI } from "../../API/API";
+
+export const loginDataHandler = (e, setDbResponse, canSubmit) => {
   e.preventDefault();
-  const userNameValue = e.target["username"].value;
-  const passwordValue = e.target["password"].value;
+  const userName = e.target["email"].value;
+  const password = e.target["password"].value;
+
+  if (canSubmit && userName && password) {
+    userLoginAPI("authenticate", userName, password, setDbResponse);
+  } else {
+    setDbResponse({ error: "Login Data Not Valid" });
+  }
 };

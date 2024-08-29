@@ -5,13 +5,16 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import login2 from "../../assets/images/login2.png";
 import { InputFieldUnit } from "../../component/InputFieldComponent/InputFieldComponent";
-import { registerDataHandler } from "../../Utils/InputDataHandler/loginDataHandler";
+import { loginDataHandler } from "../../Utils/InputDataHandler/loginDataHandler";
+import Alert from "../../component/AlertUnit/Alert";
 
 // ///////////
 // Login and Register Screen
 // ///////////
 function LoginScreen() {
   const [checkClicked, setCheckCliked] = useState(true);
+  const [checkAlert, setCheckAlert] = useState({});
+  console.log(checkAlert);
   return (
     <div className="flex items-center justify-center h-screen ">
       <div className="">
@@ -19,7 +22,7 @@ function LoginScreen() {
           {checkClicked ? (
             <>
               <div className="mx-12">
-                <LoginUnit />
+                <LoginUnit setCheckAlert={setCheckAlert} />
                 <div>
                   <p>
                     Create New Account{" "}
@@ -31,11 +34,12 @@ function LoginScreen() {
                     </span>
                   </p>
                 </div>
+                <input type="checkbox" /> Remember Me
               </div>
             </>
           ) : (
             <div className="mx-12">
-              <RegisterUnit />
+              <RegisterUnit setCheckAlert={setCheckAlert} />
               <div className="mt-2">
                 <p>
                   Already have an account ?{" "}
@@ -68,21 +72,30 @@ export default LoginScreen;
 // ///////////
 // Login Unit
 // ///////////
-const LoginUnit = () => {
+const LoginUnit = ({ setCheckAlert }) => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
-  const [username, setuserName] = useState("");
+  let success, error;
+  if (dbResponse.data) {
+    ({ success, error } = dbResponse.data);
+  }
 
+  if (error) {
+    setCheckAlert(true);
+  }
+  if (success) {
+    setCheckAlert(false);
+  }
   return (
     <>
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-11">Sign In</h1>
         <div>
-          <form onSubmit={(e) => registerDataHandler(e, setDbResponse)}>
+          <form onSubmit={(e) => loginDataHandler(e, setDbResponse, canSubmit)}>
             <InputFieldUnit
               type="text"
-              name="username"
-              errMsgBase="username"
+              name="email"
+              errMsgBase="email"
               setCanSubmit={setCanSubmit}
               label="User Name"
               placeholder="User Name"
@@ -115,9 +128,20 @@ const LoginUnit = () => {
 // ///////////
 //  Register Unit
 // ///////////
-const RegisterUnit = () => {
+const RegisterUnit = ({ setCheckAlert }) => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
+  let success, error;
+  if (dbResponse.data) {
+    ({ success, error } = dbResponse.data);
+  }
+
+  if (error) {
+    setCheckAlert(true);
+  }
+  if (success) {
+    setCheckAlert(false);
+  }
   return (
     <>
       <div className="text-center">
