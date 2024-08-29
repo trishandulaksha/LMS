@@ -1,10 +1,10 @@
 import "./App.css";
-import Navbar from "./screen/Navbar";
+import LoginScreen from "./screen/loginScreen/loginScreen";
 
 function App() {
   return (
     <div className="">
-      <Navbar />
+      <LoginScreen />
     </div>
   );
 }
