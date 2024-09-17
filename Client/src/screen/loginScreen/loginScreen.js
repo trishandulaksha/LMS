@@ -101,7 +101,7 @@ const LoginUnit = ({ setCheckAlert }) => {
               errMsgBase="email"
               setCanSubmit={setCanSubmit}
               label="User Name"
-              placeholder="User Name"
+              placeholder="Email"
               iconName={<PersonOutlineOutlinedIcon />}
             />
 
