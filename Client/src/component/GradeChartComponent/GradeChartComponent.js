@@ -19,7 +19,7 @@ ChartJS.register(
   Legend
 );
 
-function ChartComponent({ subjects }) {
+function GradeChartComponent({ subjects }) {
   const data = {
     labels: subjects.map((subject) => subject.code),
     datasets: [
@@ -49,4 +49,4 @@ function ChartComponent({ subjects }) {
   return <Bar data={data} options={options} />;
 }
 
-export default ChartComponent;
+export default GradeChartComponent;

@@ -1,6 +1,6 @@
 import React from "react";
 
-function TableComponent({ subjects, year }) {
+function GradeTableComponent({ subjects, year }) {
   return (
     <div className="table-section">
       <h2 className="mb-2 text-xl font-semibold">{year}</h2>
@@ -28,4 +28,4 @@ function TableComponent({ subjects, year }) {
   );
 }
 
-export default TableComponent;
+export default GradeTableComponent;
