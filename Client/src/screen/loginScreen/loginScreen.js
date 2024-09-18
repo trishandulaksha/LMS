@@ -6,7 +6,6 @@ import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import login2 from "../../assets/images/login2.png";
 import { InputFieldUnit } from "../../component/InputFieldComponent/InputFieldComponent";
 import { loginDataHandler } from "../../Utils/InputDataHandler/loginDataHandler";
-import Alert from "../../component/AlertUnit/Alert";
 
 // ///////////
 // Login and Register Screen

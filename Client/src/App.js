@@ -1,5 +1,4 @@
-import "./App.css";
-import GradeScreen from "./screen/grades/GradeScreen";
+import GradeScreen from "./screen/grades/gradeScreen";
 
 function App() {
   return (
