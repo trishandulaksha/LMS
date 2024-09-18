@@ -61,7 +61,7 @@ function GradeScreen() {
   return (
     <>
       <div className="flex flex-col items-center justify-center w-full h-screen p-4 overflow-x-hidden md:px-8 lg:px-16 xl:px-20 ">
-        <div className="shadow-sm md:p-5 sm:p-1 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
+        <div className="p-2 mt-5 shadow-sm md:p-5 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
           <div className="mt-8 ">
             <div className="inline-flex items-center">
               <SchoolIcon
