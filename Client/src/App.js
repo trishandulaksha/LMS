@@ -1,10 +1,9 @@
-import "./App.css";
-import LoginScreen from "./screen/loginScreen/loginScreen";
+import DashboardHome from "./screen/dashboard/DashboardHome";
 
 function App() {
   return (
     <div className="">
-      <LoginScreen />
+      <DashboardHome />
     </div>
   );
 }
