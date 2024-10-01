@@ -1,10 +1,9 @@
-import "./App.css";
-import LoginScreen from "./screen/loginScreen/loginScreen";
+import GradeScreen from "./screen/grades/gradeScreen";
 
 function App() {
   return (
     <div className="">
-      <LoginScreen />
+      <GradeScreen />
     </div>
   );
 }
