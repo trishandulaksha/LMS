@@ -6,6 +6,7 @@ import {
   passwordValidation,
 } from "../../Utils/Validation/passwordValidation";
 import { mobileNumberValidation } from "../../Utils/Validation/mobileNumberValidate";
+import { accesscodeValidation } from "../../Utils/Validation/accessCodeValidation";
 
 export const InputFieldUnit = ({
   iconName,
@@ -75,6 +76,13 @@ export const InputFieldUnit = ({
                     )
                   : errMsgBase === "mobilenumber"
                   ? mobileNumberValidation(
+                      e.target.value,
+                      setErr,
+                      setErrMsg,
+                      setCanSubmit
+                    )
+                  : errMsgBase === "accesscode"
+                  ? accesscodeValidation(
                       e.target.value,
                       setErr,
                       setErrMsg,

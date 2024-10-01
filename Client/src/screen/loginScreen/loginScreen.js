@@ -5,13 +5,12 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import login2 from "../../assets/images/login2.png";
 import { InputFieldUnit } from "../../Component/InputFieldComponent/InputFieldComponent";
-import {
-  loginDataHandler,
-  registerDataHandler,
-} from "../../Utils/InputDataHandler/loginDataHandler";
+import { loginDataHandler } from "../../Utils/InputDataHandler/loginDataHandler";
 import Alert from "../../Component/AlertUnit/Alert";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import { registerDataHandler } from "../../Utils/InputDataHandler/registerDataHandler";
 
 // ///////////
 // Login and Register Screen
@@ -228,6 +227,15 @@ const RegisterUnit = ({ setCheckAlert }) => {
               label="Confirm Password"
               placeholder="Confirm Password"
               iconName={<LockResetOutlinedIcon />}
+            />
+            <InputFieldUnit
+              type="number"
+              name="accesscode"
+              setCanSubmit={setCanSubmit}
+              errMsgBase="accesscode"
+              label="Access Code"
+              placeholder="Enter Access Code"
+              iconName={<VpnKeyIcon />}
             />
 
             <button
