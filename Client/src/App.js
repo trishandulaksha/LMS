@@ -1,10 +1,9 @@
-import "./App.css";
-import Navbar from "./screen/Navbar";
+import DashboardHome from "./screen/dashboard/DashboardHome";
 
 function App() {
   return (
     <div className="">
-      <Navbar />
+      <DashboardHome />
     </div>
   );
 }
