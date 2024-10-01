@@ -1,9 +1,9 @@
-import GradeScreen from "./screen/grades/gradeScreen";
+import DashboardHome from "./screen/dashboard/DashboardHome";
 
 function App() {
   return (
     <div className="">
-      <GradeScreen />
+      <DashboardHome />
     </div>
   );
 }
