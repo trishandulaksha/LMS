@@ -19,3 +19,26 @@ export const userLoginAPI = async (
     setDbResponse({ error: "Network Error" });
   }
 };
+
+export const userRegisterApi = async (
+  endpoint,
+  userName,
+  email,
+  password,
+  gender,
+  mobilenumber,
+  setDbResponse
+) => {
+  try {
+    const userData = {
+      name: userName,
+      email: email,
+      role: "STUDENT",
+      gender: gender,
+      mobile_number: mobilenumber,
+      password: password,
+    };
+
+    const response = await axios.post(`${API_URL}/${endpoint}`, userData);
+  } catch (error) {}
+};

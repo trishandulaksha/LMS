@@ -1,6 +1,7 @@
-import "./App.css";
-import GradeScreen from "./screen/grades/GradeScreen";
+// import GradeScreen from "./screen/grades/gradeScreen";
+
 import LoginScreen from "./screen/loginScreen/loginScreen";
+import MyProfile from "./screen/myprofile/MyProfile";
 
 import Dashboard from "./dashboard/DashboardHome";
 import Sidebar from "./Component/Header/sidebar";
@@ -8,7 +9,7 @@ import Sidebar from "./Component/Header/sidebar";
 function App() {
   return (
     <div className="">
-      <GradeScreen />
+      <LoginScreen />
     </div>
   );
 }

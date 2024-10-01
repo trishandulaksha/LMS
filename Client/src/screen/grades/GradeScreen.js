@@ -1,8 +1,8 @@
 import SchoolIcon from "@mui/icons-material/School";
 import React, { useEffect, useState } from "react";
 import data from "./data.json";
-import ChartComponent from "../../component/GradeChartComponent/GradeChartComponent";
-import TableComponent from "../../component/GradeTableComponent/GradeTableComponent";
+import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartComponent";
+import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
 
 function GradeScreen() {
   // Initialize selected year and semester to the first available year and semester in the data
@@ -119,10 +119,13 @@ function GradeScreen() {
           ) : (
             <div className="flex flex-col justify-between mt-8 space-y-8 sm:flex-row sm:space-y-0 sm:space-x-8">
               <div className="w-full overflow-auto sm:w-1/2 ">
-                <ChartComponent subjects={subjects || []} />
+                <GradeChartComponent subjects={subjects || []} />
               </div>
               <div className="w-full overflow-auto sm:w-1/2">
-                <TableComponent subjects={subjects || []} year={selectedYear} />
+                <GradeTableComponent
+                  subjects={subjects || []}
+                  year={selectedYear}
+                />
               </div>
             </div>
           )}
