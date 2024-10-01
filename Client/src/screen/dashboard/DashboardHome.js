@@ -1,9 +1,10 @@
 import React from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import Sidebar from "../Component/Header/sidebar";
+
 import LogoDevIcon from "@mui/icons-material/LogoDev";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import Sidebar from "../../Component/SideNavBar/Sidebar";
 
 function DashboardHome() {
   return (
