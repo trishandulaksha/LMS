@@ -5,13 +5,12 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LockResetOutlinedIcon from "@mui/icons-material/LockResetOutlined";
 import login2 from "../../assets/images/login2.png";
 import { InputFieldUnit } from "../../Component/InputFieldComponent/InputFieldComponent";
-import {
-  loginDataHandler,
-  registerDataHandler,
-} from "../../Utils/InputDataHandler/loginDataHandler";
+import { loginDataHandler } from "../../Utils/InputDataHandler/loginDataHandler";
 import Alert from "../../Component/AlertUnit/Alert";
 import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
+import { registerDataHandler } from "../../Utils/InputDataHandler/registerDataHandler";
 
 // ///////////
 // Login and Register Screen
@@ -27,54 +26,53 @@ function LoginScreen() {
       <div className="absolute left-0 right-0 mt-4 text-center">
         <Alert checkAlert={checkAlert} />
       </div>
-      <div className="flex items-center justify-center h-screen ">
-        <div className="">
-          <div className="flex items-center justify-center text-center border border-gray-200 shadow-2xl rounded-2xl">
-            {checkClicked ? (
-              <>
-                <div className="mx-12">
-                  <LoginUnit setCheckAlert={setCheckAlert} />
-                  <div>
-                    <p>
-                      Create New Account{" "}
-                      <span
-                        className="text-blue-500 cursor-pointer hover:text-blue-800"
-                        onClick={() => checkClicked && setCheckCliked(false)}
-                      >
-                        Sign up
-                      </span>
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-center mt-2">
-                    <input type="checkbox" />{" "}
-                    <span className="ml-2 font-bold">Remember Me</span>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="mx-12">
+      <div className="flex items-center justify-center h-screen bg-gray-100">
+        <div className="flex flex-col w-11/12 max-w-4xl overflow-hidden bg-white shadow-2xl sm:flex-row rounded-xl">
+          {/* Left Side - Form */}
+          <div className="flex flex-col items-center justify-center w-full p-8 sm:w-1/2">
+            <div className="text-center">
+              {checkClicked ? (
+                <LoginUnit setCheckAlert={setCheckAlert} />
+              ) : (
                 <RegisterUnit setCheckAlert={setCheckAlert} />
-                <div className="mt-2">
+              )}
+              <div className="mt-4">
+                {checkClicked ? (
                   <p>
-                    Already have an account ?{" "}
+                    Create New Account{" "}
                     <span
                       className="text-blue-500 cursor-pointer hover:text-blue-800"
-                      onClick={() => !checkClicked && setCheckCliked(true)}
+                      onClick={() => setCheckCliked(false)}
+                    >
+                      Sign up
+                    </span>
+                  </p>
+                ) : (
+                  <p>
+                    Already have an account?{" "}
+                    <span
+                      className="text-blue-500 cursor-pointer hover:text-blue-800"
+                      onClick={() => setCheckCliked(true)}
                     >
                       Sign in
                     </span>
                   </p>
-                </div>
+                )}
               </div>
-            )}
-
-            <div className="">
-              <img
-                src={login2}
-                alt="Login IMG"
-                className="object-cover w-full h-auto rounded-xl"
-              />
+              <div className="flex items-center justify-center mt-2">
+                <input type="checkbox" />
+                <span className="ml-2 font-bold">Remember Me</span>
+              </div>
             </div>
+          </div>
+
+          {/* Right Side - Image */}
+          <div className="hidden sm:block sm:w-1/2">
+            <img
+              src={login2}
+              alt="Login"
+              className="object-cover w-full h-full"
+            />
           </div>
         </div>
       </div>
@@ -228,6 +226,15 @@ const RegisterUnit = ({ setCheckAlert }) => {
               label="Confirm Password"
               placeholder="Confirm Password"
               iconName={<LockResetOutlinedIcon />}
+            />
+            <InputFieldUnit
+              type="number"
+              name="accesscode"
+              setCanSubmit={setCanSubmit}
+              errMsgBase="accesscode"
+              label="Access Code"
+              placeholder="Enter Access Code"
+              iconName={<VpnKeyIcon />}
             />
 
             <button
