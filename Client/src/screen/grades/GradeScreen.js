@@ -60,75 +60,76 @@ function GradeScreen() {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center w-full h-screen p-4 overflow-x-hidden md:px-8 lg:px-16 xl:px-20 ">
-        <div className="p-2 mt-5 shadow-sm md:p-5 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
-          <div className="mt-8 ">
-            <div className="inline-flex items-center">
-              <SchoolIcon
-                sx={{
-                  fontSize: "50px",
-                }}
-              />
-              <div className="ml-4 text-3xl font-extrabold">SPTS</div>
-            </div>
-            <div className="mt-4">
-              <h2 className="text-2xl font-extrabold">Grades</h2>
-            </div>
+      <div className="w-full mt-20">
+        <div className="mt-8 ml-6 mb-14">
+          <div className="inline-flex items-center">
+            <SchoolIcon
+              sx={{
+                fontSize: "50px",
+              }}
+            />
+            <div className="ml-4 text-3xl font-extrabold">SPTS</div>
           </div>
-
-          <div className="flex flex-col justify-center w-full max-w-4xl mt-6 space-y-4 sm:flex-row sm:justify-between sm:space-y-0">
-            <div className="flex flex-col w-full sm:w-1/2">
-              <label className="text-lg font-semibold">Select Year</label>
-              <select
-                className="p-2 mt-2 bg-white border rounded-md"
-                value={selectedYear}
-                onChange={handleYearChange}
-              >
-                {data.years.map((year) => (
-                  <option key={year.year} value={year.year}>
-                    {year.year}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex flex-col w-full sm:ml-1 sm:w-1/2">
-              <label className="text-lg font-semibold">Select Semester</label>
-              <select
-                className="p-2 mt-2 bg-white border rounded-md"
-                value={selectedSemester}
-                onChange={handleSemesterChange}
-              >
-                {data.years
-                  .find((y) => y.year === selectedYear)
-                  ?.semesters.map((sem) => (
-                    <option key={sem.semester} value={sem.semester}>
-                      {sem.semester}
+          <div className="mt-4">
+            <h2 className="text-2xl font-extrabold">Grades</h2>
+          </div>
+        </div>
+        <div className="flex flex-col w-full p-4 overflow-x-hidden md:px-8 lg:px-16 xl:px-20 ">
+          <div className="w-full p-2 shadow-sm md:p-5 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
+            <div className="flex flex-col justify-center w-full max-w-4xl space-y-4 sm:flex-row sm:justify-between sm:space-y-0">
+              <div className="flex flex-col w-full sm:w-1/2">
+                <label className="text-lg font-semibold">Select Year</label>
+                <select
+                  className="p-2 mt-2 bg-white border rounded-md"
+                  value={selectedYear}
+                  onChange={handleYearChange}
+                >
+                  {data.years.map((year) => (
+                    <option key={year.year} value={year.year}>
+                      {year.year}
                     </option>
                   ))}
-              </select>
-            </div>
-            <div className="flex items-center justify-center w-full sm:w-1/2">
-              <p className="font-extrabold">GPA Value = </p>
-              <p className="ml-2 text-2xl font-bold"> 2.8</p>
-            </div>
-          </div>
+                </select>
+              </div>
 
-          {error ? (
-            <p className="mt-6 text-xl text-center text-red-500">{error}</p>
-          ) : (
-            <div className="flex flex-col justify-between mt-8 space-y-8 sm:flex-row sm:space-y-0 sm:space-x-8">
-              <div className="w-full overflow-auto sm:w-1/2 ">
-                <GradeChartComponent subjects={subjects || []} />
+              <div className="flex flex-col w-full sm:ml-1 sm:w-1/2">
+                <label className="text-lg font-semibold">Select Semester</label>
+                <select
+                  className="p-2 mt-2 bg-white border rounded-md"
+                  value={selectedSemester}
+                  onChange={handleSemesterChange}
+                >
+                  {data.years
+                    .find((y) => y.year === selectedYear)
+                    ?.semesters.map((sem) => (
+                      <option key={sem.semester} value={sem.semester}>
+                        {sem.semester}
+                      </option>
+                    ))}
+                </select>
               </div>
-              <div className="w-full overflow-auto sm:w-1/2">
-                <GradeTableComponent
-                  subjects={subjects || []}
-                  year={selectedYear}
-                />
+              <div className="flex items-center justify-center w-full sm:w-1/2">
+                <p className="font-extrabold">GPA Value = </p>
+                <p className="ml-2 text-2xl font-bold"> 2.8</p>
               </div>
             </div>
-          )}
+
+            {error ? (
+              <p className="mt-6 text-xl text-center text-red-500">{error}</p>
+            ) : (
+              <div className="flex flex-col justify-between w-full mt-8 space-y-8 sm:flex-row sm:space-y-0 sm:space-x-8">
+                <div className="w-full overflow-auto sm:w-1/2 ">
+                  <GradeChartComponent subjects={subjects || []} />
+                </div>
+                <div className="w-full overflow-auto sm:w-1/2">
+                  <GradeTableComponent
+                    subjects={subjects || []}
+                    year={selectedYear}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </>
