@@ -4,7 +4,7 @@ import Avatar from '@mui/material/Avatar';
 import LogoDevIcon from "@mui/icons-material/LogoDev";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import Sidebar from "../../Component/SideNavBar/Sidebar";
+import Sidebar from "../../component/SideNavBar/Sidebar";
 
 import LinearProgress, { LinearProgressProps } from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
@@ -53,22 +53,22 @@ function DashboardHome() {
         <div className="flex justify-between p-1 ">
           <div className="flex gap-3">
             <LogoDevIcon />
-            <p className="font-semibold text-xl">SPTS</p>
+            <p className="text-xl font-semibold">SPTS</p>
           </div>
 
           <div className="flex flex-row gap-5">
             <input
               text="text"
               placeholder="Search Here"
-              className="px-2 rounded-lg border-2 text-sm"
+              className="px-2 text-sm border-2 rounded-lg"
             />
             <SearchIcon />
             <NotificationsNoneIcon />
           </div>
         </div>
 
-        <div className=" flex flex-row items-center m-5 text-sm">
-          <div className="border-2 border-black flex flex-row gap-5 w-full justify-around p-4 rounded-lg">
+        <div className="flex flex-row items-center m-5 text-sm ">
+          <div className="flex flex-row justify-around w-full gap-5 p-4 border-2 border-black rounded-lg">
             <div className="flex flex-col items-center pt-3">
               <Avatar alt="Travis Howard" src="/static/images/avatar/2.jpg" />
               <p>Name Here</p>
