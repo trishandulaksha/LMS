@@ -10,14 +10,18 @@ export const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   role: {
     type: String,
     required: true,
+    enum: ["STUDENT", "LECTURER"],
+    default: "STUDENT",
   },
   gender: {
     type: String,
     required: true,
+    enum: ["Male", "Female", "Other"],
   },
   mobile_number: {
     type: String,
@@ -41,11 +45,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// Create Access Token Method
 userSchema.methods.createAccessToken = async function () {
   try {
     const token = await jwt.sign(
       {
-        userId: this.Id,
+        userId: this._id, // Corrected from this.Id to this._id
       },
       process.env.JWT_SCRT_KEY,
       {
@@ -59,6 +64,7 @@ userSchema.methods.createAccessToken = async function () {
   }
 };
 
+// Compare Password Method
 userSchema.methods.comparePassword = async function (password) {
   return new Promise((resolve, reject) => {
     bcrypt.compare(password, this.password, (err, isMatch) => {
@@ -70,5 +76,7 @@ userSchema.methods.comparePassword = async function (password) {
     });
   });
 };
-const User = mongoose.model("users", userSchema);
+
+// Create User Model
+const User = mongoose.model("User", userSchema); // Changed "users" to "User" for consistency
 export default User;
