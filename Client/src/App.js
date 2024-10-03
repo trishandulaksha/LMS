@@ -1,21 +1,42 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./screen/dashboard/DashboardHome";
 import GradeScreen from "./screen/grades/GradeScreen";
-
+import LoginScreen from "./screen/loginScreen/loginScreen";
 import MyProfile from "./screen/myprofile/MyProfile";
 import Layout from "./Layout/Layout";
+import PrivateRoute from "./Routes/PrivateRoutes/PrivateRoutes";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <PrivateRoute>
+        <Layout />
+      </PrivateRoute>
+    ),
     children: [
-      { path: "dashboard", element: <Dashboard /> },
-      { path: "grades", element: <GradeScreen /> },
-      { path: "myprofile", element: <MyProfile /> },
+      { index: true, element: <Dashboard /> },
+      {
+        path: "grades",
+        element: (
+          <PrivateRoute>
+            <GradeScreen />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "myprofile",
+        element: (
+          <PrivateRoute>
+            <MyProfile />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
+  { path: "/login", element: <LoginScreen /> },
 ]);
+
 function App() {
   return (
     <div className="">

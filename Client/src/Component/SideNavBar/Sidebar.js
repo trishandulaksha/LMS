@@ -7,22 +7,18 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { Link } from "react-router-dom";
-
-const handleClick = (iconName) => {
-  console.log(`${iconName} icon clicked`);
-};
+import { Link, useNavigate } from "react-router-dom";
 
 const icons = [
-  { icon: <DashboardIcon />, name: "Dashboard", path: "/dashboard" },
+  { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
   {
     icon: <CalendarMonthIcon />,
     name: "Subject Recomendataion",
-    path: "/dashboard",
+    path: "/",
   },
   { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-  { icon: <TimelineIcon />, name: "Student Progress", path: "/dashboard" },
-  { icon: <LeaderboardIcon />, name: "Log Out", path: "/dashboard" },
+  { icon: <TimelineIcon />, name: "Student Progress", path: "/" },
+  { icon: <LeaderboardIcon />, name: "Log Out", path: "/" },
   { icon: <SettingsIcon />, name: "Settings", path: "/myprofile" },
 ];
 
@@ -32,6 +28,16 @@ const bottomIcons = [
 ];
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const handleClick = (iconName) => {
+    if (iconName === "Logout") {
+      localStorage.removeItem("jwtToken");
+
+      // Redirect to the login page
+      navigate("/login");
+    }
+  };
+
   return (
     <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-10 ml-7 ">
       <div className="flex flex-col gap-5">

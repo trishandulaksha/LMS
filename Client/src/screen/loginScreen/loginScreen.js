@@ -11,6 +11,7 @@ import PhoneOutlinedIcon from "@mui/icons-material/PhoneOutlined";
 import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { registerDataHandler } from "../../Utils/InputDataHandler/registerDataHandler";
+import { useNavigate } from "react-router-dom";
 
 // ///////////
 // Login and Register Screen
@@ -20,6 +21,7 @@ function LoginScreen() {
   const [checkAlert, setCheckAlert] = useState({});
   console.log(checkAlert.Success);
   console.log(checkAlert.Error);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -32,9 +34,12 @@ function LoginScreen() {
           <div className="flex flex-col items-center justify-center w-full p-8 sm:w-1/2">
             <div className="text-center">
               {checkClicked ? (
-                <LoginUnit setCheckAlert={setCheckAlert} />
+                <LoginUnit setCheckAlert={setCheckAlert} navigate={navigate} />
               ) : (
-                <RegisterUnit setCheckAlert={setCheckAlert} />
+                <RegisterUnit
+                  setCheckAlert={setCheckAlert}
+                  navigate={navigate}
+                />
               )}
               <div className="mt-4">
                 {checkClicked ? (
@@ -85,23 +90,29 @@ export default LoginScreen;
 // ///////////
 // Login Unit
 // ///////////
-const LoginUnit = ({ setCheckAlert }) => {
+const LoginUnit = ({ setCheckAlert, navigate }) => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
   let success, error;
+
   if (dbResponse.data) {
     ({ success, error } = dbResponse.data);
   }
 
+  if (success && success.token) {
+    console.log(success.token);
+  }
   // Use useEffect to handle state updates safely
   useEffect(() => {
     if (error) {
       setCheckAlert({ Error: error });
     }
-    if (success) {
+    if (success && success.token) {
+      localStorage.setItem("jwtToken", success.token);
       setCheckAlert({ Success: "Login Successful" });
+      navigate("/");
     }
-  }, [error, success, setCheckAlert]);
+  }, [error, success, setCheckAlert, navigate]);
 
   return (
     <>
