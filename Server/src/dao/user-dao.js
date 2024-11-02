@@ -1,11 +1,19 @@
+import Lecturer from "../schema/lecturerSchema.js";
 import User from "../schema/userSchema.js";
 import { accessCodes } from "../test/userDataSample.js";
+import {
+  getEligibleSubjects,
+  getInitialRecommendations,
+  getMarksForUser,
+  getUserWithCourses,
+} from "./recomendSubject-dao.js";
 
 // Find user detail using email
 export const getUserByEmail = async (email) => {
   try {
     const user = await User.findOne({ email: email });
-    return user;
+    const lecturer = await Lecturer.findOne({ email: email });
+    return user || lecturer;
   } catch (error) {
     return { error: error.message };
   }
@@ -22,7 +30,7 @@ export const authenticateUser = async (data) => {
     return { error: `${email} not found` };
   }
 
-  console.log("User role:", user.role);
+  console.log("User role:", user.role, user._id);
 
   const isMatch = await user.comparePassword(password);
 
@@ -32,6 +40,37 @@ export const authenticateUser = async (data) => {
       user: user,
       status: user.role,
     };
+
+    if (user.role === "STUDENT") {
+      const userWithCourses = await getUserWithCourses(user._id);
+      console.log(userWithCourses);
+      if (userWithCourses.enrolledCourses.length === 0) {
+        // Fetch initial recommendations for first-time enrollment
+        const recommendedSubjects = await getInitialRecommendations();
+        result.recommendedSubjects = recommendedSubjects;
+        result.marksData = null; // No marks data for first-time enrollment
+      } else {
+        // Fetch marks and determine eligible subjects based on prerequisites and eligibility
+        const marksData = await getMarksForUser(user._id);
+
+        // Map to extract completed subjects with eligibility and pass status
+        const completedSubjects = marksData.map((mark) => ({
+          subject: mark.subject.courseCode,
+          passed: mark.passed,
+          isEligibleForFinal: mark.isEligibleForFinal,
+        }));
+
+        // Fetch eligible subjects for next semester
+        const eligibleSubjects = await getEligibleSubjects(
+          userWithCourses,
+          completedSubjects
+        );
+
+        result.recommendedSubjects = eligibleSubjects;
+        result.marksData = marksData;
+      }
+    }
+
     return { success: result };
   } else {
     return { error: "Invalid password" };
@@ -43,25 +82,26 @@ export const userRegistration = async (data) => {
   const { name, email, mobile_number, gender, password, accesscode } = data;
   console.log(name, email, mobile_number, gender, password, accesscode);
   try {
-    // Check if the user already exists
     const isUserExist = await getUserByEmail(email);
     if (isUserExist) {
       return { error: `${email} already exists` };
     }
 
-    // Determine the role based on the access code's first three digits
     let role;
-    if (accesscode.startsWith("123")) {
-      // Lecturer access code prefix
+    let degreeProgram;
+    let Model;
+
+    if (accesscode.startsWith("L123")) {
       role = "LECTURER";
-    } else if (accesscode.startsWith("456")) {
-      // Student access code prefix
+      Model = Lecturer;
+    } else if (accesscode.startsWith("s456")) {
       role = "STUDENT";
+      degreeProgram = "BSE";
+      Model = User;
     } else {
       return { error: "Invalid access code prefix." };
     }
 
-    // Check if the access code matches the expected value for the determined role
     const matchingAccessCode = accessCodes.codes.find(
       (code) => code.accessCode === accesscode && code.email === email
     );
@@ -70,17 +110,19 @@ export const userRegistration = async (data) => {
       return { error: `Invalid access code` };
     }
 
-    // Proceed with user creation if access code is valid
     const savedata = {
-      name: name,
-      email: email,
-      role: role,
-      gender: gender,
-      mobile_number: mobile_number,
-      password: password,
+      _id: accesscode,
+      name,
+      email,
+      role,
+      gender,
+      mobile_number,
+      password,
+      degreeProgram,
+      teachingSubjects: role === "LECTURER" ? [] : undefined,
     };
 
-    await User.create(savedata);
+    await Model.create(savedata);
     return { success: "User created successfully" };
   } catch (error) {
     return { error: `${error.message}` };

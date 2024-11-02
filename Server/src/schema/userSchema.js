@@ -3,6 +3,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
 export const userSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -18,6 +22,10 @@ export const userSchema = new mongoose.Schema({
     enum: ["STUDENT", "LECTURER"],
     default: "STUDENT",
   },
+  degreeProgram: {
+    type: String,
+    required: true,
+  },
   gender: {
     type: String,
     required: true,
@@ -31,6 +39,12 @@ export const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  enrolledCourses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course", // Reference to the Course model
+    },
+  ],
 });
 
 // HASHED THE PASSWORD BEFORE SAVING (USING MIDDLEWARE)
@@ -50,7 +64,7 @@ userSchema.methods.createAccessToken = async function () {
   try {
     const token = await jwt.sign(
       {
-        userId: this._id, // Corrected from this.Id to this._id
+        userId: this._id,
       },
       process.env.JWT_SCRT_KEY,
       {
@@ -78,5 +92,5 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 // Create User Model
-const User = mongoose.model("User", userSchema); // Changed "users" to "User" for consistency
+const User = mongoose.model("User", userSchema);
 export default User;

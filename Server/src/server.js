@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { databaseSetup } from "./dbConnection/dbConnection.js";
 import bodyParser from "body-parser";
 import initRouter from "./router/initRouter.js";
+import subjectRouter from "./router/courseRouter.js";
 
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.use("/api/user", initRouter);
+app.use("/api/user/subject", subjectRouter);
 
 databaseSetup()
   .then(() => {
