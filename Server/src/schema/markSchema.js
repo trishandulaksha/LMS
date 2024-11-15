@@ -13,6 +13,18 @@ const marksSchema = new mongoose.Schema({
         ref: "Course", // Reference to the subject
         required: true,
       },
+      enrollmentDate: { type: Date, required: true },
+
+      isValid: {
+        type: Boolean,
+        default: function () {
+          const currentDate = new Date();
+          const enrollmentYear = this.enrollmentDate.getFullYear();
+          const validityYears = this.isRepeat ? 1 : 2;
+          return currentDate.getFullYear() - enrollmentYear <= validityYears;
+        },
+      },
+
       miniProject: { type: Number, required: true },
       catMarks: [
         {

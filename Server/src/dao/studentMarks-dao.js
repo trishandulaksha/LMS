@@ -4,36 +4,45 @@ import User from "../schema/userSchema.js";
 // Save or Update Marks for a Student
 export const saveOrUpdateMarks = async (studentId, marks) => {
   try {
-    // Fetch the student data to get their enrolled subjects
-    const student = await User.findById(studentId).populate("enrolledSubjects");
+    const student = await User.findById(studentId).populate(
+      "enrolledCourses.course"
+    );
 
-    if (!student) {
-      throw new Error("Student not found.");
-    }
+    if (!student) throw new Error("Student not found.");
 
-    // Check if the student is enrolled in each subject provided in the marks array
-    for (const mark of marks) {
-      const isEnrolled = student.enrolledSubjects.some(
-        (subject) => subject.toString() === mark.subject.toString()
+    marks.forEach((mark) => {
+      const enrolledCourse = student.enrolledCourses.find(
+        (enrollment) => enrollment.course.toString() === mark.subject.toString()
       );
 
-      if (!isEnrolled) {
+      if (!enrolledCourse)
+        throw new Error(`Student is not enrolled in subject ${mark.subject}`);
+      if (!enrolledCourse.enrollmentDate)
+        throw new Error(`No enrollment date for subject ${mark.subject}`);
+
+      // Check if the enrollment is still valid based on the enrollment date
+      const enrollmentYear = enrolledCourse.enrollmentDate.getFullYear();
+      const currentYear = new Date().getFullYear();
+      const validityPeriod = enrolledCourse.isRepeat ? 1 : 2;
+      if (currentYear - enrollmentYear > validityPeriod) {
         throw new Error(
-          `Student is not enrolled in subject with ID: ${mark.subject}`
+          `Enrollment in subject ${mark.subject} is no longer valid.`
         );
       }
-    }
+    });
 
-    // Proceed to save or update marks if the student is enrolled in all subjects
+    // Proceed to save or update marks
     let studentMarks = await Marks.findOne({ student: studentId });
+    studentMarks = studentMarks
+      ? studentMarks
+      : new Marks({ student: studentId, marks });
 
-    if (!studentMarks) {
-      // If no marks entry exists for the student, create a new entry
-      studentMarks = new Marks({ student: studentId, marks });
-    } else {
-      // Update existing marks for the student
-      studentMarks.marks = marks;
-    }
+    studentMarks.marks = marks.map((mark) => ({
+      ...mark,
+      enrollmentDate: student.enrolledCourses.find(
+        (enrollment) => enrollment.course.toString() === mark.subject.toString()
+      ).enrollmentDate,
+    }));
 
     return await studentMarks.save();
   } catch (error) {

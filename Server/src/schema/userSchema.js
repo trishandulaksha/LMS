@@ -42,7 +42,9 @@ export const userSchema = new mongoose.Schema({
   enrolledCourses: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Course", // Reference to the Course model
+      ref: "Course",
+      enrollmentDate: { type: Date, default: Date.now },
+      isRepeat: { type: Boolean, default: false },
     },
   ],
 });

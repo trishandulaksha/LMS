@@ -39,7 +39,7 @@ const lecturerSchema = new mongoose.Schema({
   teachingSubjects: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Subjects", // Reference to the Subject model
+      ref: "Course",
     },
   ],
 });
