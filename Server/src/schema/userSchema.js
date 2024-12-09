@@ -2,7 +2,11 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-export const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
+  _id: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -10,14 +14,22 @@ export const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   role: {
+    type: String,
+    required: true,
+    enum: ["STUDENT", "LECTURER"],
+    default: "STUDENT",
+  },
+  degreeProgram: {
     type: String,
     required: true,
   },
   gender: {
     type: String,
     required: true,
+    enum: ["Male", "Female", "Other"],
   },
   mobile_number: {
     type: String,
@@ -27,6 +39,15 @@ export const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  enrolledCourses: [
+    {
+      courseCode: { type: String, required: true },
+      enrolledDate: { type: String, required: true }, // Stores date as 'YYYY-MM-DD'
+      passedStatus: { type: Boolean, default: false },
+      eligibleStatus: { type: Boolean, default: true },
+      attempts: { type: Number, default: 0 },
+    },
+  ],
 });
 
 // HASHED THE PASSWORD BEFORE SAVING (USING MIDDLEWARE)
@@ -41,11 +62,12 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// Create Access Token Method
 userSchema.methods.createAccessToken = async function () {
   try {
     const token = await jwt.sign(
       {
-        userId: this.Id,
+        userId: this._id,
       },
       process.env.JWT_SCRT_KEY,
       {
@@ -59,6 +81,7 @@ userSchema.methods.createAccessToken = async function () {
   }
 };
 
+// Compare Password Method
 userSchema.methods.comparePassword = async function (password) {
   return new Promise((resolve, reject) => {
     bcrypt.compare(password, this.password, (err, isMatch) => {
@@ -70,5 +93,7 @@ userSchema.methods.comparePassword = async function (password) {
     });
   });
 };
-const User = mongoose.model("users", userSchema);
+
+// Create User Model
+const User = mongoose.model("User", userSchema);
 export default User;

@@ -6,6 +6,7 @@ export const userLoginAPI = async (
   endpoint,
   userName,
   password,
+
   setDbResponse
 ) => {
   try {
@@ -16,7 +17,7 @@ export const userLoginAPI = async (
     const response = await axios.post(`${API_URL}/${endpoint}`, userData);
     setDbResponse(response);
   } catch (error) {
-    setDbResponse({ error: "Network Error" });
+    setDbResponse(error);
   }
 };
 
@@ -25,8 +26,9 @@ export const userRegisterApi = async (
   userName,
   email,
   password,
-  gender,
+  accesscode,
   mobilenumber,
+  gender,
   setDbResponse
 ) => {
   try {
@@ -37,8 +39,13 @@ export const userRegisterApi = async (
       gender: gender,
       mobile_number: mobilenumber,
       password: password,
+      accesscode: accesscode,
     };
-
+    console.log(userData);
     const response = await axios.post(`${API_URL}/${endpoint}`, userData);
-  } catch (error) {}
+    console.log(response);
+    setDbResponse(response);
+  } catch (error) {
+    setDbResponse(error);
+  }
 };
