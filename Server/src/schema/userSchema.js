@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
-export const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   _id: {
     type: String,
     required: true,
@@ -41,10 +41,11 @@ export const userSchema = new mongoose.Schema({
   },
   enrolledCourses: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
-      enrollmentDate: { type: Date, default: Date.now },
-      isRepeat: { type: Boolean, default: false },
+      courseCode: { type: String, required: true },
+      enrolledDate: { type: String, required: true }, // Stores date as 'YYYY-MM-DD'
+      passedStatus: { type: Boolean, default: false },
+      eligibleStatus: { type: Boolean, default: true },
+      attempts: { type: Number, default: 0 },
     },
   ],
 });

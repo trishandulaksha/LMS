@@ -5,6 +5,16 @@ const accessCodes = {
       role: "LECTURER",
       accessCode: "L123000012021",
       degreeProgram: "BSE",
+      teachingSubjects: [
+        {
+          courseCode: "EEX3467",
+          courseName: "Software Engineering Concepts",
+        },
+        {
+          courseCode: "EEI3346",
+          courseName: "Web Application Development",
+        },
+      ],
     },
     {
       email: "kamal@gmail.com",

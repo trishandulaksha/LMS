@@ -118,6 +118,11 @@ const marksSchema = new mongoose.Schema({
       },
     },
   ],
+  status: {
+    type: String,
+    enum: ["Pending", "Eligible", "Resit", "Repeated"],
+    default: "Pending",
+  },
 });
 
 const Marks = mongoose.model("Marks", marksSchema);

@@ -1,6 +1,7 @@
 import Lecturer from "../schema/lecturerSchema.js";
 import User from "../schema/userSchema.js";
 import { accessCodes } from "../test/userDataSample.js";
+import Course from "../schema/courseSchema.js";
 import {
   getEligibleSubjects,
   getInitialRecommendations,
@@ -77,37 +78,70 @@ export const authenticateUser = async (data) => {
   }
 };
 
-// User Registration
+// User Registrationimport Lecturer from "../schema/lecturerSchema.js";
 export const userRegistration = async (data) => {
   const { name, email, mobile_number, gender, password, accesscode } = data;
   console.log(name, email, mobile_number, gender, password, accesscode);
+
   try {
     const isUserExist = await getUserByEmail(email);
     if (isUserExist) {
       return { error: `${email} already exists` };
     }
 
+    const matchingAccessCode = accessCodes.codes.find(
+      (code) => code.accessCode === accesscode
+    );
+
+    if (!matchingAccessCode) {
+      return {
+        error: `Access code ${accesscode} does not exist in admin data.`,
+      };
+    }
+
+    if (matchingAccessCode.email !== email) {
+      return {
+        error: `Email ${email} does not match admin data for access code ${accesscode}.`,
+      };
+    }
+
     let role;
     let degreeProgram;
     let Model;
+    let teachingSubjects = [];
 
     if (accesscode.startsWith("L123")) {
       role = "LECTURER";
       Model = Lecturer;
+
+      // Align teaching subjects with admin data
+      if (matchingAccessCode.teachingSubjects) {
+        teachingSubjects = await Promise.all(
+          matchingAccessCode.teachingSubjects.map(async (subject) => {
+            // Check if the course exists in the database or create it
+            let course = await Course.findOne({
+              courseCode: subject.courseCode,
+            });
+            if (!course) {
+              course = await Course.create({
+                courseCode: subject.courseCode,
+                courseName: subject.courseName,
+              });
+            }
+            return course._id; // Store the course's ObjectId
+          })
+        );
+      } else {
+        return {
+          error: `No teaching subjects defined for access code ${accesscode}.`,
+        };
+      }
     } else if (accesscode.startsWith("s456")) {
       role = "STUDENT";
       degreeProgram = "BSE";
       Model = User;
     } else {
       return { error: "Invalid access code prefix." };
-    }
-
-    const matchingAccessCode = accessCodes.codes.find(
-      (code) => code.accessCode === accesscode && code.email === email
-    );
-
-    if (!matchingAccessCode) {
-      return { error: `Invalid access code` };
     }
 
     const savedata = {
@@ -119,11 +153,11 @@ export const userRegistration = async (data) => {
       mobile_number,
       password,
       degreeProgram,
-      teachingSubjects: role === "LECTURER" ? [] : undefined,
+      teachingSubjects: role === "LECTURER" ? teachingSubjects : undefined,
     };
 
     await Model.create(savedata);
-    return { success: "User created successfully" };
+    return { success: "User created successfully with verified access code." };
   } catch (error) {
     return { error: `${error.message}` };
   }

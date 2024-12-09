@@ -18,7 +18,7 @@ export const subjectSchema = new mongoose.Schema({
   subjectLevel: { type: Number, required: true },
   compulsory: { type: Boolean, default: false },
   passedCreditsRequired: { type: Number, required: true },
-  eligibilityCriteria: eligibilityCriteriaSchema, // Embed eligibility criteria here
+  eligibilityCriteria: eligibilityCriteriaSchema,
   recommendedNextSubjects: { type: [String], default: [] },
 });
 
