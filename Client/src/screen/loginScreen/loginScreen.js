@@ -38,7 +38,7 @@ function LoginScreen() {
               ) : (
                 <RegisterUnit
                   setCheckAlert={setCheckAlert}
-                  navigate={navigate}
+                  setCheckCliked={setCheckCliked}
                 />
               )}
               <div className="mt-4">
@@ -156,7 +156,7 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
 // ///////////
 //  Register Unit
 // ///////////
-const RegisterUnit = ({ setCheckAlert }) => {
+const RegisterUnit = ({ setCheckAlert, setCheckCliked }) => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
   let success, error;
@@ -171,6 +171,10 @@ const RegisterUnit = ({ setCheckAlert }) => {
     }
     if (success) {
       setCheckAlert({ Success: "User Reguster Successful" });
+
+      setTimeout(() => {
+        setCheckCliked(true);
+      }, 2000);
     }
   }, [error, success, setCheckAlert]);
 
@@ -239,7 +243,7 @@ const RegisterUnit = ({ setCheckAlert }) => {
               iconName={<LockResetOutlinedIcon />}
             />
             <InputFieldUnit
-              type="number"
+              type="text"
               name="accesscode"
               setCanSubmit={setCanSubmit}
               errMsgBase="accesscode"
