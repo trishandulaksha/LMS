@@ -3,8 +3,10 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";
+
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -42,6 +44,7 @@ const Dashboard = () => {
   };
 
   return (
+
     <div className="w-full min-h-screen p-8 bg-gray-100 ">
       {/* Header Section */}
       <div className="flex items-center justify-between">
@@ -85,6 +88,7 @@ const Dashboard = () => {
             <ProgressBar currentCredits={50} totalCredits={130} />
           </div>
         </div>
+
         <div className="mt-4 lg:mt-0">
           <div className="grid grid-cols-2 gap-4 text-sm lg:flex lg:items-center lg:space-x-6">
             <div className="flex flex-col items-start">
@@ -92,6 +96,7 @@ const Dashboard = () => {
               <p>Level : 04</p>
               <p>Year : 22/23</p>
               <p>Total Years : 04</p>
+
             </div>
 
             <div className="flex flex-col items-start">
