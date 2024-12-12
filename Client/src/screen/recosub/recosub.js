@@ -3,9 +3,11 @@ import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import Recosubgrid from "../../Component/Recosubgrid/Recosubgrid";
-
+import { responseData } from "../../Testing/TestingResponse";
       
 const Recosub = () => {
+  const { recommendedSubjects } = responseData.success;
+
   return (
     <div>
     
@@ -38,7 +40,10 @@ const Recosub = () => {
           <NotificationsActiveIcon sx={{ marginLeft: 2 }} />
         </div>
       </div>
-      <div><Recosubgrid/></div>
+      <div className="min-h-screen bg-gray-100">
+      <Recosubgrid recommendedSubjects={recommendedSubjects} />
+    </div>
+
       </div>
 
 
