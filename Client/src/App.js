@@ -5,6 +5,7 @@ import LoginScreen from "./screen/loginScreen/loginScreen";
 import MyProfile from "./screen/myprofile/MyProfile";
 import Layout from "./Layout/Layout";
 import PrivateRoute from "./Routes/PrivateRoutes/PrivateRoutes";
+import Recosub from "./screen/recosub/recosub";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,15 @@ const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <GradeScreen />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: "Recosub",
+        element: (
+          <PrivateRoute>
+            < Recosub/>
           </PrivateRoute>
         ),
       },

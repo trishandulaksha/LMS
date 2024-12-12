@@ -9,12 +9,13 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Link, useNavigate } from "react-router-dom";
 
+
 const icons = [
   { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
   {
     icon: <CalendarMonthIcon />,
     name: "Subject Recomendataion",
-    path: "/",
+    path: "/recosub",
   },
   { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
   { icon: <TimelineIcon />, name: "Student Progress", path: "/" },
@@ -51,6 +52,7 @@ const Sidebar = () => {
           </div>
         ))}
       </div>
+
 
       <div className="flex flex-col gap-5">
         {bottomIcons.map(({ icon, name, path }) => (
