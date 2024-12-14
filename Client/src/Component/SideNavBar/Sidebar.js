@@ -18,8 +18,8 @@ const icons = [
     path: "/recosub",
   },
   { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-  { icon: <TimelineIcon />, name: "Student Progress", path: "/" },
-  { icon: <LeaderboardIcon />, name: "Log Out", path: "/" },
+  { icon: <TimelineIcon />, name: "Student Progress", path: "/StudentProgress" },
+  { icon: <LeaderboardIcon />, name: "Schedule", path: "/Schedule" },
   { icon: <SettingsIcon />, name: "Settings", path: "/myprofile" },
 ];
 
