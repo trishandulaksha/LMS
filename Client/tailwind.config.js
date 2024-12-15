@@ -17,6 +17,9 @@ module.exports = {
         slideDown: "slideDown 0.5s ease-out forwards",
         slideUp: "slideUp 0.5s ease-in forwards",
       },
+      screens: {
+        sm: '400px',
+      }
     },
   },
   plugins: [],
