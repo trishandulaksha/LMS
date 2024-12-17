@@ -40,7 +40,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-10 ml-7 ">
+    <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-4 ml-7 ">
       <div className="flex flex-col gap-5">
         {icons.map(({ icon, name, path }) => (
           <div
