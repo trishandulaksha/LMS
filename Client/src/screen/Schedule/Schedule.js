@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -5,6 +6,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 // Required styles for FullCalendar
 //import "@fullcalendar/core/styles.css";
 //import "@fullcalendar/daygrid/styles.css";
+
 
 const Schedule = () => {
   const [events, setEvents] = useState([]);
@@ -40,3 +42,4 @@ const Schedule = () => {
 };
 
 export default Schedule;
+
