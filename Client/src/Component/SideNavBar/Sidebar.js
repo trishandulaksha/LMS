@@ -20,12 +20,12 @@ const icons = [
   { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
   { icon: <TimelineIcon />, name: "Student Progress", path: "/StudentProgress" },
   { icon: <LeaderboardIcon />, name: "Schedule", path: "/Schedule" },
-  { icon: <SettingsIcon />, name: "Settings", path: "/myprofile" },
+  { icon: <SettingsIcon />, name: "Settings", path: "/Setting" },
 ];
 
 const bottomIcons = [
   { icon: <LogoutIcon />, name: "Logout" },
-  { icon: <AccountCircleIcon />, name: "Account" },
+  { icon: <AccountCircleIcon />, name: "myprofile",path:"/MyProfile" },
 ];
 
 const Sidebar = () => {
