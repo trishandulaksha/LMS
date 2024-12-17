@@ -17,7 +17,11 @@ const icons = [
     path: "/",
   },
   { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-  { icon: <TimelineIcon />, name: "Student Progress", path: "/" },
+  {
+    icon: <TimelineIcon />,
+    name: "Student Progress",
+    path: "/lecturerDashboard",
+  },
   { icon: <LeaderboardIcon />, name: "Log Out", path: "/" },
   { icon: <SettingsIcon />, name: "Settings", path: "/myprofile" },
 ];

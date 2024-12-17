@@ -12,6 +12,7 @@ import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { registerDataHandler } from "../../Utils/InputDataHandler/registerDataHandler";
 import { useNavigate } from "react-router-dom";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
 // ///////////
 // Login and Register Screen
@@ -93,6 +94,7 @@ export default LoginScreen;
 const LoginUnit = ({ setCheckAlert, navigate }) => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
+  const { setUser } = UseDataContexts();
   let success, error;
 
   if (dbResponse.data) {
@@ -119,7 +121,11 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-11">Sign In</h1>
         <div>
-          <form onSubmit={(e) => loginDataHandler(e, setDbResponse, canSubmit)}>
+          <form
+            onSubmit={(e) =>
+              loginDataHandler(e, setDbResponse, canSubmit, setUser)
+            }
+          >
             <InputFieldUnit
               type="text"
               name="email"

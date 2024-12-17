@@ -1,9 +1,14 @@
 // controllers/enrollmentController.js
 
 import Subjects from "../schema/courseSchema.js";
+import Marks from "../schema/markSchema.js";
 import User from "../schema/userSchema.js";
+import mongoose from "mongoose";
 
-// Enroll a user in a courseexport const enrollInCourse = async (userId, courseCodes) => {
+// //////////////
+// SAVE ENROLLED COURSES
+// //////////////
+
 export const enrollInCourse = async (userId, courseCodes) => {
   try {
     const user = await User.findById(userId);
@@ -21,30 +26,87 @@ export const enrollInCourse = async (userId, courseCodes) => {
         continue;
       }
 
-      // Check if the course is already enrolled
-      const isAlreadyEnrolled = user.enrolledCourses.some(
+      const currentDate = new Date();
+
+      // Check if the user is already enrolled in the course
+      const alreadyEnrolled = user.enrolledCourses.some(
         (enrolled) => enrolled.courseCode === code
       );
 
-      if (isAlreadyEnrolled) {
+      if (alreadyEnrolled) {
         errors.push(`Already enrolled in course with code: ${code}`);
         continue;
       }
 
-      const currentDate = new Date().toISOString().split("T")[0];
+      // Update the Marks Schema
+      const existingMarks = await Marks.findOne({ student: user._id });
 
-      // Add course details
+      if (!existingMarks) {
+        // Create a new mark record if none exists
+        await Marks.create({
+          student: user._id,
+          marks: [
+            {
+              subject: course._id,
+              enrollmentDate: currentDate,
+              miniProject: 0,
+              catMarks: Array.from({ length: 4 }, (_, i) => ({
+                label: `CAT ${i + 1}`,
+                mark: 0,
+              })),
+              tmaMarks: Array.from({ length: 4 }, (_, i) => ({
+                label: `TMA ${i + 1}`,
+                mark: 0,
+              })),
+              labMarks: Array.from({ length: 4 }, (_, i) => ({
+                label: `Lab ${i + 1}`,
+                mark: 0,
+              })),
+              finalMarks: 0,
+              eligibilityMarks: 0,
+              isEligibleForFinal: false,
+              passed: false,
+            },
+          ],
+        });
+      } else {
+        // Add the subject to existing marks
+        existingMarks.marks.push({
+          subject: course._id,
+          enrollmentDate: currentDate,
+          miniProject: 0,
+          catMarks: Array.from({ length: 4 }, (_, i) => ({
+            label: `CAT ${i + 1}`,
+            mark: 0,
+          })),
+          tmaMarks: Array.from({ length: 4 }, (_, i) => ({
+            label: `TMA ${i + 1}`,
+            mark: 0,
+          })),
+          labMarks: Array.from({ length: 4 }, (_, i) => ({
+            label: `Lab ${i + 1}`,
+            mark: 0,
+          })),
+          finalMarks: 0,
+          eligibilityMarks: 0,
+          isEligibleForFinal: false,
+          passed: false,
+        });
+        await existingMarks.save();
+      }
+
+      // Add the enrolled course to the user's enrolledCourses array
       user.enrolledCourses.push({
-        courseCode: code,
-        enrolledDate: currentDate,
-        passedStatus: false,
-        eligibleStatus: true,
-        attempts: 0,
+        courseID: course._id, // Required: courseID
+        courseCode: course.courseCode,
+        courseName: course.courseName,
+        enrolledDate: currentDate, // Required: enrolledDate
       });
 
       enrolledCourses.push(course.courseName);
     }
 
+    // Save the updated user document
     await user.save();
 
     const response = {
@@ -63,43 +125,55 @@ export const enrollInCourse = async (userId, courseCodes) => {
 // //////////////
 // DELETE ENROLLED COURSES
 // //////////////
+// DELETE ENROLLED COURSES
 export const deleteEnrolledCourses = async (userId, courseCodes) => {
   try {
+    // Validate input
+    if (!Array.isArray(courseCodes) || courseCodes.length === 0) {
+      throw new Error("courseCodes must be a non-empty array of course codes");
+    }
+
+    // Find the user based on userId
     const user = await User.findById(userId);
     if (!user) {
-      return { error: "User not found." };
+      throw new Error("User not found");
     }
 
-    const removedCourses = [];
-    const errors = [];
+    // Filter out the enrolled courses to be removed
+    const removedCourses = user.enrolledCourses.filter((course) =>
+      courseCodes.includes(course.courseCode)
+    );
 
-    for (const code of courseCodes) {
-      // Find the index of the course in enrolledCourses
-      const index = user.enrolledCourses.findIndex(
-        (enrolled) => enrolled.courseCode === code
-      );
-
-      if (index === -1) {
-        errors.push(`Course with code ${code} is not enrolled.`);
-        continue;
-      }
-
-      // Remove the course from the array
-      const [removedCourse] = user.enrolledCourses.splice(index, 1);
-      removedCourses.push(removedCourse.courseCode);
+    if (removedCourses.length === 0) {
+      throw new Error("No matching enrolled courses found for removal");
     }
 
+    // Update the user's enrolledCourses by excluding the removed ones
+    user.enrolledCourses = user.enrolledCourses.filter(
+      (course) => !courseCodes.includes(course.courseCode)
+    );
+
+    // Save the updated user data
     await user.save();
 
-    const response = {
-      success: removedCourses.length
-        ? `Removed courses: ${removedCourses.join(", ")}`
-        : null,
-      errors: errors.length ? errors : null,
-    };
+    // Extract the course IDs from the removed courses for Marks deletion
+    const removedCourseIds = removedCourses.map((course) => course.courseID);
 
-    return response;
+    // Remove corresponding marks for the removed courses in Marks table
+    await Marks.updateOne(
+      { student: userId },
+      {
+        $pull: {
+          marks: {
+            subject: { $in: removedCourseIds }, // Match subjects by course IDs
+          },
+        },
+      }
+    );
+
+    return { message: "Courses and associated marks removed successfully" };
   } catch (error) {
-    return { error: error.message };
+    console.error("Error in deleteEnrolledCourses:", error.message);
+    throw new Error(error.message);
   }
 };

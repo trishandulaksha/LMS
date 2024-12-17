@@ -5,6 +5,11 @@ import LoginScreen from "./screen/loginScreen/loginScreen";
 import MyProfile from "./screen/myprofile/MyProfile";
 import Layout from "./Layout/Layout";
 import PrivateRoute from "./Routes/PrivateRoutes/PrivateRoutes";
+import LecturerDashboard from "./screen/Lecturer/LecturerMarks/LecturerMarksScreen";
+import {
+  GlobalProvider,
+  UseDataContexts,
+} from "./ContextAPI/LoginAndMarksContext";
 
 const router = createBrowserRouter([
   {
@@ -32,6 +37,14 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      {
+        path: "lecturerDashboard",
+        element: (
+          <PrivateRoute>
+            <LecturerDashboard />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
   { path: "/login", element: <LoginScreen /> },
@@ -39,9 +52,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="">
-      <RouterProvider router={router} />
-    </div>
+    <GlobalProvider>
+      <div className="">
+        <RouterProvider router={router} />
+      </div>
+    </GlobalProvider>
   );
 }
 

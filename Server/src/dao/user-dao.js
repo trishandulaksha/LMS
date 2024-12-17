@@ -20,7 +20,7 @@ export const getUserByEmail = async (email) => {
   }
 };
 
-// User Authentication
+// User Authentication// User Authentication
 export const authenticateUser = async (data) => {
   const { email, password } = data;
 
@@ -43,32 +43,53 @@ export const authenticateUser = async (data) => {
     };
 
     if (user.role === "STUDENT") {
+      // Fetch user with courses
       const userWithCourses = await getUserWithCourses(user._id);
       console.log(userWithCourses);
-      if (userWithCourses.enrolledCourses.length === 0) {
-        // Fetch initial recommendations for first-time enrollment
+
+      if (
+        !userWithCourses.enrolledCourses ||
+        userWithCourses.enrolledCourses.length === 0
+      ) {
+        // No courses enrolled yet
         const recommendedSubjects = await getInitialRecommendations();
+        result.message =
+          "No courses enrolled yet. Here are some recommended courses.";
         result.recommendedSubjects = recommendedSubjects;
-        result.marksData = null; // No marks data for first-time enrollment
+        result.marksData = null;
       } else {
-        // Fetch marks and determine eligible subjects based on prerequisites and eligibility
+        // Fetch marks for the user
         const marksData = await getMarksForUser(user._id);
 
-        // Map to extract completed subjects with eligibility and pass status
-        const completedSubjects = marksData.map((mark) => ({
-          subject: mark.subject.courseCode,
-          passed: mark.passed,
-          isEligibleForFinal: mark.isEligibleForFinal,
-        }));
+        if (!marksData || marksData.length === 0) {
+          // User has enrolled but no marks data available
+          result.message = "No marks found for the enrolled courses.";
+          result.marksData = null;
 
-        // Fetch eligible subjects for next semester
-        const eligibleSubjects = await getEligibleSubjects(
-          userWithCourses,
-          completedSubjects
-        );
+          // Fetch eligible subjects (if applicable)
+          const eligibleSubjects = await getEligibleSubjects(
+            userWithCourses,
+            []
+          );
+          result.recommendedSubjects = eligibleSubjects;
+        } else {
+          // Map to extract completed subjects with eligibility and pass status
+          const completedSubjects = marksData.map((mark) => ({
+            subject: mark.subject.courseCode,
+            passed: mark.passed,
+            isEligibleForFinal: mark.isEligibleForFinal,
+          }));
 
-        result.recommendedSubjects = eligibleSubjects;
-        result.marksData = marksData;
+          // Fetch eligible subjects for next semester
+          const eligibleSubjects = await getEligibleSubjects(
+            userWithCourses,
+            completedSubjects
+          );
+
+          result.message = "Here are your marks and recommended subjects.";
+          result.recommendedSubjects = eligibleSubjects;
+          result.marksData = marksData;
+        }
       }
     }
 
