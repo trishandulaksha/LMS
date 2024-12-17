@@ -170,7 +170,7 @@ const RegisterUnit = ({ setCheckAlert, setCheckCliked }) => {
       setCheckAlert({ Error: error });
     }
     if (success) {
-      setCheckAlert({ Success: "User Reguster Successful" });
+      setCheckAlert({ Success: "User Register Successful" });
 
       setTimeout(() => {
         setCheckCliked(true);
