@@ -1,11 +1,9 @@
 import React from "react";
+import '../../../src/style.css';
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import SchoolIcon from "@mui/icons-material/School";
-import SearchIcon from "@mui/icons-material/Search";
-
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
+import Header from "../../Component/Header/Header";
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -46,51 +44,26 @@ const Dashboard = () => {
   return (
 
     <div className="w-full min-h-screen p-8 bg-gray-100 ">
-      {/* Header Section */}
-      <div className="flex items-center justify-between">
-        <div className="inline-flex items-center">
-          <SchoolIcon
-            sx={{
-              fontSize: "50px",
-            }}
-          />
-          <div className="ml-4 text-3xl font-extrabold">SPTS</div>
-        </div>
-        <div className="flex items-center ">
-          <div className="p-1 bg-white rounded-lg shadow-lg">
-            <input
-              text="text"
-              placeholder="Search Here"
-              className="px-2 py-1 text-sm outline-none "
-            />
-            <SearchIcon
-              sx={{
-                cursor: "pointer",
-              }}
-            />
-          </div>
-          <NotificationsActiveIcon sx={{ marginLeft: 2 }} />
-        </div>
-      </div>
+      <Header/>
 
       <div className="flex flex-col items-center p-6 mt-16 mb-6 bg-white rounded-lg shadow lg:flex-row lg:justify-between lg:space-x-6">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 mobile-row">
           <img
             src="https://via.placeholder.com/80"
             alt="Profile"
             className="w-16 h-16 rounded-full"
           />
-          <div>
+          <div className="sm:text-center">
             <h2 className="text-lg font-bold">Maitey Prajapati</h2>
             <p className="text-gray-500">Level 04 Student</p>
           </div>
-          <div className="pl-11">
+          <div className="pl-11 mobile-p-zero">
             <ProgressBar currentCredits={50} totalCredits={130} />
           </div>
         </div>
 
         <div className="mt-4 lg:mt-0">
-          <div className="grid grid-cols-2 gap-4 text-sm lg:flex lg:items-center lg:space-x-6">
+          <div className="grid grid-cols-2 gap-4 text-sm lg:flex lg:items-center lg:space-x-6 mobile-grid">
             <div className="flex flex-col items-start">
               <p>Completed Subject : 05</p>
               <p>Level : 04</p>
@@ -106,7 +79,7 @@ const Dashboard = () => {
               <p>Status : Good</p>
             </div>
 
-            <div className="flex flex-col items-start pt-4 text-cyan-400">
+            <div className="flex flex-col items-start pt-4 text-cyan-400 sm:items-center">
               <p>View Grpdes</p>
               <p>View Progress</p>
             </div>
@@ -117,7 +90,7 @@ const Dashboard = () => {
       {/* Overall Performance Section */}
       <div className="p-6 bg-white rounded-lg shadow">
         <h2 className="mb-6 text-xl font-bold">Overall Performance</h2>
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-8 mobile-grid">
           {performanceData.map((data, index) => (
             <div key={index} className="text-center">
               <Doughnut data={renderChart(data.percentage, data.color)} />
@@ -130,5 +103,6 @@ const Dashboard = () => {
     </div>
   );
 };
+
 
 export default Dashboard;

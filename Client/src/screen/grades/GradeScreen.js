@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import data from "./data.json";
 import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartComponent";
 import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
+import Header from "../../Component/Header/Header";
 
 function GradeScreen() {
   // Initialize selected year and semester to the first available year and semester in the data
@@ -60,22 +61,17 @@ function GradeScreen() {
 
   return (
     <>
-      <div className="w-full mt-20">
-        <div className="mt-8 ml-6 mb-14">
-          <div className="inline-flex items-center">
-            <SchoolIcon
-              sx={{
-                fontSize: "50px",
-              }}
-            />
-            <div className="ml-4 text-3xl font-extrabold">SPTS</div>
-          </div>
+
+      <div className="w-full p-8 bg-gray-100">
+      <Header/>
+        <div className="mt-0 mb-14">
+
           <div className="mt-4">
             <h2 className="text-2xl font-extrabold">Grades</h2>
           </div>
         </div>
         <div className="flex flex-col w-full p-4 overflow-x-hidden md:px-8 lg:px-16 xl:px-20 ">
-          <div className="w-full p-2 shadow-sm md:p-5 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
+          <div className="w-full p-2 shadow-sm md:p-5 bg-opacity-35 rounded-xl">
             <div className="flex flex-col justify-center w-full max-w-4xl space-y-4 sm:flex-row sm:justify-between sm:space-y-0">
               <div className="flex flex-col w-full sm:w-1/2">
                 <label className="text-lg font-semibold">Select Year</label>

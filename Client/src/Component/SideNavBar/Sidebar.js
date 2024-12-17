@@ -9,16 +9,17 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Link, useNavigate } from "react-router-dom";
 
+
 const icons = [
   { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
   {
     icon: <CalendarMonthIcon />,
     name: "Subject Recomendataion",
-    path: "/",
+    path: "/recosub",
   },
   { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-  { icon: <TimelineIcon />, name: "Student Progress", path: "/" },
-  { icon: <LeaderboardIcon />, name: "Log Out", path: "/" },
+  { icon: <TimelineIcon />, name: "Student Progress", path: "/StudentProgress" },
+  { icon: <LeaderboardIcon />, name: "Schedule", path: "/Schedule" },
   { icon: <SettingsIcon />, name: "Settings", path: "/myprofile" },
 ];
 
@@ -39,7 +40,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-10 ml-7 ">
+    <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-4 ml-7 ">
       <div className="flex flex-col gap-5">
         {icons.map(({ icon, name, path }) => (
           <div
@@ -51,6 +52,7 @@ const Sidebar = () => {
           </div>
         ))}
       </div>
+
 
       <div className="flex flex-col gap-5">
         {bottomIcons.map(({ icon, name, path }) => (
