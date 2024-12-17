@@ -7,6 +7,8 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
       <table className="w-full border border-collapse border-gray-200 table-auto">
         <thead>
           <tr>
+            <th className="p-2 border">Student ID</th>{" "}
+            {/* New column for Student ID */}
             <th className="p-2 border">Name</th>
             <th className="p-2 border">Mini Project</th>
             <th className="p-2 border">CAT Marks</th>
@@ -27,9 +29,11 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
 
             return (
               <tr key={student.id}>
+                {/* Display Student ID */}
+                <td className="p-2 border">{student.id}</td>{" "}
+                {/* New column for Student ID */}
                 {/* Student Name */}
                 <td className="p-2 border">{student.name}</td>
-
                 {/* Mini Project Marks */}
                 <td className="p-2 border">
                   {isEditing ? (
@@ -45,7 +49,6 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
                     student.marks?.miniProject || 0
                   )}
                 </td>
-
                 {/* CAT Marks */}
                 <td className="p-2 border">
                   {student.marks?.catMarks?.map((cat, index) => (
@@ -75,7 +78,6 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
                     </div>
                   ))}
                 </td>
-
                 {/* TMA Marks */}
                 <td className="p-2 border">
                   {student.marks?.tmaMarks?.map((tma, index) => (
@@ -105,7 +107,6 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
                     </div>
                   ))}
                 </td>
-
                 {/* Lab Marks */}
                 <td className="p-2 border">
                   {student.marks?.labMarks?.map((lab, index) => (
@@ -135,7 +136,6 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
                     </div>
                   ))}
                 </td>
-
                 {/* Final Marks */}
                 <td className="p-2 border">
                   {isEditing ? (
@@ -151,15 +151,12 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
                     student.marks?.finalMarks || 0
                   )}
                 </td>
-
                 {/* Eligibility Marks */}
                 <td className="p-2 border">{eligibilityMarks || 0}</td>
-
                 {/* Eligible for Final Exam */}
                 <td className="p-2 border">
                   {isEligibleForFinal ? "Yes" : "No"}
                 </td>
-
                 {/* Passed Status */}
                 <td className="p-2 border">
                   {isPassedStatus ? "Passed" : "Failed"}
