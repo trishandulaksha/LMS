@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-=======
+
 import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -42,4 +41,4 @@ const Schedule = () => {
 };
 
 export default Schedule;
->>>>>>> a7930316e3dc8f1ec07a8701017c0c24be13dd58
+
