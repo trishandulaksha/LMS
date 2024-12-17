@@ -30,14 +30,14 @@ const bottomIcons = [
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const handleClick = (iconName) => {
-    if (iconName === "Logout") {
-      localStorage.removeItem("jwtToken");
-
-      // Redirect to the login page
-      navigate("/login");
-    }
-  };
+  const handleClick = (iconName) => {     if (iconName === "Logout") {       
+    // Show confirmation dialog
+    const confirmLogout = window.confirm("Are you sure you want to logout?");       
+    if (confirmLogout) {         // Remove the JWT token and navigate to the login page
+      localStorage.removeItem("jwtToken");         
+      navigate("/login"); }
+  } 
+};
 
   return (
     <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-4 ml-7 ">
