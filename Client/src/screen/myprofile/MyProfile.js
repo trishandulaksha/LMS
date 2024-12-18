@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import InputField from "../../Component/InputComponent/InputComponent";
-import Footer from "../footer/Footer";
 
 const MyProfile = () => {
   const [profileData, setProfileData] = useState({
