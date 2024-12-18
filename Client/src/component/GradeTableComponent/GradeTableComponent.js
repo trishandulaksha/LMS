@@ -1,5 +1,3 @@
-import React from "react";
-
 function GradeTableComponent({ subjects, year }) {
   return (
     <div className="table-section">
@@ -15,11 +13,11 @@ function GradeTableComponent({ subjects, year }) {
         </thead>
         <tbody>
           {subjects.map((subject, index) => (
-            <tr key={subject.code}>
+            <tr key={subject.courseCode}>
               <td className="px-4 py-2 border">{index + 1}</td>
-              <td className="px-4 py-2 border">{subject.code}</td>
-              <td className="px-4 py-2 border">{subject.name}</td>
-              <td className="px-4 py-2 border">{subject.marks}%</td>
+              <td className="px-4 py-2 border">{subject.courseCode}</td>
+              <td className="px-4 py-2 border">{subject.courseName}</td>
+              <td className="px-4 py-2 border">{subject.finalMarks}%</td>
             </tr>
           ))}
         </tbody>

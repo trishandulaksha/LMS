@@ -23,11 +23,13 @@ const LecturerDashboard = () => {
   // Fetching subjects and students
   useEffect(() => {
     const loadSubjectsAndStudents = async () => {
-      if (!user?.success.user._id) return;
+      if (!user?.success?.user?._id && !user?.success?.user?.role === "STUDENT")
+        return;
+      // Ensure user data is available
       try {
         setLoading(true);
         const data = await fetchSubjectsAndStudents(
-          user?.success.user._id,
+          user.success.user._id,
           setMarksData
         );
         setSubjects(data || []);
@@ -39,7 +41,7 @@ const LecturerDashboard = () => {
     };
 
     loadSubjectsAndStudents();
-  }, [user?.success.user._id]);
+  }, [user?.success?.user?._id]); // Trigger when user data is updated
 
   // When selectedSubject changes, update students and marks
   useEffect(() => {

@@ -6,10 +6,13 @@ import MyProfile from "./screen/myprofile/MyProfile";
 import Layout from "./Layout/Layout";
 import PrivateRoute from "./Routes/PrivateRoutes/PrivateRoutes";
 import LecturerDashboard from "./screen/Lecturer/LecturerMarks/LecturerMarksScreen";
+
 import {
   GlobalProvider,
   UseDataContexts,
 } from "./ContextAPI/LoginAndMarksContext";
+import { MarksAndGradesProvider } from "./ContextAPI/getMarksAndGradeContext";
+import RoleBasedRoute from "./Routes/RoleBasedRoute/RoleBasedRoute";
 
 const router = createBrowserRouter([
   {
@@ -40,9 +43,9 @@ const router = createBrowserRouter([
       {
         path: "lecturerDashboard",
         element: (
-          <PrivateRoute>
+          <RoleBasedRoute allowedRoles={["LECTURER"]}>
             <LecturerDashboard />
-          </PrivateRoute>
+          </RoleBasedRoute>
         ),
       },
     ],
@@ -53,9 +56,11 @@ const router = createBrowserRouter([
 function App() {
   return (
     <GlobalProvider>
-      <div className="">
-        <RouterProvider router={router} />
-      </div>
+      <MarksAndGradesProvider>
+        <div className="">
+          <RouterProvider router={router} />
+        </div>
+      </MarksAndGradesProvider>
     </GlobalProvider>
   );
 }

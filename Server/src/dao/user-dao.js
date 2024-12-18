@@ -6,11 +6,12 @@ import {
   getEligibleSubjects,
   getInitialRecommendations,
   getMarksForUser,
+  getRecommendedSubjects,
   getUserWithCourses,
 } from "./recomendSubject-dao.js";
+import Subjects from "../schema/courseSchema.js";
 
-// Find user detail using email
-export const getUserByEmail = async (email) => {
+const getUserByEmail = async (email) => {
   try {
     const user = await User.findOne({ email: email });
     const lecturer = await Lecturer.findOne({ email: email });
@@ -19,12 +20,12 @@ export const getUserByEmail = async (email) => {
     return { error: error.message };
   }
 };
-
-// User Authentication// User Authentication
 export const authenticateUser = async (data) => {
   const { email, password } = data;
 
   console.log("Function called authenticateUser", email, password);
+
+  // Fetch user (either Student or Lecturer)
   const user = await getUserByEmail(email);
 
   if (!user) {
@@ -33,6 +34,7 @@ export const authenticateUser = async (data) => {
 
   console.log("User role:", user.role, user._id);
 
+  // Validate password
   const isMatch = await user.comparePassword(password);
 
   if (isMatch) {
@@ -42,54 +44,54 @@ export const authenticateUser = async (data) => {
       status: user.role,
     };
 
+    // Check if user is a student
     if (user.role === "STUDENT") {
       // Fetch user with courses
       const userWithCourses = await getUserWithCourses(user._id);
-      console.log(userWithCourses);
+      console.log("User's enrolled courses:", userWithCourses.enrolledCourses);
 
+      // Case when no courses are enrolled yet
       if (
         !userWithCourses.enrolledCourses ||
         userWithCourses.enrolledCourses.length === 0
       ) {
-        // No courses enrolled yet
+        // No courses enrolled yet, provide subjects from the first two semesters
         const recommendedSubjects = await getInitialRecommendations();
         result.message =
           "No courses enrolled yet. Here are some recommended courses.";
         result.recommendedSubjects = recommendedSubjects;
-        result.marksData = null;
       } else {
         // Fetch marks for the user
         const marksData = await getMarksForUser(user._id);
+        console.log("User marks data:", marksData);
 
-        if (!marksData || marksData.length === 0) {
-          // User has enrolled but no marks data available
-          result.message = "No marks found for the enrolled courses.";
-          result.marksData = null;
+        // Process completed subjects
+        const completedSubjects = marksData
+          .map((mark) => {
+            if (mark.subject && mark.subject.courseCode) {
+              return {
+                subject: mark.subject.courseCode,
+                passed: mark.passed,
+                isEligibleForFinal: mark.isEligibleForFinal, // Ensure eligibility for final
+              };
+            } else {
+              console.error("Missing subject or courseCode in marks:", mark);
+              return null; // Skip this mark if no courseCode
+            }
+          })
+          .filter(Boolean); // Remove invalid marks data
 
-          // Fetch eligible subjects (if applicable)
-          const eligibleSubjects = await getEligibleSubjects(
-            userWithCourses,
-            []
-          );
-          result.recommendedSubjects = eligibleSubjects;
-        } else {
-          // Map to extract completed subjects with eligibility and pass status
-          const completedSubjects = marksData.map((mark) => ({
-            subject: mark.subject.courseCode,
-            passed: mark.passed,
-            isEligibleForFinal: mark.isEligibleForFinal,
-          }));
+        console.log("Completed subjects:", completedSubjects);
 
-          // Fetch eligible subjects for next semester
-          const eligibleSubjects = await getEligibleSubjects(
-            userWithCourses,
-            completedSubjects
-          );
+        // Call the new function to get recommended subjects
+        const recommendedSubjects = await getRecommendedSubjects(
+          userWithCourses,
+          completedSubjects
+        );
 
-          result.message = "Here are your marks and recommended subjects.";
-          result.recommendedSubjects = eligibleSubjects;
-          result.marksData = marksData;
-        }
+        result.message =
+          "Here are your recommended subjects based on eligibility.";
+        result.recommendedSubjects = recommendedSubjects;
       }
     }
 
@@ -99,7 +101,9 @@ export const authenticateUser = async (data) => {
   }
 };
 
-// User Registrationimport Lecturer from "../schema/lecturerSchema.js";
+// ///////////////////////
+// User Registration
+// ///////////////////////
 export const userRegistration = async (data) => {
   const { name, email, mobile_number, gender, password, accesscode } = data;
   console.log(name, email, mobile_number, gender, password, accesscode);

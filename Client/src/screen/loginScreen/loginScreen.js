@@ -14,6 +14,8 @@ import { registerDataHandler } from "../../Utils/InputDataHandler/registerDataHa
 import { useNavigate } from "react-router-dom";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
+import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+
 // ///////////
 // Login and Register Screen
 // ///////////
@@ -95,6 +97,7 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
   const { setUser } = UseDataContexts();
+  const { fetchMarksAndGrades } = useMarksAndGrades();
   let success, error;
 
   if (dbResponse.data) {
@@ -112,6 +115,8 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
     if (success && success.token) {
       localStorage.setItem("jwtToken", success.token);
       setCheckAlert({ Success: "Login Successful" });
+
+      fetchMarksAndGrades(success.user._id);
       navigate("/");
     }
   }, [error, success, setCheckAlert, navigate]);
