@@ -1,5 +1,5 @@
 import React from "react";
-import '../../../src/style.css';
+import './dashboard.css'
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
