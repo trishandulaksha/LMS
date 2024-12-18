@@ -12,6 +12,7 @@ import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { registerDataHandler } from "../../Utils/InputDataHandler/registerDataHandler";
 import { useNavigate } from "react-router-dom";
+import './login.css';
 
 // ///////////
 // Login and Register Screen
