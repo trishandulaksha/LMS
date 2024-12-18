@@ -13,6 +13,10 @@ import {
 } from "./ContextAPI/LoginAndMarksContext";
 import { MarksAndGradesProvider } from "./ContextAPI/getMarksAndGradeContext";
 import RoleBasedRoute from "./Routes/RoleBasedRoute/RoleBasedRoute";
+import SubjectRecomendationScreen from "./screen/subjectRecomendationScreen/SubjectRecomendationScreen";
+import Setting from "./screen/setting/Setting";
+import Schedule from "./screen/shedule/Shedule";
+import StudentProgress from "./screen/studentProgress/StudentProgress";
 
 const router = createBrowserRouter([
   {
@@ -33,10 +37,42 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "StudentProgress",
+        element: (
+          <PrivateRoute>
+            <StudentProgress />
+          </PrivateRoute>
+        ),
+      },
+      {
         path: "myprofile",
         element: (
           <PrivateRoute>
             <MyProfile />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "recomendedSubjects",
+        element: (
+          <PrivateRoute>
+            <SubjectRecomendationScreen />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "schedule",
+        element: (
+          <PrivateRoute>
+            <Schedule />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "setting",
+        element: (
+          <PrivateRoute>
+            <Setting />
           </PrivateRoute>
         ),
       },

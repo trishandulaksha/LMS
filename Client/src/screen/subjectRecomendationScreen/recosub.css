@@ -1,0 +1,35 @@
+/* General container styles */
+.w-full {
+  width: 100%;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6; /* Light gray */
+}
+
+/* Responsive styles for max-width 400px */
+@media (max-width: 400px) {
+  .p-8 {
+    padding: 1rem; /* Reduce padding for smaller screens */
+  }
+
+  .min-h-screen {
+    min-height: auto; /* Allow flexibility for smaller screens */
+  }
+
+  .bg-gray-100 {
+    background-color: #f9fafb; /* Slightly lighter background for readability */
+  }
+
+  .w-full {
+    width: 100%; /* Ensure full-width layout */
+  }
+}

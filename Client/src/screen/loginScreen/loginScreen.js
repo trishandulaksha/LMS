@@ -113,7 +113,7 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
       setCheckAlert({ Error: error });
     }
     if (success && success.token) {
-      localStorage.setItem("jwtToken", success.token);
+      sessionStorage.setItem("jwtToken", success.token);
       setCheckAlert({ Success: "Login Successful" });
 
       fetchMarksAndGrades(success.user._id);

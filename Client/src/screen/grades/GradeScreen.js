@@ -48,15 +48,6 @@ function GradeScreen() {
 
   return (
     <div className="w-full mt-20">
-      <div className="mt-8 ml-6 mb-14">
-        <div className="inline-flex items-center">
-          <SchoolIcon sx={{ fontSize: "50px" }} />
-          <div className="ml-4 text-3xl font-extrabold">SPTS</div>
-        </div>
-        <div className="mt-4">
-          <h2 className="text-2xl font-extrabold">Grades</h2>
-        </div>
-      </div>
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
