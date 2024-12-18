@@ -1,0 +1,83 @@
+ /* General container styles */
+ .w-full {
+  width: 100%;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6; /* Light gray */
+}
+
+/* Responsive adjustments for max-width 400px */
+@media (max-width: 400px) {
+  .p-8 {
+    padding: 1rem; /* Reduce padding for smaller screens */
+  }
+
+  .text-2xl {
+    font-size: 1.5rem; /* Adjust heading size */
+  }
+
+  .font-extrabold {
+    font-weight: 700;
+  }
+
+  .flex-col {
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .space-y-4 > *:not(:last-child) {
+    margin-bottom: 1rem; /* Add spacing between stacked elements */
+  }
+
+  .w-full {
+    width: 100%; /* Ensure full width */
+  }
+
+  .sm\:w-1\/2 {
+    width: 100%; /* Force full width for all columns */
+  }
+
+  .sm\:ml-1 {
+    margin-left: 0; /* Remove left margin */
+  }
+
+  .text-lg {
+    font-size: 1rem; /* Slightly smaller font for labels */
+  }
+
+  .p-2 {
+    padding: 0.5rem; /* Reduce padding */
+  }
+
+  .mt-2 {
+    margin-top: 0.5rem;
+  }
+
+  .mt-6 {
+    margin-top: 1.5rem;
+  }
+
+  .text-xl {
+    font-size: 1.25rem;
+  }
+
+  .text-2xl {
+    font-size: 1.5rem; /* Adjust GPA value size */
+  }
+
+  .overflow-auto {
+    overflow-x: scroll; /* Ensure scrollability for overflowing content */
+  }
+
+  .mt-8 {
+    margin-top: 2rem;
+  }
+
+  .space-y-8 > *:not(:last-child) {
+    margin-bottom: 2rem; /* Add spacing between charts/tables */
+  }
+}

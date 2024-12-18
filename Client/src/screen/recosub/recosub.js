@@ -1,10 +1,8 @@
 import React from "react";
-import SchoolIcon from "@mui/icons-material/School";
-import SearchIcon from "@mui/icons-material/Search";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import Recosubgrid from "../../Component/Recosubgrid/Recosubgrid";
 import { responseData } from "../../Testing/TestingResponse";
 import Header from "../../Component/Header/Header";
+import './recosub.css'
       
 const Recosub = () => {
   const { recommendedSubjects } = responseData.success;
