@@ -1,8 +1,28 @@
+import React from "react";
 import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register the necessary Chart.js components
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function GradeChartComponent({ subjects }) {
   const data = {
-    labels: subjects.map((subject) => subject.courseName),
+    labels: subjects.map((subject) => subject.courseCode),
     datasets: [
       {
         label: "Final Marks",
