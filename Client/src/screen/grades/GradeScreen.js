@@ -4,6 +4,7 @@ import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartC
 import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
 import Header from "../../Component/Header/Header";
 import './grade.css'
+import Footer from "../footer/Footer";
 
 function GradeScreen() {
   // Initialize selected year and semester to the first available year and semester in the data
@@ -127,6 +128,7 @@ function GradeScreen() {
             )}
           </div>
         </div>
+        <Footer/>
       </div>
     </>
   );
