@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Header from '../../Component/Header/Header';
-import './settings.css';
+import Footer from '../footer/Footer';
 
 const Setting = () => {
   const [activeTab, setActiveTab] = useState('general');
@@ -18,11 +18,11 @@ const Setting = () => {
     <>
     <div className="w-full min-h-screen p-8 bg-gray-100 ">
     <Header/>
-    <div className="flex min-h-screen mt-10  bg-gray-100">
+    <div className="flex min-h-screen mt-10 bg-gray-100">
    
       {/* Sidebar */}
-      <aside className="w-64 bg-white shadow-md h-screen">
-        <h2 className="text-2xl font-bold text-gray-800 p-6 border-b">Settings</h2>
+      <aside className="w-64 h-screen bg-white shadow-md">
+        <h2 className="p-6 text-2xl font-bold text-gray-800 border-b">Settings</h2>
         <ul>
           {tabs.map((tab) => (
             <li key={tab.id} className="border-b">
@@ -44,9 +44,9 @@ const Setting = () => {
         {/* General Settings */}
         {activeTab === 'general' && (
           <section>
-            <h3 className="text-2xl font-semibold mb-4">General Settings</h3>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <label className="block text-gray-700 mb-2 font-medium">System Name</label>
+            <h3 className="mb-4 text-2xl font-semibold">General Settings</h3>
+            <div className="p-6 bg-white rounded-lg shadow">
+              <label className="block mb-2 font-medium text-gray-700">System Name</label>
               <input
                 type="text"
                 placeholder="Enter system name"
@@ -59,9 +59,9 @@ const Setting = () => {
         {/* User Management */}
         {activeTab === 'user' && (
           <section>
-            <h3 className="text-2xl font-semibold mb-4">User Management</h3>
-            <div className="bg-white p-6 rounded-lg shadow">
-              <label className="block text-gray-700 mb-2 font-medium">Default Role</label>
+            <h3 className="mb-4 text-2xl font-semibold">User Management</h3>
+            <div className="p-6 bg-white rounded-lg shadow">
+              <label className="block mb-2 font-medium text-gray-700">Default Role</label>
               <select className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300">
                 <option>Student</option>
                 <option>Teacher</option>
@@ -74,31 +74,31 @@ const Setting = () => {
         {/* Other Tabs */}
         {activeTab === 'academic' && (
           <section>
-            <h3 className="text-2xl font-semibold mb-4">Academic Settings</h3>
+            <h3 className="mb-4 text-2xl font-semibold">Academic Settings</h3>
             <p>Configure subjects, classes, and grading systems here.</p>
           </section>
         )}
         {activeTab === 'progress' && (
           <section>
-            <h3 className="text-2xl font-semibold mb-4">Progress Tracking</h3>
+            <h3 className="mb-4 text-2xl font-semibold">Progress Tracking</h3>
             <p>Customize metrics and tracking options.</p>
           </section>
         )}
         {activeTab === 'security' && (
           <section>
-            <h3 className="text-2xl font-semibold mb-4">Security</h3>
+            <h3 className="mb-4 text-2xl font-semibold">Security</h3>
             <p>Manage security options such as 2FA and password policies.</p>
           </section>
         )}
         {activeTab === 'integrations' && (
           <section>
-            <h3 className="text-2xl font-semibold mb-4">Integrations</h3>
+            <h3 className="mb-4 text-2xl font-semibold">Integrations</h3>
             <p>Configure third-party integrations like Google Classroom.</p>
           </section>
         )}
       </main>
     </div>
-
+      <Footer/>
     </div>
 
     </>

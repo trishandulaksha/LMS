@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import '../../screen/dashboard/dashboard.css';
 import Header from "../../Component/Header/Header";
+import Footer from "../footer/Footer";
 
 const StudentProgress = () => {
   const [marks, setMarks] = useState({
@@ -82,6 +83,7 @@ const StudentProgress = () => {
           </div>
         )}
       </div>
+      <Footer/>
     </div>
   );
 };
