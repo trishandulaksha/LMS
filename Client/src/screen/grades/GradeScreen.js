@@ -1,9 +1,9 @@
-import SchoolIcon from "@mui/icons-material/School";
 import React, { useEffect, useState } from "react";
 import data from "./data.json";
 import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartComponent";
 import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
 import Header from "../../Component/Header/Header";
+import './grade.css'
 
 function GradeScreen() {
   // Initialize selected year and semester to the first available year and semester in the data

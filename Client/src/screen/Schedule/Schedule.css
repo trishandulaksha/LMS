@@ -1,0 +1,107 @@
+/* General container styles */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.bg-gray-100 {
+  background-color: #f3f4f6; /* Light gray */
+}
+
+.container {
+  max-width: 100%;
+}
+
+.text-3xl {
+  font-size: 1.875rem; /* Default heading size */
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* FullCalendar styles for responsiveness */
+.fc-header-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.fc-toolbar-chunk {
+  margin-bottom: 0.5rem;
+}
+
+.fc-view-harness {
+  overflow-x: auto; /* Enable horizontal scrolling for the calendar */
+}
+
+.fc-daygrid-day-number {
+  font-size: 0.75rem; /* Adjust font size for day numbers */
+}
+
+/* Responsive styles for max-width 400px */
+@media (max-width: 400px) {
+  .p-8 {
+    padding: 1rem; /* Reduce padding for small screens */
+  }
+
+  .text-3xl {
+    font-size: 1.5rem; /* Smaller heading size */
+  }
+
+  .mb-8 {
+    margin-bottom: 1.5rem; /* Adjust margin for better spacing */
+  }
+
+  .p-4 {
+    padding: 0.75rem; /* Reduce padding in the card */
+  }
+
+  .rounded-lg {
+    border-radius: 0.25rem; /* Slightly smaller border radius */
+  }
+
+  .fc-header-toolbar {
+    flex-direction: column; /* Stack toolbar elements */
+    align-items: center;
+  }
+
+  .fc-toolbar-chunk {
+    margin-bottom: 0.5rem; /* Space between stacked toolbar chunks */
+  }
+
+  .fc-daygrid-day-number {
+    font-size: 0.6rem; /* Further adjust day number size */
+  }
+
+  .fc-view-harness {
+    padding: 0.5rem; /* Add padding to ensure proper alignment */
+  }
+}
