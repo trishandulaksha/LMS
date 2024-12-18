@@ -4,6 +4,7 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
 import Header from "../../Component/Header/Header";
+import Footer from "../footer/Footer";
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -100,6 +101,7 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

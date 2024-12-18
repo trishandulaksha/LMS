@@ -4,6 +4,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import './Schedule.css'
+import Footer from "../footer/Footer";
 // Required styles for FullCalendar
 //import "@fullcalendar/core/styles.css";
 //import "@fullcalendar/daygrid/styles.css";
@@ -22,7 +23,7 @@ const Schedule = () => {
   return (
     <div className="min-h-screen p-8 bg-gray-100">
       <div className="container mx-auto">
-        <h1 className="mb-8 text-3xl font-bold text-center">Student Progress Tracker</h1>
+        <h1 className="mb-8 text-3xl font-bold text-center">Shedule</h1>
         <div className="p-4 bg-white rounded-lg shadow-md">
           <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}
@@ -38,6 +39,7 @@ const Schedule = () => {
           />
         </div>
       </div>
+      <Footer/>
     </div>
   );
 };

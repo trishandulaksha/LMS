@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../../src/style.css';
+import '../../screen/dashboard/dashboard.css';
 import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";
 
