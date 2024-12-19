@@ -48,7 +48,6 @@ export const authenticateUser = async (data) => {
     if (user.role === "STUDENT") {
       // Fetch user with courses
       const userWithCourses = await getUserWithCourses(user._id);
-      console.log("User's enrolled courses:", userWithCourses.enrolledCourses);
 
       // Case when no courses are enrolled yet
       if (
@@ -63,35 +62,60 @@ export const authenticateUser = async (data) => {
       } else {
         // Fetch marks for the user
         const marksData = await getMarksForUser(user._id);
-        console.log("User marks data:", marksData);
 
-        // Process completed subjects
-        const completedSubjects = marksData
-          .map((mark) => {
-            if (mark.subject && mark.subject.courseCode) {
-              return {
-                subject: mark.subject.courseCode,
-                passed: mark.passed,
-                isEligibleForFinal: mark.isEligibleForFinal, // Ensure eligibility for final
-              };
-            } else {
-              console.error("Missing subject or courseCode in marks:", mark);
-              return null; // Skip this mark if no courseCode
-            }
-          })
-          .filter(Boolean); // Remove invalid marks data
+        if (!Array.isArray(marksData)) {
+          console.error(
+            "Invalid marksData structure. Expected an array, got:",
+            marksData
+          );
+        } else {
+          console.log("Marks data:", marksData);
 
-        console.log("Completed subjects:", completedSubjects);
+          // Process completed subjects
+          const completedSubjects = marksData
+            .flatMap((student) => {
+              if (student.marks && Array.isArray(student.marks)) {
+                // Process the marks array for each student
+                return student.marks.map((mark) => {
+                  if (mark.subject && mark.subject.courseCode) {
+                    // Only include subjects where passed is true
+                    if (mark.passed) {
+                      return {
+                        subject: mark.subject.courseCode,
+                        passed: mark.passed,
+                        isEligibleForFinal: mark.isEligibleForFinal,
+                      };
+                    }
+                  } else {
+                    console.error(
+                      "Missing subject or courseCode in mark:",
+                      mark
+                    );
+                    return null; // Skip invalid marks
+                  }
+                });
+              } else {
+                console.error(
+                  "Missing or invalid marks array for student:",
+                  student
+                );
+                return []; // Return empty array if no marks
+              }
+            })
+            .filter(Boolean); // Remove invalid entries
 
-        // Call the new function to get recommended subjects
-        const recommendedSubjects = await getRecommendedSubjects(
-          userWithCourses,
-          completedSubjects
-        );
+          console.log("Completed subjects:", completedSubjects);
 
-        result.message =
-          "Here are your recommended subjects based on eligibility.";
-        result.recommendedSubjects = recommendedSubjects;
+          // Call the new function to get recommended subjects
+          const recommendedSubjects = await getRecommendedSubjects(
+            userWithCourses,
+            completedSubjects
+          );
+          console.log(recommendedSubjects);
+          result.message =
+            "Here are your recommended subjects based on eligibility.";
+          result.recommendedSubjects = recommendedSubjects;
+        }
       }
     }
 

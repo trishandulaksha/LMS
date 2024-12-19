@@ -17,6 +17,30 @@ const accessCodes = {
       ],
     },
     {
+      email: "ruwan@gmail.com",
+      role: "LECTURER",
+      accessCode: "L123000022021",
+      degreeProgram: "BSE",
+      teachingSubjects: [
+        {
+          courseCode: "AGM3263",
+          courseName: "Communication Skills",
+        },
+        {
+          courseCode: "EEI3269",
+          courseName: "Introduction to Mobile Application Development",
+        },
+        {
+          courseCode: "MHZ3459",
+          courseName: "Basic Mathematics for Computing",
+        },
+        {
+          courseCode: "EEX3373",
+          courseName: "Communication and Computer Technology",
+        },
+      ],
+    },
+    {
       email: "kamal@gmail.com",
       role: "STUDENT",
       accessCode: "s456000012021",
