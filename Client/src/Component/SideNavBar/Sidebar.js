@@ -22,11 +22,11 @@ const Sidebar = () => {
     { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
     {
       icon: <CalendarMonthIcon />,
-      name: "Subject Recommendation",
+      name: "Recommended Subjects",
       path: "/recomendedSubjects",
     },
     { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-    { icon: <LeaderboardIcon />, name: "Leaderboard", path: "/schedule" },
+    { icon: <LeaderboardIcon />, name: "Schedule", path: "/schedule" },
     {
       icon: <TimelineIcon />,
       name: "Student Progress",
@@ -38,7 +38,7 @@ const Sidebar = () => {
   const lecturerIcons = [
     { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
     { icon: <PostAddIcon />, name: "Post Add", path: "/lecturerDashboard" },
-    { icon: <LeaderboardIcon />, name: "Leaderboard", path: "/schedule" },
+    { icon: <LeaderboardIcon />, name: "Schedule", path: "/schedule" },
     { icon: <SettingsIcon />, name: "Settings", path: "/setting" },
   ];
 
@@ -69,9 +69,12 @@ const Sidebar = () => {
           <Link
             key={name}
             to={path}
-            className="cursor-pointer hover:text-orange-700"
+            className="relative cursor-pointer group hover:text-orange-700"
           >
             {icon}
+            <span className="absolute px-2 py-1 text-sm text-white transition-opacity transform -translate-y-1/2 bg-black rounded opacity-0 left-14 top-1/2 group-hover:opacity-100">
+              {name}
+            </span>
           </Link>
         ))}
       </div>
@@ -82,18 +85,24 @@ const Sidebar = () => {
           name === "Logout" ? (
             <div
               key={name}
-              className="cursor-pointer hover:text-orange-700"
+              className="relative cursor-pointer group hover:text-orange-700"
               onClick={() => handleClick(name)}
             >
               {icon}
+              <span className="absolute px-2 py-1 text-sm text-white transition-opacity transform -translate-y-1/2 bg-black rounded opacity-0 left-14 top-1/2 group-hover:opacity-100">
+                {name}
+              </span>
             </div>
           ) : (
             <Link
               key={name}
               to={path}
-              className="cursor-pointer hover:text-orange-700"
+              className="relative cursor-pointer group hover:text-orange-700"
             >
               {icon}
+              <span className="absolute px-2 py-1 text-sm text-white transition-opacity transform -translate-y-1/2 bg-black rounded opacity-0 left-14 top-1/2 group-hover:opacity-100">
+                {name}
+              </span>
             </Link>
           )
         )}
