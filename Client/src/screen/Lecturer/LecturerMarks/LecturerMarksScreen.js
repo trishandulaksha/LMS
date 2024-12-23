@@ -9,84 +9,119 @@ import {
 import { UseDataContexts } from "../../../ContextAPI/LoginAndMarksContext";
 
 const LecturerDashboard = () => {
-  const { user, marksData, setMarksData } = UseDataContexts();
+  const { user, setMarksData } = UseDataContexts();
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [students, setStudents] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editedMarks, setEditedMarks] = useState({});
   const [originalMarks, setOriginalMarks] = useState({});
+  const [finalMarks, setFinalMarks] = useState({});
+  const [eligibility, setEligibility] = useState({});
   const [loading, setLoading] = useState(false);
 
-  console.log("LecturerDashboard function is called", user?.success.user._id);
+  const isValidUser = () =>
+    user &&
+    user.success &&
+    user.success.user &&
+    user.success.user._id &&
+    user.success.user.role === "LECTURER";
 
-  // Fetching subjects and students
   useEffect(() => {
     const loadSubjectsAndStudents = async () => {
-      if (!user?.success?.user?._id && !user?.success?.user?.role === "STUDENT")
+      if (!isValidUser()) {
+        console.error("Invalid or missing user data.");
         return;
-      // Ensure user data is available
+      }
+
       try {
         setLoading(true);
-        const data = await fetchSubjectsAndStudents(
-          user.success.user._id,
-          setMarksData
-        );
+        const { _id } = user.success.user;
+        const data = await fetchSubjectsAndStudents(_id, setMarksData);
         setSubjects(data || []);
       } catch (error) {
-        console.error("Failed to load subjects:", error);
+        console.error("Failed to fetch subjects and students:", error);
       } finally {
         setLoading(false);
       }
     };
 
     loadSubjectsAndStudents();
-  }, [user?.success?.user?._id]); // Trigger when user data is updated
+  }, [user, setMarksData]);
 
-  // When selectedSubject changes, update students and marks
   useEffect(() => {
     if (selectedSubject && subjects.length > 0) {
       const subjectData = subjects.find(
-        (subject) => subject.subject._id === selectedSubject
+        (subject) => subject?.subject?._id === selectedSubject
       );
       const studentList = subjectData?.students || [];
       setStudents(studentList);
 
-      // Initialize marks for the selected subject
       const marks = studentList.reduce((acc, student) => {
-        acc[student.student._id] = { ...student.marks };
+        if (student && student.student && student.student._id) {
+          acc[student.student._id] = { ...student.marks };
+        }
         return acc;
       }, {});
 
       setEditedMarks(marks);
-      setOriginalMarks(JSON.parse(JSON.stringify(marks))); // Deep copy for cancel operation
+      setOriginalMarks(JSON.parse(JSON.stringify(marks)));
+
+      // Compute final marks and eligibility
+      computeFinalMarksAndEligibility(marks);
     }
   }, [selectedSubject, subjects]);
 
-  // Handle editing state
+  const computeFinalMarksAndEligibility = (marks) => {
+    const finalMarksObj = {};
+    const eligibilityObj = {};
+
+    Object.entries(marks).forEach(([studentId, studentMarks]) => {
+      // Example: Compute final mark as the average of all marks
+      const totalMarks = Object.values(studentMarks).reduce(
+        (sum, mark) => sum + (parseFloat(mark) || 0),
+        0
+      );
+      const numSubjects = Object.values(studentMarks).length;
+      const finalMark = numSubjects > 0 ? totalMarks / numSubjects : 0;
+
+      // Determine eligibility (e.g., final mark >= 50)
+      const isEligible = finalMark >= 50;
+
+      finalMarksObj[studentId] = finalMark;
+      eligibilityObj[studentId] = isEligible ? "Eligible" : "Not Eligible";
+    });
+
+    setFinalMarks(finalMarksObj);
+    setEligibility(eligibilityObj);
+  };
+
+  useEffect(() => {
+    computeFinalMarksAndEligibility(editedMarks);
+  }, [editedMarks]);
+
   const handleEdit = () => setIsEditing(true);
 
-  // Handle cancel operation and revert marks
   const handleCancel = () => {
     setIsEditing(false);
     setEditedMarks(JSON.parse(JSON.stringify(originalMarks)));
   };
 
-  // Handle saving marks
   const handleSave = async () => {
+    if (!isValidUser()) {
+      alert("User validation failed. Cannot save marks.");
+      return;
+    }
+
     try {
       const studentMarks = Object.entries(editedMarks).map(([id, marks]) => ({
         studentId: id,
         marks,
       }));
 
-      await saveOrUpdateMarks(
-        user?.success.user._id, // Use correct user ID
-        selectedSubject,
-        studentMarks,
-        setMarksData
-      );
-      setOriginalMarks(JSON.parse(JSON.stringify(editedMarks))); // Sync current state
+      const { _id } = user.success.user;
+      await saveOrUpdateMarks(_id, selectedSubject, studentMarks, setMarksData);
+      setOriginalMarks(JSON.parse(JSON.stringify(editedMarks)));
       setIsEditing(false);
       alert("Marks updated successfully!");
     } catch (error) {
@@ -95,17 +130,19 @@ const LecturerDashboard = () => {
     }
   };
 
-  // Handle individual student mark changes
   const handleChange = (studentId, field, value) => {
-    setEditedMarks((prev) => {
-      const updatedStudentMarks = {
+    setEditedMarks((prev) => ({
+      ...prev,
+      [studentId]: {
         ...prev[studentId],
         [field]: value,
-      };
-
-      return { ...prev, [studentId]: updatedStudentMarks };
-    });
+      },
+    }));
   };
+
+  if (!isValidUser()) {
+    return <p>Loading user data or unauthorized access...</p>;
+  }
 
   return (
     <div className="p-4">
@@ -116,8 +153,8 @@ const LecturerDashboard = () => {
         <>
           <SubjectSelector
             subjects={subjects.map((s) => ({
-              id: s.subject._id,
-              title: s.subject.courseName,
+              id: s?.subject?._id,
+              title: s?.subject?.courseName || "Unknown Subject",
             }))}
             setSelectedSubject={setSelectedSubject}
           />
@@ -125,9 +162,11 @@ const LecturerDashboard = () => {
             <div>
               <StudentsTable
                 students={students.map((s) => ({
-                  id: s.student._id,
-                  name: s.student.name,
-                  marks: editedMarks[s.student._id] || {},
+                  id: s?.student?._id || "Unknown",
+                  name: s?.student?.name || "Unknown Name",
+                  marks: editedMarks[s?.student?._id] || {},
+                  finalMark: finalMarks[s?.student?._id] || 0,
+                  eligibility: eligibility[s?.student?._id] || "Not Available",
                 }))}
                 isEditing={isEditing}
                 handleChange={handleChange}

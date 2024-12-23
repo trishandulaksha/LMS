@@ -68,172 +68,151 @@ export const getEligibleSubjects = async (user, completedSubjects) => {
   }
 };
 
-// Recomended subject
+// Function to check if a student meets a prerequisite condition
 export const getRecommendedSubjects = async (user, completedSubjects) => {
-  const recommendedSubjects = [];
-  const nextSemestersSubjects = [];
-
-  // Ensure enrolledCourses is defined and is an array, else fallback to an empty array
-  const enrolledCourses = Array.isArray(user.enrolledCourses)
-    ? user.enrolledCourses
-    : [];
-  completedSubjects = Array.isArray(completedSubjects) ? completedSubjects : [];
-
-  console.log("Enrolled Courses:", enrolledCourses);
-  console.log("Completed Subjects:", completedSubjects);
-
-  // Guard clause to ensure user has enrolled courses and completed subjects
-  if (!enrolledCourses.length) {
-    console.error("User has no enrolled courses.");
-    return { error: "No enrolled courses found for user." };
-  }
-
-  // Initialize current semester to 1 for first-time or newly enrolled students
-  let currentSemester = 1;
-
-  // Check if the student has successfully completed the first two semesters
-  const firstTwoSemestersEnrolled = enrolledCourses.some((course) => {
-    return (
-      Array.isArray(course.semesters) &&
-      (course.semesters.includes(1) || course.semesters.includes(2))
-    );
-  });
-
-  if (firstTwoSemestersEnrolled) {
-    currentSemester = 3; // After completing 1st and 2nd semesters, recommend 3rd and 4th semesters
-  }
-
-  console.log("Current Semester:", currentSemester);
-
-  // Fetch subjects for the next two semesters based on the current semester
-  const semestersToFetch =
-    currentSemester <= 2
-      ? [3, 4] // If the current semester is 1 or 2, fetch next semester's subjects (3, 4)
-      : currentSemester <= 4
-      ? [5, 6] // If the current semester is 3 or 4, fetch next semester's subjects (5, 6)
-      : currentSemester <= 6
-      ? [7, 8] // If the current semester is 5 or 6, fetch next semester's subjects (7, 8)
-      : [];
-
-  console.log("Fetching subjects for semesters:", semestersToFetch);
-
   try {
-    // Fetch subjects for the next semesters, ensuring prerequisites and passedCreditsRequired are respected
-    nextSemestersSubjects.push(
-      ...(await Subjects.find({
-        semesters: { $in: semestersToFetch },
-      }))
-    );
-  } catch (error) {
-    console.error("Error fetching subjects for next semesters:", error);
-    return [];
-  }
-
-  console.log("Next Semester Subjects:", nextSemestersSubjects);
-
-  // Function to check prerequisites
-  const checkPrerequisites = (subject) => {
-    if (!subject.prerequisites || subject.prerequisites.length === 0) {
-      return true; // No prerequisites for the subject
+    const enrolledCourses = user.enrolledCourses || [];
+    if (enrolledCourses.length === 0) {
+      console.error("No enrolled courses found for the user.");
+      return { error: "No enrolled courses found for the user." };
     }
 
-    // Filter out "Pass in 15 credits" from prerequisites
-    const validPrerequisites = subject.prerequisites.filter(
-      (prereq) => !prereq.includes("Pass in")
-    );
+    const enrolledCourseIDs = enrolledCourses.map((course) => course.courseID);
 
-    return validPrerequisites.every((prereq) => {
-      const [courseCode, condition] = prereq.split(" ");
-      switch (condition) {
-        case "(CR)": // Course required to be enrolled in
-          return enrolledCourses.some(
-            (course) => course.courseCode === courseCode
-          );
-        case "(CA)": // Completed course eligible
-        case "(P)": // Passed course
-          return completedSubjects.some(
-            (completed) => completed.subject === courseCode && completed.passed
-          );
-        default:
-          return false;
-      }
+    // Fetch all enrolled subjects in one query
+    const enrolledSubjectsDetails = await Subjects.find({
+      _id: { $in: enrolledCourseIDs },
     });
-  };
 
-  // Filter nextSemestersSubjects for recommendations
-  for (const subject of nextSemestersSubjects) {
-    console.log("Evaluating next semester subject:", subject.courseCode);
+    // Extract and deduplicate semesters
+    const enrolledSemesters = [
+      ...new Set(
+        enrolledSubjectsDetails.flatMap((subject) => subject.semesters)
+      ),
+    ].sort((a, b) => a - b);
 
-    // Check if the subject is already completed or enrolled
-    const isAlreadyCompletedOrEnrolled =
-      completedSubjects.some(
-        (completed) => completed.subject === subject.courseCode
-      ) ||
-      enrolledCourses.some(
-        (course) => course.courseCode === subject.courseCode
-      );
+    console.log("Enrolled Semesters:", enrolledSemesters);
 
-    if (isAlreadyCompletedOrEnrolled) {
-      console.log(
-        `Subject ${subject.courseCode} is already completed or enrolled. Skipping.`
-      );
-      continue; // Skip this subject
-    }
+    // Determine the largest two semesters as current semesters
+    const currentSemesters = enrolledSemesters.slice(-2);
+    console.log("Current Semesters (Largest Two):", currentSemesters);
 
-    // Add next semester subjects regardless of whether prerequisites are met
-    console.log(`Subject ${subject.courseCode} added from next semester.`);
-    recommendedSubjects.push(subject);
-  }
+    // Calculate the next two semesters
+    const nextSemesters =
+      currentSemesters.length > 0
+        ? [Math.max(...currentSemesters) + 1, Math.max(...currentSemesters) + 2]
+        : [1, 2];
+    console.log("Next Semesters:", nextSemesters);
 
-  // Filter remaining recommended subjects based on prerequisites and passed credits
-  for (const subject of nextSemestersSubjects) {
-    console.log("Evaluating subject:", subject.courseCode);
+    // Fetch subjects for the next semesters in one query
+    const nextSemesterSubjects = await Subjects.find({
+      semesters: { $in: nextSemesters },
+    });
 
-    // Check if the subject is already completed or enrolled
-    const isAlreadyCompletedOrEnrolled =
-      completedSubjects.some(
-        (completed) => completed.subject === subject.courseCode
-      ) ||
-      enrolledCourses.some(
-        (course) => course.courseCode === subject.courseCode
-      );
-
-    if (isAlreadyCompletedOrEnrolled) {
-      console.log(
-        `Subject ${subject.courseCode} is already completed or enrolled. Skipping.`
-      );
-      continue; // Skip this subject
-    }
-
-    // Check if prerequisites are met
-    if (!checkPrerequisites(subject)) {
-      console.log(
-        `Subject ${subject.courseCode} prerequisites not met. Skipping.`
-      );
-      continue; // Skip this subject
-    }
-
-    // Check passed credits requirement
-    const passedCredits = completedSubjects.filter(
-      (completed) => completed.passed
-    ).length;
-
-    if (
-      subject.passedCreditsRequired &&
-      passedCredits < subject.passedCreditsRequired
-    ) {
-      console.log(
-        `Subject ${subject.courseCode} requires ${subject.passedCreditsRequired} credits. User has ${passedCredits}. Skipping.`
-      );
-      continue; // Skip this subject
-    }
+    // Calculate total passed credits from completed subjects
+    const passedCredits = completedSubjects.reduce((total, subject) => {
+      if (subject.passed) {
+        const creditValue = parseInt(subject.subject.charAt(3), 10); // Second digit indicates credits
+        return total + creditValue;
+      }
+      return total;
+    }, 0);
 
     console.log(
-      `Subject ${subject.courseCode} is eligible. Adding to recommendations.`
+      "Total Passed Credits (from completedSubjects):",
+      passedCredits
     );
-    recommendedSubjects.push(subject);
-  }
 
-  console.log("Recommended subjects:", recommendedSubjects);
-  return recommendedSubjects;
+    // Check prerequisites for next semester subjects
+    const subjectsWithPrerequisiteChecks = nextSemesterSubjects.map(
+      (subject) => {
+        const prerequisites = subject.prerequisites || [];
+        console.log(`Prerequisites for ${subject.courseCode}:`, prerequisites);
+
+        const prerequisitesStatus = prerequisites.map((prerequisite) => {
+          if (prerequisite.includes("Pass in")) {
+            const requiredCredits = parseInt(
+              prerequisite.match(/Pass in (\d+) credits/)[1],
+              10
+            );
+            const isSatisfied = passedCredits >= requiredCredits;
+            return {
+              prerequisite,
+              status: isSatisfied ? "true" : "false",
+            };
+          } else if (prerequisite.includes("(CA)")) {
+            const prerequisiteCode = prerequisite.split(" ")[0];
+            // Check if eligible for final
+            const isEligible = completedSubjects.some(
+              (subject) =>
+                subject.subject === prerequisiteCode &&
+                subject.isEligibleForFinal
+            );
+            return {
+              prerequisite,
+              status: isEligible ? "true" : "false",
+            };
+          } else if (prerequisite.includes("(CR)")) {
+            const prerequisiteCode = prerequisite.split(" ")[0];
+            // Check if enrolled
+            const isEnrolled = enrolledCourses.some(
+              (course) => course.courseID === prerequisiteCode
+            );
+            return {
+              prerequisite,
+              status: isEnrolled ? "true" : "false",
+            };
+          } else if (prerequisite.includes("(P)")) {
+            const prerequisiteCode = prerequisite.split(" ")[0];
+            // Check if passed
+            const isPassed = completedSubjects.some(
+              (subject) =>
+                subject.subject === prerequisiteCode && subject.passed
+            );
+            return {
+              prerequisite,
+              status: isPassed ? "true" : "false",
+            };
+          } else {
+            // Check if the prerequisite course has been passed
+            const prerequisiteCode = prerequisite.split(" ")[0];
+            const isPassed = completedSubjects.some(
+              (subject) =>
+                subject.subject === prerequisiteCode && subject.passed
+            );
+            return {
+              prerequisite,
+              status: isPassed ? "true" : "false",
+            };
+          }
+        });
+
+        // Check if all prerequisites are met
+        const allPrerequisitesMet = prerequisitesStatus.every(
+          (status) => status.status === "true"
+        );
+
+        return {
+          courseCode: subject.courseCode,
+          courseName: subject.courseName,
+          prerequisitesStatus,
+          allPrerequisitesMet,
+        };
+      }
+    );
+
+    // Filter subjects based on prerequisites being met or empty prerequisites
+    const filteredSubjects = subjectsWithPrerequisiteChecks.filter(
+      (subject) =>
+        subject.allPrerequisitesMet || subject.prerequisitesStatus.length === 0
+    );
+
+    return {
+      nextSemesters,
+      filteredSubjects,
+    };
+  } catch (error) {
+    console.error("Error in getRecommendedSubjects:", error);
+    return { error: "An error occurred while processing." };
+  }
 };

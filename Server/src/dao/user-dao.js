@@ -10,6 +10,7 @@ import {
   getUserWithCourses,
 } from "./recomendSubject-dao.js";
 import Subjects from "../schema/courseSchema.js";
+import { calculateGPA } from "../Utils/GPA_Calculation/GPA-Calculation.js";
 
 const getUserByEmail = async (email) => {
   try {
@@ -63,14 +64,14 @@ export const authenticateUser = async (data) => {
         // Fetch marks for the user
         const marksData = await getMarksForUser(user._id);
 
+        const gpa = await calculateGPA(user._id);
+
         if (!Array.isArray(marksData)) {
           console.error(
             "Invalid marksData structure. Expected an array, got:",
             marksData
           );
         } else {
-          console.log("Marks data:", marksData);
-
           // Process completed subjects
           const completedSubjects = marksData
             .flatMap((student) => {
@@ -116,6 +117,7 @@ export const authenticateUser = async (data) => {
             "Here are your recommended subjects based on eligibility.";
           result.recommendedSubjects = recommendedSubjects;
         }
+        result.gpa = gpa;
       }
     }
 

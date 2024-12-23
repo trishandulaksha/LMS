@@ -36,7 +36,6 @@ const Sidebar = () => {
   ];
 
   const lecturerIcons = [
-    { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
     { icon: <PostAddIcon />, name: "Post Add", path: "/lecturerDashboard" },
     { icon: <LeaderboardIcon />, name: "Leaderboard", path: "/schedule" },
     { icon: <SettingsIcon />, name: "Settings", path: "/setting" },

@@ -4,12 +4,16 @@ import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartC
 import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
 import SchoolIcon from "@mui/icons-material/School";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
 function GradeScreen() {
   const { processedMarksData, loading, error } = useMarksAndGrades();
+  const { user } = UseDataContexts();
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
   const [subjects, setSubjects] = useState([]);
+
+  console.log("GRADE SCREEN USER", user);
 
   useEffect(() => {
     // Extract data for the first level (default)
@@ -99,14 +103,7 @@ function GradeScreen() {
               </div>
               <div className="flex items-center justify-center w-full sm:w-1/2">
                 <p className="font-extrabold">GPA Value = </p>
-                <p className="ml-2 text-2xl font-bold">
-                  {processedMarksData.passedCreditAmount
-                    ? (
-                        processedMarksData.passedCreditAmount /
-                        processedMarksData.registerSubjectFullCreditAmount
-                      ).toFixed(2)
-                    : 0}
-                </p>
+                <p className="ml-2 text-2xl font-bold">{user?.success.gpa}</p>
               </div>
             </div>
 

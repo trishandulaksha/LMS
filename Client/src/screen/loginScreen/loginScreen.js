@@ -115,9 +115,14 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
     if (success && success.token) {
       sessionStorage.setItem("jwtToken", success.token);
       setCheckAlert({ Success: "Login Successful" });
-
-      fetchMarksAndGrades(success.user._id);
-      navigate("/");
+      if (success.user.role === "STUDENT") {
+        navigate("/");
+        fetchMarksAndGrades(success?.user._id);
+      }
+      if (success.user.role === "LECTURER") {
+        navigate("/lecturerDashboard");
+        fetchMarksAndGrades(success?.user._id);
+      }
     }
   }, [error, success, setCheckAlert, navigate]);
 
