@@ -93,6 +93,42 @@ const accessCodes = {
         },
       ],
     },
+    {
+      email: "sadamali@gmail.com",
+      role: "LECTURER",
+      accessCode: "L123000332022",
+      degreeProgram: "BSE",
+      teachingSubjects: [
+        {
+          courseCode: "EEI3262",
+          courseName: "Introduction to Object Oriented Programming",
+        },
+        {
+          courseCode: "EEI3266",
+          courseName: "Information Systems and Data Management",
+        },
+        {
+          courseCode: "EEX3373",
+          courseName: "Communication and Computer Technology",
+        },
+        {
+          courseCode: "AGM3263",
+          courseName: "Communication Skills",
+        },
+        {
+          courseCode: "MHZ3459",
+          courseName: "Basic Mathematics for Computing",
+        },
+        {
+          courseCode: "EEI3372",
+          courseName: "Programming in Python",
+        },
+        {
+          courseCode: "EEM3366",
+          courseName: "Introduction to Business Studies",
+        },
+      ],
+    },
 
     {
       email: "kamal@gmail.com",
@@ -122,6 +158,12 @@ const accessCodes = {
       email: "hansani@gmail.com",
       role: "STUDENT",
       accessCode: "s456000042021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "hasitha@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000072021",
       degreeProgram: "BSE",
     },
   ],

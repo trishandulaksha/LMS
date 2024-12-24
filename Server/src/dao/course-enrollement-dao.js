@@ -4,6 +4,7 @@ import Subjects from "../schema/courseSchema.js";
 import Marks from "../schema/markSchema.js";
 import User from "../schema/userSchema.js";
 import mongoose from "mongoose";
+import { getRecommendedSubjects } from "./recomendSubject-dao.js";
 
 // //////////////
 // SAVE ENROLLED COURSES
@@ -18,6 +19,7 @@ export const enrollInCourse = async (userId, courseCodes) => {
 
     const enrolledCourses = [];
     const errors = [];
+    const currentDate = new Date();
 
     for (const code of courseCodes) {
       const course = await Subjects.findOne({ courseCode: code });
@@ -25,8 +27,6 @@ export const enrollInCourse = async (userId, courseCodes) => {
         errors.push(`Course with code ${code} not found.`);
         continue;
       }
-
-      const currentDate = new Date();
 
       // Check if the user is already enrolled in the course
       const alreadyEnrolled = user.enrolledCourses.some(
@@ -40,9 +40,8 @@ export const enrollInCourse = async (userId, courseCodes) => {
 
       // Update the Marks Schema
       const existingMarks = await Marks.findOne({ student: user._id });
-
       if (!existingMarks) {
-        // Create a new mark record if none exists
+        // Create a new marks record if none exists
         await Marks.create({
           student: user._id,
           marks: [
@@ -97,10 +96,10 @@ export const enrollInCourse = async (userId, courseCodes) => {
 
       // Add the enrolled course to the user's enrolledCourses array
       user.enrolledCourses.push({
-        courseID: course._id, // Required: courseID
+        courseID: course._id,
         courseCode: course.courseCode,
         courseName: course.courseName,
-        enrolledDate: currentDate, // Required: enrolledDate
+        enrolledDate: currentDate,
       });
 
       enrolledCourses.push(course.courseName);
@@ -109,11 +108,28 @@ export const enrollInCourse = async (userId, courseCodes) => {
     // Save the updated user document
     await user.save();
 
+    // Recalculate recommended subjects in real-time
+    const completedSubjects = await Marks.findOne({ student: user._id })
+      .populate("marks.subject") // Populate the subject field
+      .then((marksData) =>
+        marksData.marks.map((mark) => ({
+          subject: mark.subject.courseCode, // Now this will work
+          passed: mark.passed,
+          isEligibleForFinal: mark.isEligibleForFinal,
+        }))
+      );
+
+    const recommendedSubjects = await getRecommendedSubjects(
+      user,
+      completedSubjects
+    );
+
     const response = {
       success: enrolledCourses.length
         ? `Enrolled in courses: ${enrolledCourses.join(", ")}`
         : null,
       errors: errors.length ? errors : null,
+      updatedRecommendations: recommendedSubjects.filteredSubjects || [],
     };
 
     return response;

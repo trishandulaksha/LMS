@@ -40,9 +40,9 @@ const SubjectRecomendation = ({ recommendedSubjects }) => {
       <h2 className="mb-4 text-xl font-bold">Recommended Subjects</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {recommendedSubjects && recommendedSubjects.length > 0 ? (
-          recommendedSubjects.map((subject) => (
+          recommendedSubjects.map((subject, index) => (
             <div
-              key={subject._id}
+              key={subject._id || `${subject.courseCode}-${index}`}
               className="p-4 transition-shadow bg-white border border-gray-200 rounded-md shadow-md hover:shadow-lg"
             >
               <h3 className="mb-2 text-lg font-semibold">

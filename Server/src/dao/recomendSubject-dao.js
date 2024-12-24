@@ -19,8 +19,16 @@ export const getUserWithCourses = async (userId) => {
 // Get initial recommended courses (first two semesters)
 export const getInitialRecommendations = async () => {
   try {
-    return await Subjects.find({ semesters: { $in: [1, 2] } });
+    const initialRecommendations = await Subjects.find({
+      semesters: { $in: [1, 2] },
+    });
+    if (!initialRecommendations || initialRecommendations.length === 0) {
+      console.error("No initial recommendations found.");
+      return [];
+    }
+    return initialRecommendations;
   } catch (error) {
+    console.error("Error fetching initial recommendations:", error);
     throw new Error("Error fetching initial recommendations");
   }
 };
@@ -72,145 +80,74 @@ export const getEligibleSubjects = async (user, completedSubjects) => {
 export const getRecommendedSubjects = async (user, completedSubjects) => {
   try {
     const enrolledCourses = user.enrolledCourses || [];
-    if (enrolledCourses.length === 0) {
-      console.error("No enrolled courses found for the user.");
-      return { error: "No enrolled courses found for the user." };
-    }
+    const enrolledCourseCodes = enrolledCourses.map(
+      (course) => course.courseCode
+    );
 
-    const enrolledCourseIDs = enrolledCourses.map((course) => course.courseID);
+    // Fetch all subjects across semesters
+    const allSubjects = await Subjects.find();
 
-    // Fetch all enrolled subjects in one query
-    const enrolledSubjectsDetails = await Subjects.find({
-      _id: { $in: enrolledCourseIDs },
-    });
-
-    // Extract and deduplicate semesters
-    const enrolledSemesters = [
-      ...new Set(
-        enrolledSubjectsDetails.flatMap((subject) => subject.semesters)
-      ),
-    ].sort((a, b) => a - b);
-
-    console.log("Enrolled Semesters:", enrolledSemesters);
-
-    // Determine the largest two semesters as current semesters
-    const currentSemesters = enrolledSemesters.slice(-2);
-    console.log("Current Semesters (Largest Two):", currentSemesters);
-
-    // Calculate the next two semesters
-    const nextSemesters =
-      currentSemesters.length > 0
-        ? [Math.max(...currentSemesters) + 1, Math.max(...currentSemesters) + 2]
-        : [1, 2];
-    console.log("Next Semesters:", nextSemesters);
-
-    // Fetch subjects for the next semesters in one query
-    const nextSemesterSubjects = await Subjects.find({
-      semesters: { $in: nextSemesters },
-    });
-
-    // Calculate total passed credits from completed subjects
+    // Calculate passed credits from completed subjects
     const passedCredits = completedSubjects.reduce((total, subject) => {
       if (subject.passed) {
-        const creditValue = parseInt(subject.subject.charAt(3), 10); // Second digit indicates credits
+        const creditValue = parseInt(subject.subject.charAt(3), 10); // Extract credits from courseCode
         return total + creditValue;
       }
       return total;
     }, 0);
 
-    console.log(
-      "Total Passed Credits (from completedSubjects):",
-      passedCredits
-    );
+    // Process prerequisites for each subject
+    const subjectsWithPrerequisiteChecks = allSubjects.map((subject) => {
+      const prerequisites = subject.prerequisites || [];
 
-    // Check prerequisites for next semester subjects
-    const subjectsWithPrerequisiteChecks = nextSemesterSubjects.map(
-      (subject) => {
-        const prerequisites = subject.prerequisites || [];
-        console.log(`Prerequisites for ${subject.courseCode}:`, prerequisites);
+      const prerequisitesStatus = prerequisites.map((prerequisite) => {
+        if (prerequisite.includes("Pass in")) {
+          const requiredCredits = parseInt(
+            prerequisite.match(/Pass in (\d+) credits/)[1],
+            10
+          );
+          return passedCredits >= requiredCredits;
+        } else if (prerequisite.includes("(CA)")) {
+          const prerequisiteCode = prerequisite.split(" ")[0];
+          return completedSubjects.some(
+            (subject) =>
+              subject.subject === prerequisiteCode && subject.isEligibleForFinal
+          );
+        } else if (prerequisite.includes("(CR)")) {
+          const prerequisiteCode = prerequisite.split(" ")[0];
+          return enrolledCourseCodes.includes(prerequisiteCode);
+        } else if (prerequisite.includes("(P)")) {
+          const prerequisiteCode = prerequisite.split(" ")[0];
+          return completedSubjects.some(
+            (subject) => subject.subject === prerequisiteCode && subject.passed
+          );
+        } else {
+          const prerequisiteCode = prerequisite.split(" ")[0];
+          return completedSubjects.some(
+            (subject) => subject.subject === prerequisiteCode && subject.passed
+          );
+        }
+      });
 
-        const prerequisitesStatus = prerequisites.map((prerequisite) => {
-          if (prerequisite.includes("Pass in")) {
-            const requiredCredits = parseInt(
-              prerequisite.match(/Pass in (\d+) credits/)[1],
-              10
-            );
-            const isSatisfied = passedCredits >= requiredCredits;
-            return {
-              prerequisite,
-              status: isSatisfied ? "true" : "false",
-            };
-          } else if (prerequisite.includes("(CA)")) {
-            const prerequisiteCode = prerequisite.split(" ")[0];
-            // Check if eligible for final
-            const isEligible = completedSubjects.some(
-              (subject) =>
-                subject.subject === prerequisiteCode &&
-                subject.isEligibleForFinal
-            );
-            return {
-              prerequisite,
-              status: isEligible ? "true" : "false",
-            };
-          } else if (prerequisite.includes("(CR)")) {
-            const prerequisiteCode = prerequisite.split(" ")[0];
-            // Check if enrolled
-            const isEnrolled = enrolledCourses.some(
-              (course) => course.courseID === prerequisiteCode
-            );
-            return {
-              prerequisite,
-              status: isEnrolled ? "true" : "false",
-            };
-          } else if (prerequisite.includes("(P)")) {
-            const prerequisiteCode = prerequisite.split(" ")[0];
-            // Check if passed
-            const isPassed = completedSubjects.some(
-              (subject) =>
-                subject.subject === prerequisiteCode && subject.passed
-            );
-            return {
-              prerequisite,
-              status: isPassed ? "true" : "false",
-            };
-          } else {
-            // Check if the prerequisite course has been passed
-            const prerequisiteCode = prerequisite.split(" ")[0];
-            const isPassed = completedSubjects.some(
-              (subject) =>
-                subject.subject === prerequisiteCode && subject.passed
-            );
-            return {
-              prerequisite,
-              status: isPassed ? "true" : "false",
-            };
-          }
-        });
+      const allPrerequisitesMet = prerequisitesStatus.every((status) => status);
 
-        // Check if all prerequisites are met
-        const allPrerequisitesMet = prerequisitesStatus.every(
-          (status) => status.status === "true"
-        );
+      return {
+        courseCode: subject.courseCode,
+        courseName: subject.courseName,
+        semester: subject.semesters,
+        prerequisites,
+        allPrerequisitesMet,
+      };
+    });
 
-        return {
-          courseCode: subject.courseCode,
-          courseName: subject.courseName,
-          prerequisitesStatus,
-          allPrerequisitesMet,
-        };
-      }
-    );
-
-    // Filter subjects based on prerequisites being met or empty prerequisites
+    // Filter subjects
     const filteredSubjects = subjectsWithPrerequisiteChecks.filter(
       (subject) =>
-        subject.allPrerequisitesMet || subject.prerequisitesStatus.length === 0
+        (subject.allPrerequisitesMet || subject.prerequisites.length === 0) &&
+        !enrolledCourseCodes.includes(subject.courseCode)
     );
 
-    return {
-      nextSemesters,
-      filteredSubjects,
-    };
+    return { filteredSubjects };
   } catch (error) {
     console.error("Error in getRecommendedSubjects:", error);
     return { error: "An error occurred while processing." };

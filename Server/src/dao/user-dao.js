@@ -55,11 +55,14 @@ export const authenticateUser = async (data) => {
         !userWithCourses.enrolledCourses ||
         userWithCourses.enrolledCourses.length === 0
       ) {
-        // No courses enrolled yet, provide subjects from the first two semesters
+        // Fetch initial recommendations
         const recommendedSubjects = await getInitialRecommendations();
+
         result.message =
-          "No courses enrolled yet. Here are some recommended courses.";
-        result.recommendedSubjects = recommendedSubjects;
+          recommendedSubjects.length > 0
+            ? "No courses enrolled yet. Here are some recommended courses."
+            : "No courses enrolled yet, and no recommendations available.";
+        result.recommendedSubjects = { filteredSubjects: recommendedSubjects };
       } else {
         // Fetch marks for the user
         const marksData = await getMarksForUser(user._id);
