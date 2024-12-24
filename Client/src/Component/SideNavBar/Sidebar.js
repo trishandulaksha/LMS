@@ -100,25 +100,27 @@ const Sidebar = () => {
 
       {/* Custom Logout Confirmation Modal */}
       {showLogoutModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="relative bg-white rounded-lg shadow-lg w-80">
-            <div className="p-5 text-center">
-              <h2 className="mb-4 text-lg font-bold">Confirm Logout</h2>
-              <p className="mb-6">Are you sure you want to log out?</p>
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 text-white bg-red-500 rounded hover:bg-red-600"
-                >
-                  Yes
-                </button>
-                <button
-                  onClick={() => setShowLogoutModal(false)}
-                  className="px-4 py-2 text-gray-800 bg-gray-300 rounded hover:bg-gray-400"
-                >
-                  No
-                </button>
-              </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70">
+          <div className="bg-white rounded-lg shadow-xl w-[90%] max-w-md p-6">
+            <h2 className="mb-4 text-xl font-semibold text-center">
+              Confirm Logout
+            </h2>
+            <p className="mb-6 text-center">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleLogout}
+                className="px-6 py-2 text-white bg-red-500 rounded hover:bg-red-600"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-6 py-2 text-gray-700 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                No
+              </button>
             </div>
           </div>
         </div>

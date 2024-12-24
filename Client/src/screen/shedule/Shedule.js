@@ -18,10 +18,10 @@ const Schedule = () => {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gray-100">
-      <div className="container mx-auto">
+    <div className="z-10 min-h-screen p-8 bg-gray-100">
+      <div className="container z-10 mx-auto">
         <h1 className="mb-8 text-3xl font-bold text-center">Shedule</h1>
-        <div className="p-4 bg-white rounded-lg shadow-md">
+        <div className="z-10 p-4 bg-white rounded-lg shadow-md">
           <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
