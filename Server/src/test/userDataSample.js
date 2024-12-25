@@ -129,7 +129,48 @@ const accessCodes = {
         },
       ],
     },
-
+    {
+      email: "caldera@gmail.com",
+      role: "LECTURER",
+      accessCode: "L123000432022",
+      degreeProgram: "BSE",
+      teachingSubjects: [
+        {
+          courseCode: "EEI4366",
+          courseName: "Data Modelling and Database Systems",
+        },
+        {
+          courseCode: "EEX4464",
+          courseName: "Operating Systems and System Programming",
+        },
+        {
+          courseCode: "EEI4374",
+          courseName: "Computer Networks and Security",
+        },
+        {
+          courseCode: "EEI4385",
+          courseName: "Emerging Technologies",
+        },
+        {
+          courseCode: "EEI4271",
+          courseName: "Cloud Computing",
+        },
+        {
+          courseCode: "EEI5270",
+          courseName: "Advanced Database Systems",
+        },
+        {
+          courseCode: "EEI5375",
+          courseName: "Advanced Data Structures",
+        },
+      ],
+    },
+    {
+      email: "ravindu@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000112021",
+      degreeProgram: "BSE",
+    },
     {
       email: "kamal@gmail.com",
       role: "STUDENT",
