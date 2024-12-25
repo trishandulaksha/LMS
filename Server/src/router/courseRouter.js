@@ -12,7 +12,7 @@ import {
 
 const subjectRouter = Router();
 
-subjectRouter.get("/getSubjectByID/:id", getSubjectByIdEp);
+subjectRouter.get("/getSubjectByID/:courseCode", getSubjectByIdEp);
 subjectRouter.post("/getallSubjects", getAllSubjectsEp);
 subjectRouter.post("/addSubjects", validateCourse, createSubjectEp);
 subjectRouter.post("/updateSubject", validateCourse, updateSubjectEp);

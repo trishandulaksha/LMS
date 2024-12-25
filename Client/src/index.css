@@ -6,3 +6,12 @@
   margin: 0;
   padding: 0;
 }
+
+body,
+html {
+  overflow: visible !important;
+}
+
+.fixed {
+  z-index: 9999 !important;
+}

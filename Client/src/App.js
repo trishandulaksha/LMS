@@ -5,10 +5,7 @@ import LoginScreen from "./screen/loginScreen/loginScreen";
 import Setting from "./screen/Settings/Setting";
 import Layout from "./Layout/Layout";
 import PrivateRoute from "./Routes/PrivateRoutes/PrivateRoutes";
-import Recosub from "./screen/recosub/recosub";
-import StudentProgress from "./screen/StudentProgress/StudentProgress";
-import Schedule from "./screen/Schedule/Schedule";
-import MyProfile from "./screen/myprofile/MyProfile";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,28 +24,27 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-
       {
-        path: "Recosub",
+        path: "myprofile",
         element: (
           <PrivateRoute>
-            < Recosub/>
+            <MyProfile/>
           </PrivateRoute>
         ),
       },
       {
-        path: "StudentProgress",
+        path: "recomendedSubjects",
         element: (
           <PrivateRoute>
-            <StudentProgress />
+            <SubjectRecomendationScreen />
           </PrivateRoute>
         ),
       },
       {
-        path: "Schedule",
+        path: "schedule",
         element: (
           <PrivateRoute>
-            < Schedule/>
+            <Schedule />
           </PrivateRoute>
         ),
       },
@@ -56,16 +52,16 @@ const router = createBrowserRouter([
         path: "setting",
         element: (
           <PrivateRoute>
-            <Setting/>
+            <Setting />
           </PrivateRoute>
         ),
       },
       {
-        path: "myprofile",
+        path: "lecturerDashboard",
         element: (
-          <PrivateRoute>
-            <MyProfile/>
-          </PrivateRoute>
+          <RoleBasedRoute allowedRoles={["LECTURER"]}>
+            <LecturerDashboard />
+          </RoleBasedRoute>
         ),
       },
     ],
@@ -75,9 +71,13 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className="">
-      <RouterProvider router={router} />
-    </div>
+    <GlobalProvider>
+      <MarksAndGradesProvider>
+        <div className="">
+          <RouterProvider router={router} />
+        </div>
+      </MarksAndGradesProvider>
+    </GlobalProvider>
   );
 }
 

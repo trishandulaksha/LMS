@@ -6,11 +6,13 @@ import {
   getEligibleSubjects,
   getInitialRecommendations,
   getMarksForUser,
+  getRecommendedSubjects,
   getUserWithCourses,
 } from "./recomendSubject-dao.js";
+import Subjects from "../schema/courseSchema.js";
+import { calculateGPA } from "../Utils/GPA_Calculation/GPA-Calculation.js";
 
-// Find user detail using email
-export const getUserByEmail = async (email) => {
+const getUserByEmail = async (email) => {
   try {
     const user = await User.findOne({ email: email });
     const lecturer = await Lecturer.findOne({ email: email });
@@ -19,12 +21,12 @@ export const getUserByEmail = async (email) => {
     return { error: error.message };
   }
 };
-
-// User Authentication
 export const authenticateUser = async (data) => {
   const { email, password } = data;
 
   console.log("Function called authenticateUser", email, password);
+
+  // Fetch user (either Student or Lecturer)
   const user = await getUserByEmail(email);
 
   if (!user) {
@@ -33,6 +35,7 @@ export const authenticateUser = async (data) => {
 
   console.log("User role:", user.role, user._id);
 
+  // Validate password
   const isMatch = await user.comparePassword(password);
 
   if (isMatch) {
@@ -42,33 +45,82 @@ export const authenticateUser = async (data) => {
       status: user.role,
     };
 
+    // Check if user is a student
     if (user.role === "STUDENT") {
+      // Fetch user with courses
       const userWithCourses = await getUserWithCourses(user._id);
-      console.log(userWithCourses);
-      if (userWithCourses.enrolledCourses.length === 0) {
-        // Fetch initial recommendations for first-time enrollment
+
+      // Case when no courses are enrolled yet
+      if (
+        !userWithCourses.enrolledCourses ||
+        userWithCourses.enrolledCourses.length === 0
+      ) {
+        // Fetch initial recommendations
         const recommendedSubjects = await getInitialRecommendations();
-        result.recommendedSubjects = recommendedSubjects;
-        result.marksData = null; // No marks data for first-time enrollment
+
+        result.message =
+          recommendedSubjects.length > 0
+            ? "No courses enrolled yet. Here are some recommended courses."
+            : "No courses enrolled yet, and no recommendations available.";
+        result.recommendedSubjects = { filteredSubjects: recommendedSubjects };
       } else {
-        // Fetch marks and determine eligible subjects based on prerequisites and eligibility
+        // Fetch marks for the user
         const marksData = await getMarksForUser(user._id);
 
-        // Map to extract completed subjects with eligibility and pass status
-        const completedSubjects = marksData.map((mark) => ({
-          subject: mark.subject.courseCode,
-          passed: mark.passed,
-          isEligibleForFinal: mark.isEligibleForFinal,
-        }));
+        const gpa = await calculateGPA(user._id);
 
-        // Fetch eligible subjects for next semester
-        const eligibleSubjects = await getEligibleSubjects(
-          userWithCourses,
-          completedSubjects
-        );
+        if (!Array.isArray(marksData)) {
+          console.error(
+            "Invalid marksData structure. Expected an array, got:",
+            marksData
+          );
+        } else {
+          // Process completed subjects
+          const completedSubjects = marksData
+            .flatMap((student) => {
+              if (student.marks && Array.isArray(student.marks)) {
+                // Process the marks array for each student
+                return student.marks.map((mark) => {
+                  if (mark.subject && mark.subject.courseCode) {
+                    // Only include subjects where passed is true
+                    if (mark.passed) {
+                      return {
+                        subject: mark.subject.courseCode,
+                        passed: mark.passed,
+                        isEligibleForFinal: mark.isEligibleForFinal,
+                      };
+                    }
+                  } else {
+                    console.error(
+                      "Missing subject or courseCode in mark:",
+                      mark
+                    );
+                    return null; // Skip invalid marks
+                  }
+                });
+              } else {
+                console.error(
+                  "Missing or invalid marks array for student:",
+                  student
+                );
+                return []; // Return empty array if no marks
+              }
+            })
+            .filter(Boolean); // Remove invalid entries
 
-        result.recommendedSubjects = eligibleSubjects;
-        result.marksData = marksData;
+          console.log("Completed subjects:", completedSubjects);
+
+          // Call the new function to get recommended subjects
+          const recommendedSubjects = await getRecommendedSubjects(
+            userWithCourses,
+            completedSubjects
+          );
+          console.log(recommendedSubjects);
+          result.message =
+            "Here are your recommended subjects based on eligibility.";
+          result.recommendedSubjects = recommendedSubjects;
+        }
+        result.gpa = gpa;
       }
     }
 
@@ -78,7 +130,9 @@ export const authenticateUser = async (data) => {
   }
 };
 
-// User Registrationimport Lecturer from "../schema/lecturerSchema.js";
+// ///////////////////////
+// User Registration
+// ///////////////////////
 export const userRegistration = async (data) => {
   const { name, email, mobile_number, gender, password, accesscode } = data;
   console.log(name, email, mobile_number, gender, password, accesscode);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import ArticleIcon from "@mui/icons-material/Article";
@@ -7,68 +7,62 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Link, useNavigate } from "react-router-dom";
 
 const icons = [
   { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
-  { icon: <CalendarMonthIcon />, name: "Subject Recomendation", path: "/recosub" },
+  { icon: <CalendarMonthIcon />, name: "Subject Recommendation", path: "/" },
   { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-  { icon: <TimelineIcon />, name: "Student Progress", path: "/StudentProgress" },
-  { icon: <LeaderboardIcon />, name: "Schedule", path: "/Schedule" },
-  { icon: <SettingsIcon />, name: "Settings", path: "/Setting" },
+  { icon: <TimelineIcon />, name: "Student Progress", path: "/" },
+  { icon: <LeaderboardIcon />, name: "Log Out", path: "/" },
+  { icon: <SettingsIcon />, name: "Settings", path: "/myprofile" },
 ];
 
 const bottomIcons = [
-  { icon: <LogoutIcon />, name: "Logout", path: null },
-  { icon: <AccountCircleIcon />, name: "My Profile", path: "/MyProfile" },
+  { icon: <LogoutIcon />, name: "Logout" },
+  { icon: <AccountCircleIcon />, name: "Account" },
 ];
 
 const Sidebar = () => {
   const navigate = useNavigate();
 
-  const handleClick = (event, iconName, path) => {
+  const handleClick = (iconName) => {
     if (iconName === "Logout") {
-      // Show confirmation dialog
-      const confirmLogout = window.confirm("Are you sure you want to logout?");
-      if (confirmLogout) {
-        // Remove the JWT token and navigate to the login page
-        localStorage.removeItem("jwtToken");
-        navigate("/login");
-      } else {
-        // Prevent navigation if logout is canceled
-        event.preventDefault();
-      }
+      localStorage.removeItem("jwtToken");
+
+      // Redirect to the login page
+      navigate("/login");
     }
   };
 
+  // Assuming you define `role` variable somewhere in your code
+  const role = "LECTURER"; // Example, modify based on your actual logic
+  const iconsList = role === "LECTURER" ? icons : icons; // Replace with actual studentIcons if needed
+
   return (
-    <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-4 ml-7">
-      {/* Top Icons */}
+    <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-10 ml-7 ">
       <div className="flex flex-col gap-5">
-        {icons.map(({ icon, name, path }) => (
-          <div
+        {iconsList.map(({ icon, name, path }) => (
+          <Link
             key={name}
+            to={path}
             className="cursor-pointer hover:text-orange-700"
-            onClick={(event) => handleClick(event, name, path)}
+            onClick={() => handleClick(name)}
           >
-            <Link to={path}>{icon}</Link>
-          </div>
+            {icon}
+          </Link>
         ))}
       </div>
 
-      {/* Bottom Icons */}
       <div className="flex flex-col gap-5">
-        {bottomIcons.map(({ icon, name, path }) => (
+        {bottomIcons.map(({ icon, name }) => (
           <div
             key={name}
             className="cursor-pointer hover:text-orange-700"
-            onClick={(event) => handleClick(event, name, path)}
+            onClick={() => handleClick(name)}
           >
-            {path ? (
-              <Link to={path}>{icon}</Link>
-            ) : (
-              <div>{icon}</div> // For Logout which doesn't navigate
-            )}
+            {icon}
           </div>
         ))}
       </div>
