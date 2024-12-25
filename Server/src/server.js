@@ -8,6 +8,7 @@ import subjectRouter from "./router/courseRouter.js";
 import lecturerRouter from "./router/lecturerRouter.js";
 import courseEnrollementRouter from "./router/course-enrollementRouter.js";
 import studentMarksRouter from "./router/studentMarksRouter.js";
+import RecomendedSubjectRouter from "./router/subject-RecomendtaionRouter.js";
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.use("/api/user", initRouter);
 app.use("/api/user/subject", subjectRouter);
 app.use("/api/user/lecturer", lecturerRouter);
 app.use("/api/user/student", studentMarksRouter);
+app.use("/api/user/student", RecomendedSubjectRouter);
 app.use("/api/user/subjectenrollement", courseEnrollementRouter);
 
 databaseSetup()

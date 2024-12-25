@@ -1,10 +1,6 @@
 import React, { useState } from "react";
-import { subjectEnrollment } from "../../API/SubjectAPI";
-import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
-// Assuming subjectEnrollment function is available
 
-const SubjectRecomendation = ({ recommendedSubjects }) => {
-  const { user } = UseDataContexts();
+const SubjectRecomendation = ({ recommendedSubjects, handleEnroll }) => {
   const [selectedCourses, setSelectedCourses] = useState([]); // Track selected courses
 
   // Handle course selection
@@ -16,22 +12,12 @@ const SubjectRecomendation = ({ recommendedSubjects }) => {
       return [...prev, courseCode]; // Add course code to selection
     });
   };
-  console.log(selectedCourses);
+
   // Handle enrollment
-  const handleEnroll = async () => {
-    try {
-      const studentID = user?.success.user._id; // Replace with actual student ID
-      for (const courseCode of selectedCourses) {
-        const response = await subjectEnrollment(studentID, courseCode);
-        console.log(response);
-        if (response) {
-          console.log(`Successfully enrolled in ${courseCode}`);
-        }
-      }
-      alert("Enrollment successful!");
-    } catch (error) {
-      console.error("Enrollment failed:", error.message);
-      alert("Failed to enroll in selected courses.");
+  const handleEnrollClick = async () => {
+    if (selectedCourses.length > 0) {
+      await handleEnroll(selectedCourses[0]); // Enroll only one course at a time
+      setSelectedCourses([]); // Reset selected courses after enrollment
     }
   };
 
@@ -40,9 +26,9 @@ const SubjectRecomendation = ({ recommendedSubjects }) => {
       <h2 className="mb-4 text-xl font-bold">Recommended Subjects</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {recommendedSubjects && recommendedSubjects.length > 0 ? (
-          recommendedSubjects.map((subject, index) => (
+          recommendedSubjects.map((subject) => (
             <div
-              key={subject._id || `${subject.courseCode}-${index}`}
+              key={subject.courseCode}
               className="p-4 transition-shadow bg-white border border-gray-200 rounded-md shadow-md hover:shadow-lg"
             >
               <h3 className="mb-2 text-lg font-semibold">
@@ -50,7 +36,7 @@ const SubjectRecomendation = ({ recommendedSubjects }) => {
               </h3>
               <p className="text-sm text-gray-700">
                 <span className="font-bold">Coordinator: </span>
-                {subject.courseCoordinator}
+                {subject.coordinator}
               </p>
               <p className="text-sm text-gray-700">
                 <span className="font-bold">Credits: </span>
@@ -63,7 +49,6 @@ const SubjectRecomendation = ({ recommendedSubjects }) => {
               >
                 {subject.compulsory ? "Compulsory" : "Optional"}
               </p>
-              {/* Add checkbox to select the course */}
               <div className="mt-2">
                 <input
                   type="checkbox"
@@ -86,7 +71,7 @@ const SubjectRecomendation = ({ recommendedSubjects }) => {
       {selectedCourses.length > 0 && (
         <div className="mt-4">
           <button
-            onClick={handleEnroll}
+            onClick={handleEnrollClick}
             className="px-4 py-2 text-white bg-blue-600 rounded-md"
           >
             Enroll in Selected Courses

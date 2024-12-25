@@ -137,6 +137,9 @@ export const getRecommendedSubjects = async (user, completedSubjects) => {
         semester: subject.semesters,
         prerequisites,
         allPrerequisitesMet,
+        credits: subject.credits,
+        coordinator: subject.courseCoordinator,
+        compulsory: subject.compulsory,
       };
     });
 

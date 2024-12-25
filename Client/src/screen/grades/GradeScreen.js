@@ -1,10 +1,41 @@
 import React, { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartComponent";
 import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
 import SchoolIcon from "@mui/icons-material/School";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+
+// Modal component for error message
+const ErrorModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+
+  const handleRedirect = () => {
+    // Navigate to the RecommendedSubjects screen
+    navigate("/recomendedSubjects");
+    onClose(); // Close the modal after redirection
+  };
+
+  return (
+    isOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="flex flex-col items-center p-8 bg-white rounded-lg shadow-lg">
+          <p className="text-xl font-semibold text-red-500">
+            No Marks Found. Please enroll in subjects.
+          </p>
+          <div className="mt-4">
+            <button
+              onClick={handleRedirect}
+              className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+            >
+              Yes, Take me to Enroll
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  );
+};
 
 function GradeScreen() {
   const { processedMarksData, loading, error } = useMarksAndGrades();
@@ -12,18 +43,26 @@ function GradeScreen() {
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
   const [subjects, setSubjects] = useState([]);
+  const [showErrorModal, setShowErrorModal] = useState(false); // State to control modal visibility
 
   console.log("GRADE SCREEN USER", user);
 
   useEffect(() => {
-    // Extract data for the first level (default)
-    if (processedMarksData.levels) {
+    // Only try to access levels if processedMarksData and processedMarksData.levels exist
+    if (processedMarksData && processedMarksData.levels) {
       const firstLevel = Object.values(processedMarksData.levels)[0];
       setSubjects(firstLevel.enrolledSubjects || []);
       setSelectedYear(firstLevel.enrolledSubjects[0]?.studentYear || "");
       setSelectedSemester(firstLevel.enrolledSubjects[0]?.semester || "");
     }
   }, [processedMarksData]);
+
+  useEffect(() => {
+    // Show error modal if there's an error fetching data
+    if (error) {
+      setShowErrorModal(true);
+    }
+  }, [error]);
 
   const handleYearChange = (e) => {
     const selected = e.target.value;
@@ -55,7 +94,10 @@ function GradeScreen() {
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
-        <p className="text-red-500">{error}</p>
+        <ErrorModal
+          isOpen={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+        />
       ) : (
         <div className="flex flex-col w-full p-4 overflow-x-hidden md:px-8 lg:px-16 xl:px-20 ">
           <div className="w-full p-2 shadow-sm md:p-5 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
@@ -67,14 +109,15 @@ function GradeScreen() {
                   value={selectedYear}
                   onChange={handleYearChange}
                 >
-                  {Object.values(processedMarksData.levels).map((level) => (
-                    <option
-                      key={level.enrolledSubjects[0]?.studentYear}
-                      value={level.enrolledSubjects[0]?.studentYear}
-                    >
-                      {level.enrolledSubjects[0]?.studentYear}
-                    </option>
-                  ))}
+                  {processedMarksData.levels &&
+                    Object.values(processedMarksData.levels).map((level) => (
+                      <option
+                        key={level.enrolledSubjects[0]?.studentYear}
+                        value={level.enrolledSubjects[0]?.studentYear}
+                      >
+                        {level.enrolledSubjects[0]?.studentYear}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -87,12 +130,14 @@ function GradeScreen() {
                 >
                   {[
                     ...new Set(
-                      Object.values(processedMarksData.levels)
-                        .flatMap((level) => level.enrolledSubjects)
-                        .filter(
-                          (subject) => subject.studentYear === selectedYear
-                        )
-                        .map((subject) => subject.semester)
+                      processedMarksData.levels
+                        ? Object.values(processedMarksData.levels)
+                            .flatMap((level) => level.enrolledSubjects)
+                            .filter(
+                              (subject) => subject.studentYear === selectedYear
+                            )
+                            .map((subject) => subject.semester)
+                        : []
                     ),
                   ].map((sem) => (
                     <option key={sem} value={sem}>

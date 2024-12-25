@@ -37,10 +37,10 @@ const Dashboard = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [studentDetails, setStudentDetails] = useState({
     name: "Student",
-    level: "",
+    level: "1", // Default level as 1
     completedSubjects: 0,
-    totalYears: 0,
-    currentYear: "",
+    totalYears: 4,
+    currentYear: 1,
     progressYear: 0,
     passedSubjects: 0,
     failedSubjects: 0,
@@ -50,6 +50,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (processedMarksData) {
+      // If marks data is available, calculate the details
       const levels = Object.values(processedMarksData.levels || {});
       const totalYears = 4;
       const completedSubjects = levels.reduce(
@@ -89,7 +90,7 @@ const Dashboard = () => {
       const level =
         totalYears === 1 && currentYear === 1
           ? 3
-          : processedMarksData.levels?.level || "Unknown";
+          : processedMarksData.levels?.level || "1"; // Default level if not available
 
       const performanceData = levels.map((level, idx) => ({
         label: `Year ${idx + 1}`,
@@ -106,7 +107,7 @@ const Dashboard = () => {
 
       setStudentDetails({
         name: user?.success.user.name || "Student",
-        level: 3,
+        level,
         completedSubjects,
         totalYears,
         currentYear,
@@ -115,6 +116,20 @@ const Dashboard = () => {
         failedSubjects,
         status: failedSubjects === 0 ? "Good" : "Needs Improvement",
       });
+    } else {
+      // If no data, show the default values without error message
+      setStudentDetails({
+        name: user?.success.user.name || "Student",
+        level: "1", // Default level 1
+        completedSubjects: 0,
+        totalYears: 4,
+        currentYear: 1,
+        progressYear: 0,
+        passedSubjects: 0,
+        failedSubjects: 0,
+        status: "Pending",
+      });
+      setPerformanceData([]);
     }
   }, [processedMarksData, user]);
 
@@ -131,7 +146,6 @@ const Dashboard = () => {
   });
 
   if (loading) return <LoadingModal isOpen={loading} />; // Display loading modal when data is loading
-  if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
     <div className="w-full min-h-screen p-8 bg-gray-100">
@@ -206,13 +220,17 @@ const Dashboard = () => {
       <div className="p-6 bg-white rounded-lg shadow">
         <h2 className="mb-6 text-xl font-bold">Overall Performance</h2>
         <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
-          {performanceData.map((data, index) => (
-            <div key={index} className="text-center">
-              <Doughnut data={renderChart(data.percentage, data.color)} />
-              <p className="mt-4 text-lg font-bold">{data.percentage}%</p>
-              <p className="text-gray-500">{data.label}</p>
-            </div>
-          ))}
+          {performanceData.length === 0 ? (
+            <p>No performance data available yet.</p>
+          ) : (
+            performanceData.map((data, index) => (
+              <div key={index} className="text-center">
+                <Doughnut data={renderChart(data.percentage, data.color)} />
+                <p className="mt-4 text-lg font-bold">{data.percentage}%</p>
+                <p className="text-gray-500">{data.label}</p>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
