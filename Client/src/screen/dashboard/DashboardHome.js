@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Link } from "react-router-dom"; // Import Link from React Router
 import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
@@ -143,7 +144,15 @@ const Dashboard = () => {
         <div className="mt-4 lg:mt-0">
           <div className="grid grid-cols-2 gap-4 text-sm lg:flex lg:items-center lg:space-x-6">
             <div className="flex flex-col items-start">
-              <p>Enrolled Subjects: {studentDetails.completedSubjects}</p>
+              <p>
+                {" "}
+                <Link
+                  to="/studentprogress#enrolled"
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  Enrolled Subjects: {studentDetails.completedSubjects}{" "}
+                </Link>
+              </p>
               <p>Level: {studentDetails.level}</p>
               <p>Year: {studentDetails.currentYear}</p>
               <p>Total Years: {studentDetails.totalYears}</p>
@@ -151,8 +160,23 @@ const Dashboard = () => {
 
             <div className="flex flex-col items-start">
               <p>Progress Year: {studentDetails.progressYear}</p>
-              <p>Pass Subjects: {studentDetails.passedSubjects}</p>
-              <p>Failed Subjects: {studentDetails.failedSubjects}</p>
+              <p>
+                <Link
+                  to="/studentprogress#passed"
+                  className="text-green-500 hover:text-green-700"
+                >
+                  Passed Subjects: {studentDetails.passedSubjects}
+                </Link>
+              </p>
+              <p>
+                {" "}
+                <Link
+                  to="/studentprogress#pending"
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Pending Subjects: {studentDetails.failedSubjects}{" "}
+                </Link>
+              </p>
               <p>Status: {studentDetails.status}</p>
             </div>
           </div>

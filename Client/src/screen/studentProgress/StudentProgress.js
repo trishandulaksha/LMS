@@ -1,83 +1,138 @@
-import React, { useState } from "react";
-import "./StudentProgress.css";
+import React, { useEffect, useState } from "react";
+import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
 const StudentProgress = () => {
-  const [marks, setMarks] = useState({
-    exams: 0,
-    labTest: 0,
-    tmas: 0,
-    vivas: 0,
-    finalExams: 0,
-  });
+  const { processedMarksData, loading, error } = useMarksAndGrades();
 
-  const [gpa, setGpa] = useState(null);
+  const [enrolledSubjects, setEnrolledSubjects] = useState([]);
+  const [passedSubjects, setPassedSubjects] = useState([]);
+  const [pendingSubjects, setPendingSubjects] = useState([]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setMarks({
-      ...marks,
-      [name]: value,
-    });
-  };
+  useEffect(() => {
+    if (processedMarksData) {
+      const levels = Object.values(processedMarksData.levels || {});
+      const enrolled = [];
+      const passed = [];
+      const pending = [];
 
-  const calculateGPA = () => {
-    // Example weightage percentages for GPA calculation
-    const weights = {
-      exams: 0.2,
-      labTest: 0.2,
-      tmas: 0.15,
-      vivas: 0.15,
-      finalExams: 0.3,
-    };
+      levels.forEach((level) => {
+        level.enrolledSubjects?.forEach((subject) => {
+          enrolled.push(subject);
 
-    let totalWeightedMarks = 0;
-    let totalWeight = 0;
+          if (subject.finalMarks >= 50) {
+            passed.push(subject);
+          } else {
+            pending.push(subject);
+          }
+        });
+      });
 
-    for (const key in marks) {
-      totalWeightedMarks += marks[key] * weights[key];
-      totalWeight += weights[key];
+      setEnrolledSubjects(enrolled);
+      setPassedSubjects(passed);
+      setPendingSubjects(pending);
     }
+  }, [processedMarksData]);
 
-    const calculatedGPA = totalWeightedMarks / totalWeight / 25; // Scale marks to GPA (4.0 scale)
-    setGpa(calculatedGPA.toFixed(2));
-  };
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const element = document.querySelector(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (
     <div className="w-full min-h-screen p-8 bg-gray-100">
-      {/* GPA Calculator Section */}
       <div className="p-6 mt-10 bg-white rounded-lg shadow">
-        <h2 className="text-xl font-bold">GPA Calculation System</h2>
-        <div className="grid grid-cols-1 gap-4 mt-4 lg:grid-cols-3">
-          {["exams", "labTest", "tmas", "vivas", "finalExams"].map((field) => (
-            <div key={field} className="flex flex-col">
-              <label className="mb-2 font-medium capitalize">
-                {field.replace(/([A-Z])/g, " $1")}
-              </label>
-              <input
-                type="number"
-                name={field}
-                min="0"
-                max="100"
-                value={marks[field]}
-                onChange={handleInputChange}
-                className="p-2 border border-gray-300 rounded-lg"
-                placeholder={`Enter ${field} marks (0-100)`}
-              />
-            </div>
-          ))}
-        </div>
-        <button
-          onClick={calculateGPA}
-          className="px-6 py-2 mt-6 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
-        >
-          Calculate GPA
-        </button>
+        <h2 className="text-xl font-bold">Student Progress</h2>
 
-        {gpa && (
-          <div className="mt-6 text-lg font-bold text-center text-green-500">
-            Your GPA: {gpa}
-          </div>
-        )}
+        {/* Enrolled Subjects Table */}
+        <div id="enrolled">
+          <h3 className="mt-8 text-lg font-semibold">Enrolled Subjects</h3>
+          <table className="w-full mt-4 border border-collapse table-auto">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="px-4 py-2 text-left">Subject</th>
+                <th className="px-4 py-2 text-left">Credits</th>
+                <th className="px-4 py-2 text-left">Final Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {enrolledSubjects.map((subject, index) => (
+                <tr
+                  key={index}
+                  className={`${
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  } hover:bg-gray-100 transition-colors duration-300`}
+                >
+                  <td className="px-4 py-2">{subject.courseCode}</td>
+                  <td className="px-4 py-2">{subject.credits}</td>
+                  <td className="px-4 py-2">{subject.finalMarks}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* Passed Subjects Table */}
+        <div id="passed">
+          <h3 className="mt-8 text-lg font-semibold">Passed Subjects</h3>
+          <table className="w-full mt-4 border border-collapse table-auto">
+            <thead className="bg-green-200">
+              <tr>
+                <th className="px-4 py-2 text-left">Subject</th>
+                <th className="px-4 py-2 text-left">Credits</th>
+                <th className="px-4 py-2 text-left">Final Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {passedSubjects.map((subject, index) => (
+                <tr
+                  key={index}
+                  className={`${
+                    index % 2 === 0 ? "bg-green-50" : "bg-white"
+                  } hover:bg-green-100 transition-colors duration-300`}
+                >
+                  <td className="px-4 py-2">{subject.courseCode}</td>
+                  <td className="px-4 py-2">{subject.credits}</td>
+                  <td className="px-4 py-2">{subject.finalMarks}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* Pending Subjects Table */}
+        <div id="pending">
+          <h3 className="mt-8 text-lg font-semibold">Pending Subjects</h3>
+          <table className="w-full mt-4 border border-collapse table-auto">
+            <thead className="bg-red-200">
+              <tr>
+                <th className="px-4 py-2 text-left">Subject</th>
+                <th className="px-4 py-2 text-left">Credits</th>
+                <th className="px-4 py-2 text-left">Final Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pendingSubjects.map((subject, index) => (
+                <tr
+                  key={index}
+                  className={`${
+                    index % 2 === 0 ? "bg-red-50" : "bg-white"
+                  } hover:bg-red-100 transition-colors duration-300`}
+                >
+                  <td className="px-4 py-2">{subject.courseCode}</td>
+                  <td className="px-4 py-2">{subject.credits}</td>
+                  <td className="px-4 py-2">{subject.finalMarks}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
