@@ -1,13 +1,32 @@
 import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Link } from "react-router-dom"; // Import Link from React Router
+import { Link } from "react-router-dom";
 import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+
+// Modal for loading popup
+const LoadingModal = ({ isOpen }) => {
+  return (
+    isOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="flex flex-col items-center p-8 bg-white rounded-lg shadow-lg">
+          <div
+            className="inline-block w-16 h-16 border-4 border-t-4 border-blue-500 rounded-full spinner-border animate-spin"
+            role="status"
+          >
+            <span className="sr-only">Loading...</span>
+          </div>
+          <p className="mt-4 text-lg font-semibold">Loading Data...</p>
+        </div>
+      </div>
+    )
+  );
+};
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -111,7 +130,7 @@ const Dashboard = () => {
     ],
   });
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingModal isOpen={loading} />; // Display loading modal when data is loading
   if (error) return <div className="text-red-500">Error: {error}</div>;
 
   return (

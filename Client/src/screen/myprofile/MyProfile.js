@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import InputField from "../../Component/InputComponent/InputComponent";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
+// Custom CSS for loading dots animation
+import "./myProfile.css";
+
 const MyProfile = () => {
   const { user } = UseDataContexts();
   console.log(user?.success?.user?.name);
@@ -20,6 +23,8 @@ const MyProfile = () => {
     guardianContactNumber: "",
     homeAddress: "",
   });
+
+  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() => {
     if (user?.success?.user) {
@@ -58,8 +63,15 @@ const MyProfile = () => {
   };
 
   const handleSave = () => {
-    localStorage.setItem("profileData", JSON.stringify(profileData));
-    console.log("Profile Data Saved:", profileData);
+    setLoading(true); // Start loading
+
+    // Simulate a save delay (e.g., save to API or localStorage)
+    setTimeout(() => {
+      localStorage.setItem("profileData", JSON.stringify(profileData));
+      console.log("Profile Data Saved:", profileData);
+
+      setLoading(false); // End loading
+    }, 2000); // Simulating a delay of 2 seconds
   };
 
   return (
@@ -169,7 +181,18 @@ const MyProfile = () => {
           onClick={handleSave}
           className="w-full p-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700 sm:w-auto"
         >
-          Save
+          {loading ? (
+            <div className="flex items-center justify-center">
+              {/* Custom Dots Loading Animation */}
+              <div className="dot-loader">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+              </div>
+            </div>
+          ) : (
+            "Save"
+          )}
         </button>
       </div>
     </div>
