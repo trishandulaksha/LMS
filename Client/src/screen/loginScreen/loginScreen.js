@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+import { ClipLoader } from "react-spinners";
 
 // ///////////
 // Login and Register Screen
@@ -96,6 +97,7 @@ export default LoginScreen;
 const LoginUnit = ({ setCheckAlert, navigate }) => {
   const [dbResponse, setDbResponse] = useState({});
   const [canSubmit, setCanSubmit] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { setUser } = UseDataContexts();
   const { fetchMarksAndGrades } = useMarksAndGrades();
   let success, error;
@@ -111,10 +113,12 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
   useEffect(() => {
     if (error) {
       setCheckAlert({ Error: error });
+      setIsLoading(false); // Stop loading when there's an error
     }
     if (success && success.token) {
       sessionStorage.setItem("jwtToken", success.token);
       setCheckAlert({ Success: "Login Successful" });
+      setIsLoading(false); // Stop loading when login is successful
       if (success.user.role === "STUDENT") {
         navigate("/");
         fetchMarksAndGrades(success?.user._id);
@@ -124,18 +128,20 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
         fetchMarksAndGrades(success?.user._id);
       }
     }
-  }, [error, success, setCheckAlert, navigate]);
+  }, [error, success, setCheckAlert, navigate, fetchMarksAndGrades]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsLoading(true); // Start loading when the form is submitted
+    loginDataHandler(e, setDbResponse, canSubmit, setUser);
+  };
 
   return (
     <>
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-11">Sign In</h1>
         <div>
-          <form
-            onSubmit={(e) =>
-              loginDataHandler(e, setDbResponse, canSubmit, setUser)
-            }
-          >
+          <form onSubmit={handleSubmit}>
             <InputFieldUnit
               type="text"
               name="email"
@@ -158,9 +164,13 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
             <button
               type="submit"
               className="px-3 py-2 my-3 mb-6 font-semibold text-white bg-purple-500 border rounded-lg"
-              disabled={!canSubmit}
+              disabled={!canSubmit || isLoading} // Disable button if loading
             >
-              Login Now
+              {isLoading ? (
+                <ClipLoader size={30} color={"#ffffff"} loading={isLoading} />
+              ) : (
+                "Login Now"
+              )}
             </button>
           </form>
         </div>
@@ -186,7 +196,7 @@ const RegisterUnit = ({ setCheckAlert, setCheckCliked }) => {
       setCheckAlert({ Error: error });
     }
     if (success) {
-      setCheckAlert({ Success: "User Reguster Successful" });
+      setCheckAlert({ Success: "User Register Successful" });
 
       setTimeout(() => {
         setCheckCliked(true);
