@@ -31,7 +31,7 @@ export async function getAllSubjectsEp(req, res) {
 // Fetch a subject by ID
 export async function getSubjectByIdEp(req, res) {
   try {
-    const subject = await getSubjectById(req.params.id);
+    const subject = await getSubjectById(req.params.courseCode);
     if (subject) {
       res.send({ success: subject });
     } else {
