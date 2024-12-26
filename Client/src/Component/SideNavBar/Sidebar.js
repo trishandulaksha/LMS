@@ -17,6 +17,7 @@ const Sidebar = () => {
   const role = user?.success.user.role || "STUDENT";
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null); // Track hovered item
 
   const studentIcons = [
     { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
@@ -26,7 +27,7 @@ const Sidebar = () => {
       path: "/recomendedSubjects",
     },
     { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-    { icon: <LeaderboardIcon />, name: "Leaderboard", path: "/schedule" },
+    { icon: <LeaderboardIcon />, name: "Shedule", path: "/schedule" },
     {
       icon: <TimelineIcon />,
       name: "Student Progress",
@@ -37,7 +38,7 @@ const Sidebar = () => {
 
   const lecturerIcons = [
     { icon: <PostAddIcon />, name: "Post Add", path: "/lecturerDashboard" },
-    { icon: <LeaderboardIcon />, name: "Leaderboard", path: "/schedule" },
+    { icon: <LeaderboardIcon />, name: "Shedule", path: "/schedule" },
     { icon: <SettingsIcon />, name: "Settings", path: "/setting" },
   ];
 
@@ -65,13 +66,19 @@ const Sidebar = () => {
       {/* Top Menu */}
       <div className="flex flex-col gap-5">
         {icons.map(({ icon, name, path }) => (
-          <Link
+          <div
             key={name}
-            to={path}
-            className="cursor-pointer hover:text-orange-700"
+            className="relative flex items-center cursor-pointer group hover:text-orange-700"
+            onMouseEnter={() => setHoveredItem(name)}
+            onMouseLeave={() => setHoveredItem(null)}
           >
-            {icon}
-          </Link>
+            <Link to={path}>{icon}</Link>
+            {hoveredItem === name && (
+              <div className="absolute px-2 py-1 text-sm text-white transform -translate-y-1/2 bg-gray-800 rounded-md shadow-lg left-12 top-1/2 whitespace-nowrap">
+                {name}
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
@@ -81,19 +88,32 @@ const Sidebar = () => {
           name === "Logout" ? (
             <div
               key={name}
-              className="cursor-pointer hover:text-orange-700"
+              className="relative flex items-center cursor-pointer group hover:text-orange-700"
+              onMouseEnter={() => setHoveredItem(name)}
+              onMouseLeave={() => setHoveredItem(null)}
               onClick={() => handleClick(name)}
             >
               {icon}
+              {hoveredItem === name && (
+                <div className="absolute px-2 py-1 text-sm text-white transform -translate-y-1/2 bg-gray-800 rounded-md shadow-lg left-12 top-1/2 whitespace-nowrap">
+                  {name}
+                </div>
+              )}
             </div>
           ) : (
-            <Link
+            <div
               key={name}
-              to={path}
-              className="cursor-pointer hover:text-orange-700"
+              className="relative flex items-center cursor-pointer group hover:text-orange-700"
+              onMouseEnter={() => setHoveredItem(name)}
+              onMouseLeave={() => setHoveredItem(null)}
             >
-              {icon}
-            </Link>
+              <Link to={path}>{icon}</Link>
+              {hoveredItem === name && (
+                <div className="absolute px-2 py-1 text-sm text-white transform -translate-y-1/2 bg-gray-800 rounded-md shadow-lg left-12 top-1/2 whitespace-nowrap">
+                  {name}
+                </div>
+              )}
+            </div>
           )
         )}
       </div>
