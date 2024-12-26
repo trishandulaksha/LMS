@@ -6,7 +6,7 @@ import Setting from "./screen/Settings/Setting";
 import Layout from "./Layout/Layout";
 import PrivateRoute from "./Routes/PrivateRoutes/PrivateRoutes";
 import Recosub from "./screen/recosub/recosub";
-import StudentProgress from "./screen/StudentProgress/StudentProgress";
+import StudentProgress from "./screen/studentProgress/StudentProgress";
 import Schedule from "./screen/Schedule/Schedule";
 import MyProfile from "./screen/myprofile/MyProfile";
 const router = createBrowserRouter([
