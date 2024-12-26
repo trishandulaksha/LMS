@@ -18,6 +18,7 @@ import Setting from "./screen/setting/Setting";
 import Schedule from "./screen/shedule/Shedule";
 import StudentProgress from "./screen/studentProgress/StudentProgress";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
