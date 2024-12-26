@@ -32,3 +32,18 @@ export const subjectEnrollment = async (studentID, courseCodes) => {
     throw error;
   }
 };
+
+const SUBJECT_RECOMEND_URI =
+  "http://localhost:8076/api/user/student/recommended-subjects";
+
+export const SubjectRecomendeAPI = async (userID) => {
+  console.log("SubjectRecomendeAPI ffunction API called", userID);
+  try {
+    const response = await axios.post(`${SUBJECT_RECOMEND_URI}/${userID}`);
+    console.log("SUbject Recomend API", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching subjects and students:", error.message);
+    throw error;
+  }
+};

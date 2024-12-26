@@ -2,14 +2,6 @@ import Lecturer from "../schema/lecturerSchema.js";
 import User from "../schema/userSchema.js";
 import { accessCodes } from "../test/userDataSample.js";
 import Course from "../schema/courseSchema.js";
-import {
-  getEligibleSubjects,
-  getInitialRecommendations,
-  getMarksForUser,
-  getRecommendedSubjects,
-  getUserWithCourses,
-} from "./recomendSubject-dao.js";
-import Subjects from "../schema/courseSchema.js";
 import { calculateGPA } from "../Utils/GPA_Calculation/GPA-Calculation.js";
 
 const getUserByEmail = async (email) => {
@@ -48,80 +40,11 @@ export const authenticateUser = async (data) => {
     // Check if user is a student
     if (user.role === "STUDENT") {
       // Fetch user with courses
-      const userWithCourses = await getUserWithCourses(user._id);
+      const gpa = await calculateGPA(user._id);
 
-      // Case when no courses are enrolled yet
-      if (
-        !userWithCourses.enrolledCourses ||
-        userWithCourses.enrolledCourses.length === 0
-      ) {
-        // Fetch initial recommendations
-        const recommendedSubjects = await getInitialRecommendations();
+      // Process completed subjects
 
-        result.message =
-          recommendedSubjects.length > 0
-            ? "No courses enrolled yet. Here are some recommended courses."
-            : "No courses enrolled yet, and no recommendations available.";
-        result.recommendedSubjects = { filteredSubjects: recommendedSubjects };
-      } else {
-        // Fetch marks for the user
-        const marksData = await getMarksForUser(user._id);
-
-        const gpa = await calculateGPA(user._id);
-
-        if (!Array.isArray(marksData)) {
-          console.error(
-            "Invalid marksData structure. Expected an array, got:",
-            marksData
-          );
-        } else {
-          // Process completed subjects
-          const completedSubjects = marksData
-            .flatMap((student) => {
-              if (student.marks && Array.isArray(student.marks)) {
-                // Process the marks array for each student
-                return student.marks.map((mark) => {
-                  if (mark.subject && mark.subject.courseCode) {
-                    // Only include subjects where passed is true
-                    if (mark.passed) {
-                      return {
-                        subject: mark.subject.courseCode,
-                        passed: mark.passed,
-                        isEligibleForFinal: mark.isEligibleForFinal,
-                      };
-                    }
-                  } else {
-                    console.error(
-                      "Missing subject or courseCode in mark:",
-                      mark
-                    );
-                    return null; // Skip invalid marks
-                  }
-                });
-              } else {
-                console.error(
-                  "Missing or invalid marks array for student:",
-                  student
-                );
-                return []; // Return empty array if no marks
-              }
-            })
-            .filter(Boolean); // Remove invalid entries
-
-          console.log("Completed subjects:", completedSubjects);
-
-          // Call the new function to get recommended subjects
-          const recommendedSubjects = await getRecommendedSubjects(
-            userWithCourses,
-            completedSubjects
-          );
-          console.log(recommendedSubjects);
-          result.message =
-            "Here are your recommended subjects based on eligibility.";
-          result.recommendedSubjects = recommendedSubjects;
-        }
-        result.gpa = gpa;
-      }
+      result.gpa = gpa;
     }
 
     return { success: result };

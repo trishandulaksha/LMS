@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef } from "react";
 import SchoolIcon from "@mui/icons-material/School";
 import SearchIcon from "@mui/icons-material/Search";

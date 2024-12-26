@@ -9,63 +9,142 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Link, useNavigate } from "react-router-dom";
-
-const icons = [
-  { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
-  { icon: <CalendarMonthIcon />, name: "Subject Recommendation", path: "/" },
-  { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
-  { icon: <TimelineIcon />, name: "Student Progress", path: "/" },
-  { icon: <LeaderboardIcon />, name: "Log Out", path: "/" },
-  { icon: <SettingsIcon />, name: "Settings", path: "/myprofile" },
-];
-
-const bottomIcons = [
-  { icon: <LogoutIcon />, name: "Logout" },
-  { icon: <AccountCircleIcon />, name: "Account" },
-];
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const { user } = UseDataContexts();
+  const role = user?.success.user.role || "STUDENT";
+
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null); // Track hovered item
+
+  const studentIcons = [
+    { icon: <DashboardIcon />, name: "Dashboard", path: "/" },
+    {
+      icon: <CalendarMonthIcon />,
+      name: "Subject Recommendation",
+      path: "/recomendedSubjects",
+    },
+    { icon: <ArticleIcon />, name: "Grades", path: "/grades" },
+    { icon: <LeaderboardIcon />, name: "Shedule", path: "/schedule" },
+    {
+      icon: <TimelineIcon />,
+      name: "Student Progress",
+      path: "/StudentProgress",
+    },
+    { icon: <SettingsIcon />, name: "Settings", path: "/setting" },
+  ];
+
+  const lecturerIcons = [
+    { icon: <PostAddIcon />, name: "Post Add", path: "/lecturerDashboard" },
+    { icon: <LeaderboardIcon />, name: "Shedule", path: "/schedule" },
+    { icon: <SettingsIcon />, name: "Settings", path: "/setting" },
+  ];
+
+  const bottomIcons = [
+    { icon: <LogoutIcon />, name: "Logout" },
+    { icon: <AccountCircleIcon />, name: "My Profile", path: "/myprofile" },
+  ];
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("jwtToken");
+    sessionStorage.clear();
+    navigate("/login");
+  };
 
   const handleClick = (iconName) => {
     if (iconName === "Logout") {
-      localStorage.removeItem("jwtToken");
-
-      // Redirect to the login page
-      navigate("/login");
+      setShowLogoutModal(true); // Open the logout confirmation popup
     }
   };
 
-  // Assuming you define `role` variable somewhere in your code
-  const role = "LECTURER"; // Example, modify based on your actual logic
-  const iconsList = role === "LECTURER" ? icons : icons; // Replace with actual studentIcons if needed
+  const icons = role === "LECTURER" ? lecturerIcons : studentIcons;
 
   return (
-    <div className="fixed flex flex-col justify-between float-left h-screen py-10 text-justify sm:ml-10 ml-7 ">
+    <div className="fixed flex flex-col justify-between h-screen py-10 sm:ml-10 ml-7">
+      {/* Top Menu */}
       <div className="flex flex-col gap-5">
-        {iconsList.map(({ icon, name, path }) => (
-          <Link
-            key={name}
-            to={path}
-            className="cursor-pointer hover:text-orange-700"
-            onClick={() => handleClick(name)}
-          >
-            {icon}
-          </Link>
-        ))}
-      </div>
-
-      <div className="flex flex-col gap-5">
-        {bottomIcons.map(({ icon, name }) => (
+        {icons.map(({ icon, name, path }) => (
           <div
             key={name}
-            className="cursor-pointer hover:text-orange-700"
-            onClick={() => handleClick(name)}
+            className="relative flex items-center cursor-pointer group hover:text-orange-700"
+            onMouseEnter={() => setHoveredItem(name)}
+            onMouseLeave={() => setHoveredItem(null)}
           >
-            {icon}
+            <Link to={path}>{icon}</Link>
+            {hoveredItem === name && (
+              <div className="absolute px-2 py-1 text-sm text-white transform -translate-y-1/2 bg-gray-800 rounded-md shadow-lg left-12 top-1/2 whitespace-nowrap">
+                {name}
+              </div>
+            )}
           </div>
         ))}
       </div>
+
+      {/* Bottom Menu */}
+      <div className="flex flex-col gap-5">
+        {bottomIcons.map(({ icon, name, path }) =>
+          name === "Logout" ? (
+            <div
+              key={name}
+              className="relative flex items-center cursor-pointer group hover:text-orange-700"
+              onMouseEnter={() => setHoveredItem(name)}
+              onMouseLeave={() => setHoveredItem(null)}
+              onClick={() => handleClick(name)}
+            >
+              {icon}
+              {hoveredItem === name && (
+                <div className="absolute px-2 py-1 text-sm text-white transform -translate-y-1/2 bg-gray-800 rounded-md shadow-lg left-12 top-1/2 whitespace-nowrap">
+                  {name}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div
+              key={name}
+              className="relative flex items-center cursor-pointer group hover:text-orange-700"
+              onMouseEnter={() => setHoveredItem(name)}
+              onMouseLeave={() => setHoveredItem(null)}
+            >
+              <Link to={path}>{icon}</Link>
+              {hoveredItem === name && (
+                <div className="absolute px-2 py-1 text-sm text-white transform -translate-y-1/2 bg-gray-800 rounded-md shadow-lg left-12 top-1/2 whitespace-nowrap">
+                  {name}
+                </div>
+              )}
+            </div>
+          )
+        )}
+      </div>
+
+      {/* Custom Logout Confirmation Modal */}
+      {showLogoutModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70">
+          <div className="bg-white rounded-lg shadow-xl w-[90%] max-w-md p-6">
+            <h2 className="mb-4 text-xl font-semibold text-center">
+              Confirm Logout
+            </h2>
+            <p className="mb-6 text-center">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={handleLogout}
+                className="px-6 py-2 text-white bg-red-500 rounded hover:bg-red-600"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setShowLogoutModal(false)}
+                className="px-6 py-2 text-gray-700 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

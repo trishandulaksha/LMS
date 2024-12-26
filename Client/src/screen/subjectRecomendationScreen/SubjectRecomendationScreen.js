@@ -1,33 +1,46 @@
 import React, { useEffect, useState } from "react";
 import SubjectRecomendation from "../../Component/SubjectRecomendation/SubjectRecomendation";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+import { subjectEnrollment, SubjectRecomendeAPI } from "../../API/SubjectAPI"; // Import the API
 import "./recosub.css";
 
 function SubjectRecomendationScreen() {
   const { user } = UseDataContexts();
-  console.log(user);
   const [recommendedSubjects, setRecommendedSubjects] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Loading state
-
+  console.log("SubjectRecomendationScreen user", user);
+  // Fetch recommended subjects from API
   useEffect(() => {
-    if (user && user?.success.recommendedSubjects) {
-      setRecommendedSubjects(
-        user?.success.recommendedSubjects.filteredSubjects
-      ); // Initial load
-    }
+    const fetchRecommendedSubjects = async () => {
+      if (user && user?.success.user._id) {
+        setIsLoading(true); // Start loading
+        try {
+          const data = await SubjectRecomendeAPI(user?.success.user._id);
+          setRecommendedSubjects(data.recommendedSubjects.filteredSubjects); // Update recommended subjects
+        } catch (error) {
+          console.error("Error fetching recommended subjects:", error);
+        } finally {
+          setIsLoading(false); // Stop loading
+        }
+      }
+    };
+
+    fetchRecommendedSubjects();
   }, [user]);
 
-  const handleEnrollSubject = async (subjectId) => {
+  // Handle enrolling a subject
+  const handleEnrollSubject = async (subjectCode) => {
     setIsLoading(true); // Show loading animation
     try {
-      // Mock API call to enroll the subject
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate network delay
-
-      // After enrollment, update the recommended subjects list (simulate real-time update)
-      const updatedSubjects = recommendedSubjects.filter(
-        (subject) => subject.id !== subjectId
-      );
-      setRecommendedSubjects(updatedSubjects);
+      const studentID = user?.success.user._id;
+      const response = await subjectEnrollment(studentID, subjectCode); // Call the API to enroll
+      console.log("Enrollment response:", response);
+      if (response) {
+        // Remove enrolled subject from the recommended list
+        setRecommendedSubjects((prevSubjects) =>
+          prevSubjects.filter((subject) => subject.courseCode !== subjectCode)
+        );
+      }
     } catch (error) {
       console.error("Error enrolling subject:", error);
     } finally {
@@ -49,7 +62,7 @@ function SubjectRecomendationScreen() {
           {/* Pass the recommendedSubjects data to the SubjectRecomendation component */}
           <SubjectRecomendation
             recommendedSubjects={recommendedSubjects}
-            onEnroll={handleEnrollSubject} // Pass enroll handler
+            handleEnroll={handleEnrollSubject} // Pass enroll handler
           />
         </div>
       </div>
