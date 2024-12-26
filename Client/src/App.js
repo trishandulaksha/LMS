@@ -2,10 +2,21 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Dashboard from "./screen/dashboard/DashboardHome";
 import GradeScreen from "./screen/grades/GradeScreen";
 import LoginScreen from "./screen/loginScreen/loginScreen";
-import Setting from "./screen/Settings/Setting";
+import MyProfile from "./screen/myprofile/MyProfile";
 import Layout from "./Layout/Layout";
 import PrivateRoute from "./Routes/PrivateRoutes/PrivateRoutes";
+import LecturerDashboard from "./screen/Lecturer/LecturerMarks/LecturerMarksScreen";
 
+import {
+  GlobalProvider,
+  UseDataContexts,
+} from "./ContextAPI/LoginAndMarksContext";
+import { MarksAndGradesProvider } from "./ContextAPI/getMarksAndGradeContext";
+import RoleBasedRoute from "./Routes/RoleBasedRoute/RoleBasedRoute";
+import SubjectRecomendationScreen from "./screen/subjectRecomendationScreen/SubjectRecomendationScreen";
+import Setting from "./screen/setting/Setting";
+import Schedule from "./screen/shedule/Shedule";
+import StudentProgress from "./screen/studentProgress/StudentProgress";
 
 const router = createBrowserRouter([
   {
@@ -26,10 +37,18 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "StudentProgress",
+        element: (
+          <PrivateRoute>
+            <StudentProgress />
+          </PrivateRoute>
+        ),
+      },
+      {
         path: "myprofile",
         element: (
           <PrivateRoute>
-            <MyProfile/>
+            <MyProfile />
           </PrivateRoute>
         ),
       },

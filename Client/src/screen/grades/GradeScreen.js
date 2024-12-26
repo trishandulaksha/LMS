@@ -2,6 +2,40 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartComponent";
 import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
+import SchoolIcon from "@mui/icons-material/School";
+import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+
+// Modal component for error message
+const ErrorModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+
+  const handleRedirect = () => {
+    // Navigate to the RecommendedSubjects screen
+    navigate("/recomendedSubjects");
+    onClose(); // Close the modal after redirection
+  };
+
+  return (
+    isOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="flex flex-col items-center p-8 bg-white rounded-lg shadow-lg">
+          <p className="text-xl font-semibold text-red-500">
+            No Marks Found. Please enroll in subjects.
+          </p>
+          <div className="mt-4">
+            <button
+              onClick={handleRedirect}
+              className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+            >
+              Yes, Take me to Enroll
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  );
+};
 
 function GradeScreen() {
   const { processedMarksData, loading, error } = useMarksAndGrades();
@@ -56,23 +90,17 @@ function GradeScreen() {
   };
 
   return (
-    <>
-      <div className="w-full mt-20">
-        <div className="mt-8 ml-6 mb-14">
-          <div className="inline-flex items-center">
-            <SchoolIcon
-              sx={{
-                fontSize: "50px",
-              }}
-            />
-            <div className="ml-4 text-3xl font-extrabold">SPTS</div>
-          </div>
-          <div className="mt-4">
-            <h2 className="text-2xl font-extrabold">Grades</h2>
-          </div>
-        </div>
+    <div className="w-full mt-20">
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <ErrorModal
+          isOpen={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+        />
+      ) : (
         <div className="flex flex-col w-full p-4 overflow-x-hidden md:px-8 lg:px-16 xl:px-20 ">
-          <div className="w-full p-2 shadow-sm md:p-5 bg-opacity-35 rounded-xl">
+          <div className="w-full p-2 shadow-sm md:p-5 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
             <div className="flex flex-col justify-center w-full max-w-4xl space-y-4 sm:flex-row sm:justify-between sm:space-y-0">
               <div className="flex flex-col w-full sm:w-1/2">
                 <label className="text-lg font-semibold">Select Year</label>
@@ -134,8 +162,8 @@ function GradeScreen() {
             </div>
           </div>
         </div>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

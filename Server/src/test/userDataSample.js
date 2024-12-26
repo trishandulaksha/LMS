@@ -183,14 +183,6 @@ const accessCodes = {
       accessCode: "s456000012021",
       degreeProgram: "BSE",
     },
-
-    {
-      email: "hansima@gmail.com",
-      role: "STUDENT",
-      accessCode: "s456000052021",
-      degreeProgram: "BSE",
-
-    },
     {
       email: "lawan@gmail.com",
       role: "STUDENT",

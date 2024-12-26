@@ -12,6 +12,10 @@ import WcOutlinedIcon from "@mui/icons-material/WcOutlined";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { registerDataHandler } from "../../Utils/InputDataHandler/registerDataHandler";
 import { useNavigate } from "react-router-dom";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+
+import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+import { ClipLoader } from "react-spinners";
 
 // ///////////
 // Login and Register Screen
