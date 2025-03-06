@@ -16,8 +16,7 @@ import RoleBasedRoute from "./Routes/RoleBasedRoute/RoleBasedRoute";
 import SubjectRecomendationScreen from "./screen/subjectRecomendationScreen/SubjectRecomendationScreen";
 import Setting from "./screen/setting/Setting";
 import Schedule from "./screen/shedule/Shedule";
-import StudentProgress from "./screen/studentProgress/StudentProgress";
-
+import StudentProgress from "./screen/StudentProgress/StudentProgress"
 
 const router = createBrowserRouter([
   {
