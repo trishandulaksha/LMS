@@ -3,7 +3,7 @@ import InputField from "../../Component/InputComponent/InputComponent";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
 // Custom CSS for loading dots animation
-import "./myProfile.css";
+import "./myprofile.css";
 
 const MyProfile = () => {
   const { user } = UseDataContexts();
