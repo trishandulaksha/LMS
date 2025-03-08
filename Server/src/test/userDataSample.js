@@ -213,6 +213,12 @@ const accessCodes = {
       accessCode: "s456000072021",
       degreeProgram: "BSE",
     },
+    {
+      email: "malitha@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000122021",
+      degreeProgram: "BSE",
+    },
   ],
 };
 
