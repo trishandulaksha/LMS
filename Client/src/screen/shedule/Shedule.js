@@ -3,6 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import "./schedule.css";
+import MyProfile from "../myprofile/MyProfile";
 
 const Schedule = () => {
   const [events, setEvents] = useState([]);
@@ -20,7 +21,7 @@ const Schedule = () => {
   return (
     <div className="z-10 min-h-screen p-8 bg-gray-100">
       <div className="container z-10 mx-auto">
-        <h1 className="mb-8 text-3xl font-bold text-center">Shedule</h1>
+        <h1 className="mb-8 text-3xl font-bold text-center">Schedule</h1>
         <div className="z-10 p-4 bg-white rounded-lg shadow-md">
           <FullCalendar
             plugins={[dayGridPlugin, interactionPlugin]}
