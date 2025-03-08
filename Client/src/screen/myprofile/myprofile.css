@@ -1,157 +1,36 @@
-/* Base Styles for All Screens */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f3f4f6;
+.dot-loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: dot-blink 1.4s infinite ease-in-out;
+}
+
+.dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes dot-blink {
+  0%,
+  100% {
+    opacity: 0;
   }
-  
-  .max-w-4xl {
-    max-width: 100%;
+  50% {
+    opacity: 1;
   }
-  
-  .p-4 {
-    padding: 1rem;
-  }
-  
-  .mx-auto {
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .rounded-lg {
-    border-radius: 0.5rem;
-  }
-  
-  .shadow-lg {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .bg-purple-50 {
-    background-color: #f9f5ff;
-  }
-  
-  .text-purple-700 {
-    color: #6b46c1;
-  }
-  
-  .text-center {
-    text-align: center;
-  }
-  
-  .text-lg {
-    font-size: 1rem;
-  }
-  
-  .font-medium {
-    font-weight: 500;
-  }
-  
-  /* Responsive Styles for max-width: 400px */
-  @media (max-width: 400px) {
-    .p-4 {
-      padding: 1rem;
-    }
-  
-    .sm\\:p-8 {
-      padding: 1rem;
-    }
-  
-    .sm\\:text-3xl {
-      font-size: 1.5rem;
-    }
-  
-    .sm\\:w-24 {
-      width: 5rem;
-    }
-  
-    .sm\\:h-24 {
-      height: 5rem;
-    }
-  
-    .text-2xl {
-      font-size: 1.25rem;
-    }
-  
-    .text-lg {
-      font-size: 1rem;
-    }
-  
-    .grid {
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .sm\\:grid-cols-2 {
-      flex-direction: column;
-    }
-  
-    .gap-4 {
-      gap: 1rem;
-    }
-  
-    .sm\\:gap-6 {
-      gap: 1rem;
-    }
-  
-    .text-right {
-      text-align: center;
-    }
-  
-    .w-full {
-      width: 100%;
-    }
-  
-    .sm\\:w-auto {
-      width: 100%;
-    }
-  
-    .space-y-4 {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-  
-    .sm\\:space-y-0 {
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-  
-    .sm\\:space-x-4 {
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-  
-    .text-purple-600 {
-      color: #9b2c98;
-    }
-  
-    /* Input Field Adjustments */
-    input,
-    select {
-      width: 100%;
-      padding: 0.5rem;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 0.25rem;
-    }
-  
-    label {
-      font-size: 0.875rem;
-      color: #555;
-    }
-  
-    button {
-      width: 100%;
-      padding: 0.75rem;
-      font-size: 1rem;
-      background-color: #6b46c1;
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      cursor: pointer;
-    }
-  
-    button:hover {
-      background-color: #553c9a;
-    }
-  }
-  
+}

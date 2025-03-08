@@ -1,4 +1,5 @@
 import axios from "axios";
+import { UseDataContexts } from "../ContextAPI/LoginAndMarksContext";
 
 const API_URL = process.env.API_URL || " http://localhost:8076/api/user/";
 
@@ -6,8 +7,8 @@ export const userLoginAPI = async (
   endpoint,
   userName,
   password,
-
-  setDbResponse
+  setDbResponse,
+  setUser
 ) => {
   try {
     const userData = {
@@ -16,6 +17,7 @@ export const userLoginAPI = async (
     };
     const response = await axios.post(`${API_URL}/${endpoint}`, userData);
     setDbResponse(response);
+    setUser(response.data);
   } catch (error) {
     setDbResponse(error);
   }
