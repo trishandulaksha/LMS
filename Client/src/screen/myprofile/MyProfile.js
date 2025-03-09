@@ -36,13 +36,13 @@ const MyProfile = () => {
         lastName: nameParts[1] || "",
         gender: user.success.user.gender || "",
         role: user.success.user.role || "",
-        dateOfBirth: "", // Replace with user.success.user.dateOfBirth if available
-        educationLevel: "", // Replace with user.success.user.educationLevel if available
+        dateOfBirth: "",
+        educationLevel: "",
         email: user.success.user.email || "",
         contactNumber: user.success.user.mobile_number || "",
-        guardianName: "", // Replace with user.success.user.guardianName if available
-        guardianContactNumber: "", // Replace with user.success.user.guardianContactNumber if available
-        homeAddress: "", // Replace with user.success.user.homeAddress if available
+        guardianName: "",
+        guardianContactNumber: "",
+        homeAddress: "", // Replace with user.success.user.homeAddress if availab
       };
       setProfileData(updatedProfileData);
     }

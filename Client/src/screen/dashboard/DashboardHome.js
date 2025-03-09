@@ -8,6 +8,8 @@ import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+import PersonIcon from "@mui/icons-material/Person";
+import userImage from ".././../assets/images/userIcon.jpeg";
 
 // Modal for loading popup
 const LoadingModal = ({ isOpen }) => {
@@ -152,10 +154,10 @@ const Dashboard = () => {
       {/* Header Section */}
 
       {/* Student Info Section */}
-      <div className="flex flex-col items-center p-6 mt-16 mb-6 bg-white rounded-lg shadow lg:flex-row lg:justify-between lg:space-x-6">
+      <div className="flex flex-col items-center p-6 mt-1 mb-6 bg-white rounded-lg shadow lg:flex-row lg:justify-between lg:space-x-6">
         <div className="flex items-center space-x-4">
           <img
-            src="https://via.placeholder.com/80"
+            src={userImage}
             alt="Profile"
             className="w-16 h-16 rounded-full"
           />

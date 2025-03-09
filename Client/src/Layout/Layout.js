@@ -13,14 +13,14 @@ function Layout() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col w-[95%] mt-10">
+      <div className="flex flex-col w-[95%] mt-4 ">
         {/* Header */}
-        <div className="h-[10%]  ">
+        <div className="h-[10%]   ">
           <Header />
         </div>
 
         {/* Outlet Content */}
-        <div className="flex-1 bg-gray-100">
+        <div className="flex-1 ">
           <Outlet />
         </div>
 

@@ -6,7 +6,7 @@ export const calculateGPA = async (userId) => {
   try {
     // Fetch marks for the user
     const userMarks = await Marks.find({ student: userId });
-    console.log("GPA Calculation Data:", userMarks);
+    // console.log("GPA Calculation Data:", userMarks);
 
     if (!userMarks.length) {
       console.log("No subjects found for GPA calculation.");

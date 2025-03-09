@@ -31,13 +31,13 @@ const Header = () => {
   return (
     <div>
       {/* Existing Header Section with no changes */}
-      <div className="flex items-center justify-between">
-        <div className="inline-flex items-center">
-          <SchoolIcon sx={{ fontSize: "50px" }} />
+      <div className="flex flex-col items-center justify-between mx-10 sm:bg-white sm:pb-5 sm:flex-row">
+        <div className="inline-flex items-center ">
+          <SchoolIcon sx={{ fontSize: "50px" }} className="" />
           <div className="ml-4 text-3xl font-extrabold">SPTS</div>
         </div>
         <div className="flex items-center">
-          <div className="relative p-1 bg-white rounded-lg shadow-lg">
+          <div className="relative p-1 rounded-lg shadow-lg">
             <input
               type="text"
               placeholder="Enter Course Code"
