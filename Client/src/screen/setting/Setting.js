@@ -47,6 +47,9 @@ const Setting = () => {
                 <h3 className="mb-4 text-2xl font-semibold">
                   General Settings
                 </h3>
+                <p className="mb-4 text-gray-600">
+                  Configure system-wide settings such as system name and appearance.
+                </p>
                 <div className="p-6 bg-white rounded-lg shadow">
                   <label className="block mb-2 font-medium text-gray-700">
                     System Name
@@ -64,6 +67,9 @@ const Setting = () => {
             {activeTab === "user" && (
               <section>
                 <h3 className="mb-4 text-2xl font-semibold">User Management</h3>
+                <p className="mb-4 text-gray-600">
+                  Manage roles and permissions for users.
+                </p>
                 <div className="p-6 bg-white rounded-lg shadow">
                   <label className="block mb-2 font-medium text-gray-700">
                     Default Role
@@ -77,35 +83,83 @@ const Setting = () => {
               </section>
             )}
 
-            {/* Other Tabs */}
+            {/* Academic Settings */}
             {activeTab === "academic" && (
               <section>
                 <h3 className="mb-4 text-2xl font-semibold">
                   Academic Settings
                 </h3>
-                <p>Configure subjects, classes, and grading systems here.</p>
+                <p className="mb-4 text-gray-600">
+                  Configure subject selection, grading policies, and academic rules.
+                </p>
+                <div className="p-6 bg-white rounded-lg shadow">
+                  <label className="block mb-2 font-medium text-gray-700">
+                    Select Grading System
+                  </label>
+                  <select className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300">
+                    <option>Percentage</option>
+                    <option>GPA</option>
+                    <option>Letter Grades</option>
+                  </select>
+                </div>
               </section>
             )}
+
+            {/* Progress Tracking */}
             {activeTab === "progress" && (
               <section>
                 <h3 className="mb-4 text-2xl font-semibold">
                   Progress Tracking
                 </h3>
-                <p>Customize metrics and tracking options.</p>
+                <p className="mb-4 text-gray-600">
+                  Customize performance tracking metrics.
+                </p>
+                <div className="p-6 bg-white rounded-lg shadow">
+                  <label className="block mb-2 font-medium text-gray-700">
+                    Select Metrics to Track
+                  </label>
+                  <select className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300">
+                    <option>Attendance</option>
+                    <option>Assignment Scores</option>
+                    <option>Exam Performance</option>
+                  </select>
+                </div>
               </section>
             )}
+
+            {/* Security */}
             {activeTab === "security" && (
               <section>
                 <h3 className="mb-4 text-2xl font-semibold">Security</h3>
-                <p>
-                  Manage security options such as 2FA and password policies.
+                <p className="mb-4 text-gray-600">
+                  Manage security settings such as authentication and password policies.
                 </p>
+                <div className="p-6 bg-white rounded-lg shadow">
+                  <label className="block mb-2 font-medium text-gray-700">
+                    Enable Two-Factor Authentication
+                  </label>
+                  <input type="checkbox" className="ml-2" />
+                </div>
               </section>
             )}
+
+            {/* Integrations */}
             {activeTab === "integrations" && (
               <section>
                 <h3 className="mb-4 text-2xl font-semibold">Integrations</h3>
-                <p>Configure third-party integrations like Google Classroom.</p>
+                <p className="mb-4 text-gray-600">
+                  Connect with third-party services for seamless functionality.
+                </p>
+                <div className="p-6 bg-white rounded-lg shadow">
+                  <label className="block mb-2 font-medium text-gray-700">
+                    Integration Type
+                  </label>
+                  <select className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300">
+                    <option>Google Classroom</option>
+                    <option>Microsoft Teams</option>
+                    <option>Custom API</option>
+                  </select>
+                </div>
               </section>
             )}
           </main>

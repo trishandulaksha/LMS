@@ -2,15 +2,9 @@ import Lecturer from "../schema/lecturerSchema.js";
 import User from "../schema/userSchema.js";
 import { accessCodes } from "../test/userDataSample.js";
 import Course from "../schema/courseSchema.js";
-import {
-  getEligibleSubjects,
-  getInitialRecommendations,
-  getMarksForUser,
-  getUserWithCourses,
-} from "./recomendSubject-dao.js";
+import { calculateGPA } from "../Utils/GPA_Calculation/GPA-Calculation.js";
 
-// Find user detail using email
-export const getUserByEmail = async (email) => {
+const getUserByEmail = async (email) => {
   try {
     const user = await User.findOne({ email: email });
     const lecturer = await Lecturer.findOne({ email: email });
@@ -19,12 +13,12 @@ export const getUserByEmail = async (email) => {
     return { error: error.message };
   }
 };
-
-// User Authentication
 export const authenticateUser = async (data) => {
   const { email, password } = data;
 
   console.log("Function called authenticateUser", email, password);
+
+  // Fetch user (either Student or Lecturer)
   const user = await getUserByEmail(email);
 
   if (!user) {
@@ -33,6 +27,7 @@ export const authenticateUser = async (data) => {
 
   console.log("User role:", user.role, user._id);
 
+  // Validate password
   const isMatch = await user.comparePassword(password);
 
   if (isMatch) {
@@ -42,34 +37,14 @@ export const authenticateUser = async (data) => {
       status: user.role,
     };
 
+    // Check if user is a student
     if (user.role === "STUDENT") {
-      const userWithCourses = await getUserWithCourses(user._id);
-      console.log(userWithCourses);
-      if (userWithCourses.enrolledCourses.length === 0) {
-        // Fetch initial recommendations for first-time enrollment
-        const recommendedSubjects = await getInitialRecommendations();
-        result.recommendedSubjects = recommendedSubjects;
-        result.marksData = null; // No marks data for first-time enrollment
-      } else {
-        // Fetch marks and determine eligible subjects based on prerequisites and eligibility
-        const marksData = await getMarksForUser(user._id);
+      // Fetch user with courses
+      const gpa = await calculateGPA(user._id);
 
-        // Map to extract completed subjects with eligibility and pass status
-        const completedSubjects = marksData.map((mark) => ({
-          subject: mark.subject.courseCode,
-          passed: mark.passed,
-          isEligibleForFinal: mark.isEligibleForFinal,
-        }));
+      // Process completed subjects
 
-        // Fetch eligible subjects for next semester
-        const eligibleSubjects = await getEligibleSubjects(
-          userWithCourses,
-          completedSubjects
-        );
-
-        result.recommendedSubjects = eligibleSubjects;
-        result.marksData = marksData;
-      }
+      result.gpa = gpa;
     }
 
     return { success: result };
@@ -78,7 +53,9 @@ export const authenticateUser = async (data) => {
   }
 };
 
-// User Registrationimport Lecturer from "../schema/lecturerSchema.js";
+// ///////////////////////
+// User Registration
+// ///////////////////////
 export const userRegistration = async (data) => {
   const { name, email, mobile_number, gender, password, accesscode } = data;
   console.log(name, email, mobile_number, gender, password, accesscode);

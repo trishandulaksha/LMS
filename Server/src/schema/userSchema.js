@@ -2,6 +2,17 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+const enrolledCourseSchema = new mongoose.Schema({
+  courseID: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Subjects",
+    required: true,
+  },
+  courseCode: { type: String, required: true },
+  courseName: { type: String, required: true },
+  enrolledDate: { type: Date, required: true },
+});
+
 const userSchema = new mongoose.Schema({
   _id: {
     type: String,
@@ -39,15 +50,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  enrolledCourses: [
-    {
-      courseCode: { type: String, required: true },
-      enrolledDate: { type: String, required: true }, // Stores date as 'YYYY-MM-DD'
-      passedStatus: { type: Boolean, default: false },
-      eligibleStatus: { type: Boolean, default: true },
-      attempts: { type: Number, default: 0 },
-    },
-  ],
+  enrolledCourses: [enrolledCourseSchema],
 });
 
 // HASHED THE PASSWORD BEFORE SAVING (USING MIDDLEWARE)
