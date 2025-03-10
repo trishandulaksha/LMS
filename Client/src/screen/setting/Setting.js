@@ -2,9 +2,10 @@ import React, { useState } from "react";
 
 const Setting = () => {
   const [activeTab, setActiveTab] = useState("general");
+  const [theme, setTheme] = useState("light");
 
   const tabs = [
-    { id: "general", label: "General Settings" },
+    { id: "general", label: "Theme Settings" },
     { id: "user", label: "User Management" },
     { id: "academic", label: "Academic Settings" },
     { id: "progress", label: "Progress Tracking" },
@@ -14,7 +15,7 @@ const Setting = () => {
 
   return (
     <>
-      <div className="w-full min-h-screen p-8 bg-gray-100 ">
+      <div className="w-full min-h-screen p-8 bg-gray-100">
         <div className="flex min-h-screen mt-10 bg-gray-100">
           {/* Sidebar */}
           <aside className="w-64 h-screen bg-white shadow-md">
@@ -41,24 +42,25 @@ const Setting = () => {
 
           {/* Content */}
           <main className="flex-1 p-8">
-            {/* General Settings */}
+            {/* Theme Settings (Replacing General Settings) */}
             {activeTab === "general" && (
               <section>
-                <h3 className="mb-4 text-2xl font-semibold">
-                  General Settings
-                </h3>
+                <h3 className="mb-4 text-2xl font-semibold">Theme Settings</h3>
                 <p className="mb-4 text-gray-600">
-                  Configure system-wide settings such as system name and appearance.
+                  Choose a theme to personalize the appearance of the system.
                 </p>
                 <div className="p-6 bg-white rounded-lg shadow">
                   <label className="block mb-2 font-medium text-gray-700">
-                    System Name
+                    Select Theme
                   </label>
-                  <input
-                    type="text"
-                    placeholder="Enter system name"
+                  <select
+                    value={theme}
+                    onChange={(e) => setTheme(e.target.value)}
                     className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300"
-                  />
+                  >
+                    <option value="light">Light Mode</option>
+                    <option value="dark">Dark Mode</option>
+                  </select>
                 </div>
               </section>
             )}
@@ -90,7 +92,8 @@ const Setting = () => {
                   Academic Settings
                 </h3>
                 <p className="mb-4 text-gray-600">
-                  Configure subject selection, grading policies, and academic rules.
+                  Configure subject selection, grading policies, and academic
+                  rules.
                 </p>
                 <div className="p-6 bg-white rounded-lg shadow">
                   <label className="block mb-2 font-medium text-gray-700">
@@ -132,7 +135,8 @@ const Setting = () => {
               <section>
                 <h3 className="mb-4 text-2xl font-semibold">Security</h3>
                 <p className="mb-4 text-gray-600">
-                  Manage security settings such as authentication and password policies.
+                  Manage security settings such as authentication and password
+                  policies.
                 </p>
                 <div className="p-6 bg-white rounded-lg shadow">
                   <label className="block mb-2 font-medium text-gray-700">
