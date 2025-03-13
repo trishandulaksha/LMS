@@ -2,13 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Link } from "react-router-dom";
-import SchoolIcon from "@mui/icons-material/School";
-import SearchIcon from "@mui/icons-material/Search";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
-import PersonIcon from "@mui/icons-material/Person";
 import userImage from ".././../assets/images/userIcon.jpeg";
 
 // Modal for loading popup
@@ -39,20 +35,23 @@ const Dashboard = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [studentDetails, setStudentDetails] = useState({
     name: "Student",
-    level: "1", // Default level as 1
+    level: "3", // Default level as 3
     completedSubjects: 0,
     totalYears: 4,
     currentYear: 1,
-    progressYear: 0,
+    progressYear: 1, // Default progress year as 1
     passedSubjects: 0,
     failedSubjects: 0,
     status: "Pending",
+    levelCredits: {}, // Track credits completed per level
   });
   const [passedCreditAmount, setPassedCreditAmount] = useState(0);
+  const [progressBarTotalCredits, setProgressBarTotalCredits] = useState(28); // Default to 28 credits for Year 1
+
+  console.log(user);
 
   useEffect(() => {
     if (processedMarksData) {
-      // If marks data is available, calculate the details
       const levels = Object.values(processedMarksData.levels || {});
       const totalYears = 4;
       const completedSubjects = levels.reduce(
@@ -68,34 +67,50 @@ const Dashboard = () => {
       );
       const failedSubjects = completedSubjects - passedSubjects;
 
-      // Calculate passed credits
-      const totalPassedCredits = levels.reduce(
-        (acc, level) =>
-          acc +
-          (level.enrolledSubjects
-            ?.filter((subject) => subject.finalMarks >= 50)
-            .reduce((subAcc, subject) => subAcc + (subject.credits || 0), 0) ||
-            0),
-        0
+      // Calculate passed credits level-wise
+      const creditsPerLevel = 28; // Minimum credits required per level
+      let cumulativeCredits = 0;
+      let currentLevel = 3; // Starting level
+      const levelCredits = {};
+
+      for (const level of levels) {
+        const passedCredits = level.enrolledSubjects
+          ?.filter((subject) => subject.finalMarks >= 50)
+          .reduce((acc, subject) => acc + (subject.credits || 0), 0);
+
+        cumulativeCredits += passedCredits || 0;
+        levelCredits[level.level] = cumulativeCredits;
+
+        // Move to the next level if the student has completed at least 28 credits in the current level
+        if (cumulativeCredits >= creditsPerLevel * (level.level - 2)) {
+          currentLevel = level.level + 1;
+        }
+      }
+
+      // Calculate progress year based on cumulative credits
+      const progressYear = Math.min(
+        Math.floor(cumulativeCredits / creditsPerLevel) + 1,
+        totalYears
       );
 
-      setPassedCreditAmount(totalPassedCredits);
+      // Set the total credits for the progress bar based on the progress year
+      let progressBarTotal;
+      if (progressYear === 1) {
+        progressBarTotal = 28; // Year 1: 0–28 credits
+      } else if (progressYear === 2) {
+        progressBarTotal = 56; // Year 2: 29–56 credits
+      } else if (progressYear === 3) {
+        progressBarTotal = 84; // Year 3: 57–84 credits
+      } else if (progressYear === 4) {
+        progressBarTotal =
+          processedMarksData?.registerSubjectFullCreditAmount || 130; // Year 4: 85+ credits
+      }
 
-      const currentYear =
-        processedMarksData.currentYear ||
-        levels.findIndex((level) =>
-          level.enrolledSubjects?.some((s) => s.finalMarks < 50)
-        ) + 1;
-
-      const progressYear = failedSubjects === 0 ? totalYears : currentYear;
-
-      const level =
-        totalYears === 1 && currentYear === 1
-          ? 3
-          : processedMarksData.levels?.level || "1"; // Default level if not available
+      setProgressBarTotalCredits(progressBarTotal);
+      setPassedCreditAmount(cumulativeCredits);
 
       const performanceData = levels.map((level, idx) => ({
-        label: `Year ${idx + 1}`,
+        label: `Level ${level.level}`,
         percentage: Math.round(
           ((level.enrolledSubjects?.filter((s) => s.finalMarks >= 50).length ||
             0) /
@@ -109,29 +124,32 @@ const Dashboard = () => {
 
       setStudentDetails({
         name: user?.success.user.name || "Student",
-        level,
+        level: currentLevel,
         completedSubjects,
         totalYears,
-        currentYear,
-        progressYear,
+        currentYear: Math.floor((currentLevel - 3) / 1) + 1, // Calculate current year based on level
+        progressYear, // Update progress year based on cumulative credits
         passedSubjects,
         failedSubjects,
         status: failedSubjects === 0 ? "Good" : "Needs Improvement",
+        levelCredits, // Include level-wise credits in student details
       });
     } else {
       // If no data, show the default values without error message
       setStudentDetails({
         name: user?.success.user.name || "Student",
-        level: "1", // Default level 1
+        level: "3", // Default level 3
         completedSubjects: 0,
         totalYears: 4,
         currentYear: 1,
-        progressYear: 0,
+        progressYear: 1, // Default progress year as 1
         passedSubjects: 0,
         failedSubjects: 0,
         status: "Pending",
+        levelCredits: {}, // Default empty level credits
       });
       setPerformanceData([]);
+      setProgressBarTotalCredits(28); // Default to 28 credits for Year 1
     }
   }, [processedMarksData, user]);
 
@@ -170,9 +188,7 @@ const Dashboard = () => {
           <div className="pl-11">
             <ProgressBar
               currentCredits={passedCreditAmount}
-              totalCredits={
-                processedMarksData?.registerSubjectFullCreditAmount || 130
-              }
+              totalCredits={progressBarTotalCredits} // Dynamically set total credits based on progress year
             />
           </div>
         </div>

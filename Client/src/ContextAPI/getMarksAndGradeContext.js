@@ -52,6 +52,7 @@ export const MarksAndGradesProvider = ({ children }) => {
         processedMarksData,
         loading,
         error,
+        setLoading,
         fetchMarksAndGrades,
       }}
     >

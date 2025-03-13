@@ -17,6 +17,7 @@ export const userLoginAPI = async (
     };
     const response = await axios.post(`${API_URL}/${endpoint}`, userData);
     sessionStorage.setItem("dbResponse", response);
+    console.log(response);
     setDbResponse(response);
     setUser(response.data);
   } catch (error) {
