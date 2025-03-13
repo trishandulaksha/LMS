@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
 import InputField from "../../Component/InputComponent/InputComponent";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+
+// Custom CSS for loading dots animation
+import "./myprofile.css";
 
 const MyProfile = () => {
+  const { user } = UseDataContexts();
+  console.log(user?.success?.user?.name);
+
   const [profileData, setProfileData] = useState({
     firstName: "",
     lastName: "",
@@ -17,22 +24,54 @@ const MyProfile = () => {
     homeAddress: "",
   });
 
+  const [loading, setLoading] = useState(false); // Loading state
+
   useEffect(() => {
-    const cachedProfile = JSON.parse(localStorage.getItem("profileData"));
+    if (user?.success?.user) {
+      const nameParts = user.success.user.name
+        ? user.success.user.name.split(" ")
+        : ["", ""];
+      const updatedProfileData = {
+        firstName: nameParts[0] || "",
+        lastName: nameParts[1] || "",
+        gender: user.success.user.gender || "",
+        role: user.success.user.role || "",
+        dateOfBirth: "", // Replace with user.success.user.dateOfBirth if available
+        educationLevel: "", // Replace with user.success.user.educationLevel if available
+        email: user.success.user.email || "",
+        contactNumber: user.success.user.mobile_number || "",
+        guardianName: "", // Replace with user.success.user.guardianName if available
+        guardianContactNumber: "", // Replace with user.success.user.guardianContactNumber if available
+        homeAddress: "", // Replace with user.success.user.homeAddress if available
+      };
+      setProfileData(updatedProfileData);
+    }
+
+    const cachedProfile = JSON.parse(sessionStorage.getItem("user"));
     if (cachedProfile) {
-      setProfileData(cachedProfile);
+      setProfileData((prevState) => ({
+        ...prevState,
+        ...cachedProfile,
+      }));
       console.log("Cached Data:", cachedProfile);
     }
-  }, []);
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProfileData({ ...profileData, [name]: value });
+    setProfileData({ ...profileData, [name]: value || "" });
   };
 
   const handleSave = () => {
-    localStorage.setItem("profileData", JSON.stringify(profileData));
-    console.log("Profile Data Saved:", profileData);
+    setLoading(true); // Start loading
+
+    // Simulate a save delay (e.g., save to API or localStorage)
+    setTimeout(() => {
+      localStorage.setItem("profileData", JSON.stringify(profileData));
+      console.log("Profile Data Saved:", profileData);
+
+      setLoading(false); // End loading
+    }, 2000); // Simulating a delay of 2 seconds
   };
 
   return (
@@ -47,7 +86,7 @@ const MyProfile = () => {
           <span className="text-4xl sm:text-5xl">👤</span>
         </div>
         <h3 className="text-lg font-medium text-purple-600 sm:text-xl">
-          STUDENT
+          {profileData.role || "N/A"}
         </h3>
       </div>
 
@@ -55,14 +94,14 @@ const MyProfile = () => {
         <InputField
           label="First Name"
           name="firstName"
-          value={profileData.firstName}
+          value={profileData.firstName || ""}
           onChange={handleChange}
           placeholder="First Name"
         />
         <InputField
           label="Last Name"
           name="lastName"
-          value={profileData.lastName}
+          value={profileData.lastName || ""}
           onChange={handleChange}
           placeholder="Last Name"
         />
@@ -70,7 +109,7 @@ const MyProfile = () => {
           label="E-mail"
           type="email"
           name="email"
-          value={profileData.email}
+          value={profileData.email || ""}
           onChange={handleChange}
           placeholder="E-mail"
         />
@@ -78,7 +117,7 @@ const MyProfile = () => {
           label="Contact Number"
           type="tel"
           name="contactNumber"
-          value={profileData.contactNumber}
+          value={profileData.contactNumber || ""}
           onChange={handleChange}
           placeholder="Contact Number"
         />
@@ -88,13 +127,13 @@ const MyProfile = () => {
           <label className="block mb-1 text-sm text-gray-700">Gender</label>
           <select
             name="gender"
-            value={profileData.gender}
+            value={profileData.gender || ""}
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded"
           >
             <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
           </select>
         </div>
 
@@ -102,21 +141,21 @@ const MyProfile = () => {
           label="Date of Birth"
           type="date"
           name="dateOfBirth"
-          value={profileData.dateOfBirth}
+          value={profileData.dateOfBirth || ""}
           onChange={handleChange}
           placeholder="mm/dd/yyyy"
         />
         <InputField
           label="Education Level"
           name="educationLevel"
-          value={profileData.educationLevel}
+          value={profileData.educationLevel || ""}
           onChange={handleChange}
           placeholder="Education Level"
         />
         <InputField
           label="Guardian's Name"
           name="guardianName"
-          value={profileData.guardianName}
+          value={profileData.guardianName || ""}
           onChange={handleChange}
           placeholder="Guardian's Name"
         />
@@ -124,14 +163,14 @@ const MyProfile = () => {
           label="Guardian's Contact Number"
           type="tel"
           name="guardianContactNumber"
-          value={profileData.guardianContactNumber}
+          value={profileData.guardianContactNumber || ""}
           onChange={handleChange}
           placeholder="Guardian's Contact Number"
         />
         <InputField
           label="Home Address"
           name="homeAddress"
-          value={profileData.homeAddress}
+          value={profileData.homeAddress || ""}
           onChange={handleChange}
           placeholder="Home Address"
         />
@@ -142,7 +181,18 @@ const MyProfile = () => {
           onClick={handleSave}
           className="w-full p-3 text-white bg-purple-600 rounded-lg hover:bg-purple-700 sm:w-auto"
         >
-          Save
+          {loading ? (
+            <div className="flex items-center justify-center">
+              {/* Custom Dots Loading Animation */}
+              <div className="dot-loader">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+              </div>
+            </div>
+          ) : (
+            "Save"
+          )}
         </button>
       </div>
     </div>

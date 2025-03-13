@@ -1,78 +1,106 @@
 import React, { useEffect, useState } from "react";
-import data from "./data.json";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for routing
 import GradeChartComponent from "../../Component/GradeChartComponent/GradeChartComponent";
 import GradeTableComponent from "../../Component/GradeTableComponent/GradeTableComponent";
-import Header from "../../Component/Header/Header";
-import './grade.css'
-import Footer from "../footer/Footer";
+import SchoolIcon from "@mui/icons-material/School";
+import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+
+// Modal component for error message
+const ErrorModal = ({ isOpen, onClose }) => {
+  const navigate = useNavigate();
+
+  const handleRedirect = () => {
+    // Navigate to the RecommendedSubjects screen
+    navigate("/recomendedSubjects");
+    onClose(); // Close the modal after redirection
+  };
+
+  return (
+    isOpen && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div className="flex flex-col items-center p-8 bg-white rounded-lg shadow-lg">
+          <p className="text-xl font-semibold text-red-500">
+            No Marks Found. Please enroll in subjects.
+          </p>
+          <div className="mt-4">
+            <button
+              onClick={handleRedirect}
+              className="px-6 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+            >
+              Yes, Take me to Enroll
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  );
+};
 
 function GradeScreen() {
-  // Initialize selected year and semester to the first available year and semester in the data
-  const [selectedYear, setSelectedYear] = useState(data.years[0].year);
-  const [selectedSemester, setSelectedSemester] = useState(
-    data.years[0].semesters[0].semester
-  );
-  const [subjects, setSubjects] = useState(
-    data.years[0].semesters[0].subjects || []
-  );
-  const [error, setError] = useState("");
+  const { processedMarksData, loading, error } = useMarksAndGrades();
+  const { user } = UseDataContexts();
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedSemester, setSelectedSemester] = useState("");
+  const [subjects, setSubjects] = useState([]);
+  const [showErrorModal, setShowErrorModal] = useState(false); // State to control modal visibility
+
+  console.log("GRADE SCREEN USER", user);
 
   useEffect(() => {
-    // Find the data for the selected year
-    const yearData = data.years.find((y) => y.year === selectedYear);
-    if (!yearData) {
-      setError("Data not found for the selected year");
-      setSubjects([]);
-      return;
+    // Only try to access levels if processedMarksData and processedMarksData.levels exist
+    if (processedMarksData && processedMarksData.levels) {
+      const firstLevel = Object.values(processedMarksData.levels)[0];
+      setSubjects(firstLevel.enrolledSubjects || []);
+      setSelectedYear(firstLevel.enrolledSubjects[0]?.studentYear || "");
+      setSelectedSemester(firstLevel.enrolledSubjects[0]?.semester || "");
     }
+  }, [processedMarksData]);
 
-    setError("");
-
-    // Find the data for the selected semester
-    const semesterData = yearData.semesters.find(
-      (sem) => sem.semester === selectedSemester
-    );
-
-    if (semesterData) {
-      setSubjects(semesterData.subjects);
-    } else {
-      setError("Data not found for the selected semester");
-      setSubjects([]);
+  useEffect(() => {
+    // Show error modal if there's an error fetching data
+    if (error) {
+      setShowErrorModal(true);
     }
-  }, [selectedYear, selectedSemester]);
+  }, [error]);
 
   const handleYearChange = (e) => {
-    const newYear = e.target.value;
-    setSelectedYear(newYear);
-
-    // Set the first semester of the newly selected year
-    const yearData = data.years.find((y) => y.year === newYear);
-    if (yearData && yearData.semesters.length > 0) {
-      setSelectedSemester(yearData.semesters[0].semester);
-      setSubjects(yearData.semesters[0].subjects);
-    } else {
-      setSelectedSemester("");
-      setSubjects([]);
+    const selected = e.target.value;
+    setSelectedYear(selected);
+    const level = Object.values(processedMarksData.levels).find(
+      (lvl) => lvl.enrolledSubjects[0]?.studentYear === selected
+    );
+    if (level) {
+      setSelectedSemester(level.enrolledSubjects[0]?.semester || "");
+      setSubjects(level.enrolledSubjects || []);
     }
   };
 
   const handleSemesterChange = (e) => {
-    setSelectedSemester(e.target.value);
+    const selected = e.target.value;
+    setSelectedSemester(selected);
+    const subjectsForSemester = Object.values(processedMarksData.levels)
+      .flatMap((lvl) => lvl.enrolledSubjects)
+      .filter(
+        (subject) =>
+          subject.semester === selected && subject.studentYear === selectedYear
+      );
+
+    setSubjects(subjectsForSemester);
   };
 
   return (
-    <>
-
-      <div className="w-full p-8 bg-gray-100">
-      <Header/>
-        <div className="mt-0 mb-14">
-
-          <div className="mt-4">
-            <h2 className="text-2xl font-extrabold">Grades</h2>
-          </div>
-        </div>
+    <div className="w-full mt-20">
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <ErrorModal
+          isOpen={showErrorModal}
+          onClose={() => setShowErrorModal(false)}
+        />
+      ) : (
         <div className="flex flex-col w-full p-4 overflow-x-hidden md:px-8 lg:px-16 xl:px-20 ">
-          <div className="w-full p-2 shadow-sm md:p-5 bg-opacity-35 rounded-xl">
+          <div className="w-full p-2 shadow-sm md:p-5 bg-slate-200 bg-opacity-35 rounded-xl shadow-blue-200">
             <div className="flex flex-col justify-center w-full max-w-4xl space-y-4 sm:flex-row sm:justify-between sm:space-y-0">
               <div className="flex flex-col w-full sm:w-1/2">
                 <label className="text-lg font-semibold">Select Year</label>
@@ -81,11 +109,15 @@ function GradeScreen() {
                   value={selectedYear}
                   onChange={handleYearChange}
                 >
-                  {data.years.map((year) => (
-                    <option key={year.year} value={year.year}>
-                      {year.year}
-                    </option>
-                  ))}
+                  {processedMarksData.levels &&
+                    Object.values(processedMarksData.levels).map((level) => (
+                      <option
+                        key={level.enrolledSubjects[0]?.studentYear}
+                        value={level.enrolledSubjects[0]?.studentYear}
+                      >
+                        {level.enrolledSubjects[0]?.studentYear}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -96,41 +128,42 @@ function GradeScreen() {
                   value={selectedSemester}
                   onChange={handleSemesterChange}
                 >
-                  {data.years
-                    .find((y) => y.year === selectedYear)
-                    ?.semesters.map((sem) => (
-                      <option key={sem.semester} value={sem.semester}>
-                        {sem.semester}
-                      </option>
-                    ))}
+                  {[
+                    ...new Set(
+                      processedMarksData.levels
+                        ? Object.values(processedMarksData.levels)
+                            .flatMap((level) => level.enrolledSubjects)
+                            .filter(
+                              (subject) => subject.studentYear === selectedYear
+                            )
+                            .map((subject) => subject.semester)
+                        : []
+                    ),
+                  ].map((sem) => (
+                    <option key={sem} value={sem}>
+                      {sem}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex items-center justify-center w-full sm:w-1/2">
                 <p className="font-extrabold">GPA Value = </p>
-                <p className="ml-2 text-2xl font-bold"> 2.8</p>
+                <p className="ml-2 text-2xl font-bold">{user?.success.gpa}</p>
               </div>
             </div>
 
-            {error ? (
-              <p className="mt-6 text-xl text-center text-red-500">{error}</p>
-            ) : (
-              <div className="flex flex-col justify-between w-full mt-8 space-y-8 sm:flex-row sm:space-y-0 sm:space-x-8">
-                <div className="w-full overflow-auto sm:w-1/2 ">
-                  <GradeChartComponent subjects={subjects || []} />
-                </div>
-                <div className="w-full overflow-auto sm:w-1/2">
-                  <GradeTableComponent
-                    subjects={subjects || []}
-                    year={selectedYear}
-                  />
-                </div>
+            <div className="flex flex-col justify-between w-full mt-8 space-y-8 sm:flex-row sm:space-y-0 sm:space-x-8">
+              <div className="w-full overflow-auto sm:w-1/2 ">
+                <GradeChartComponent subjects={subjects} />
               </div>
-            )}
+              <div className="w-full overflow-auto sm:w-1/2">
+                <GradeTableComponent subjects={subjects} year={selectedYear} />
+              </div>
+            </div>
           </div>
         </div>
-        <Footer/>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

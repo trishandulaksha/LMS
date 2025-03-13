@@ -1,20 +1,19 @@
 import { Router } from "express";
 import {
   lecturerSaveAndUpdateMarks,
-  lecturerSubjectsWithenrolledStudents,
-} from "../user-ep/lecturerSubjects-ep.js";
-import { lectureCoursesEP } from "../user-ep/lecturerCourses-ep.js";
+  lecturerSubjectsWithEnrolledStudents,
+} from "../user-ep/lecturerCourses-ep.js";
+import { lecturerCoursesEP } from "../user-ep/lecturerTeachingCourses-ep.js";
 
 const lecturerRouter = Router();
-lecturerRouter.post("/courses", lectureCoursesEP);
+
+lecturerRouter.post("/courses", lecturerCoursesEP);
 
 lecturerRouter.post(
-  "/lecturer/:lecturerId/enrolled-students",
-  lecturerSubjectsWithenrolledStudents
+  "/:lecturerId/enrolled-students",
+  lecturerSubjectsWithEnrolledStudents
 );
-lecturerRouter.post(
-  "/lecturer/:lecturerId/save-marks",
-  lecturerSaveAndUpdateMarks
-);
+
+lecturerRouter.post("/save-marks", lecturerSaveAndUpdateMarks);
 
 export default lecturerRouter;

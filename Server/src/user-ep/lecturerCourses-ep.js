@@ -1,23 +1,35 @@
-import { getCoursesWithStudentDetails } from "../dao/lecutureCourse-dao.js";
+import {
+  getLecturerSubjectsAndStudents,
+  saveOrUpdateMarks,
+} from "../dao/lecutureCourse-dao.js";
 
-export const lectureCoursesEP = async (req, res) => {
+// Endpoint to fetch subjects and enrolled students
+export const lecturerSubjectsWithEnrolledStudents = async (req, res) => {
+  const { lecturerId } = req.params;
+
   try {
-    const { email } = req.query;
-    if (!email) {
-      return res.status(400).json({ error: "Lecturer email is required" });
-    }
-
-    const result = await getCoursesWithStudentDetails(email);
-
-    if (result.error) {
-      return res.status(404).json({ error: result.error });
-    }
-
-    return res.status(200).json(result.success);
+    const data = await getLecturerSubjectsAndStudents(lecturerId);
+    res.status(200).json(data);
   } catch (error) {
-    console.error("API Error:", error);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while fetching data" });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Endpoint to save or update student marks
+export const lecturerSaveAndUpdateMarks = async (req, res) => {
+  const { lecturerId, subjectId, studentMarks } = req.body;
+
+  try {
+    const result = await saveOrUpdateMarks(
+      {
+        lecturerId,
+        subjectId,
+        studentMarks,
+      },
+      res
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
