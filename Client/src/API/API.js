@@ -51,3 +51,41 @@ export const userRegisterApi = async (
     setDbResponse(error);
   }
 };
+
+// Save student details
+export const saveStudentDetails = async (studentDetails) => {
+  try {
+    const response = await axios.post(`${API_URL}/student/details`, studentDetails);
+    return response.data;
+  } catch (error) {
+    console.error("Error saving student details:", error);
+    throw error;
+  }
+};
+
+// Fetch student details
+export const fetchStudentDetails = async (studentId) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/student/details/${studentId}` // Ensure this matches the backend route
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching student details:", error);
+    throw error;
+  }
+};
+
+// Update students Detials
+export const updateStudentDetails = async (studentId, updatedDetails) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/student/details/${studentId}`, // Ensure this matches the backend route
+      updatedDetails
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating student details:", error);
+    throw error;
+  }
+};

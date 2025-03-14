@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Link } from "react-router-dom";
-import SchoolIcon from "@mui/icons-material/School";
-import SearchIcon from "@mui/icons-material/Search";
-import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
+import { saveStudentDetails, fetchStudentDetails } from "../../API/API.js";
 
-// Modal for loading popup
+// Register Chart.js components
+ChartJS.register(ArcElement, Tooltip, Legend);
+
+// Loading Modal Component
 const LoadingModal = ({ isOpen }) => {
   return (
     isOpen && (
@@ -28,8 +29,6 @@ const LoadingModal = ({ isOpen }) => {
   );
 };
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
 const Dashboard = () => {
   const { processedMarksData, loading, error } = useMarksAndGrades();
   const { user } = UseDataContexts();
@@ -37,7 +36,7 @@ const Dashboard = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [studentDetails, setStudentDetails] = useState({
     name: "Student",
-    level: "1", // Default level as 1
+    level: "1",
     completedSubjects: 0,
     totalYears: 4,
     currentYear: 1,
@@ -48,9 +47,40 @@ const Dashboard = () => {
   });
   const [passedCreditAmount, setPassedCreditAmount] = useState(0);
 
+  // Fetch student data from the API (only for students)
   useEffect(() => {
-    if (processedMarksData) {
-      // If marks data is available, calculate the details
+    const fetchData = async () => {
+      if (user?.success.user.role === "STUDENT") {
+        try {
+          const studentId = user?.success.user.id; // Assuming user ID is available
+          const data = await fetchStudentDetails(studentId);
+          if (data) {
+            setStudentDetails(data);
+          }
+        } catch (error) {
+          console.error("Error fetching student data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  // Save student data to the API (only for students)
+  const saveData = async () => {
+    if (user?.success.user.role === "STUDENT") {
+      try {
+        const studentId = user?.success.user.id;
+        await saveStudentDetails({ id: studentId, ...studentDetails });
+      } catch (error) {
+        console.error("Error saving student data:", error);
+      }
+    }
+  };
+
+  // Update student details when processedMarksData changes (only for students)
+  useEffect(() => {
+    if (processedMarksData && user?.success.user.role === "STUDENT") {
       const levels = Object.values(processedMarksData.levels || {});
       const totalYears = 4;
       const completedSubjects = levels.reduce(
@@ -66,14 +96,13 @@ const Dashboard = () => {
       );
       const failedSubjects = completedSubjects - passedSubjects;
 
-      // Calculate passed credits
       const totalPassedCredits = levels.reduce(
         (acc, level) =>
           acc +
           (level.enrolledSubjects
             ?.filter((subject) => subject.finalMarks >= 50)
             .reduce((subAcc, subject) => subAcc + (subject.credits || 0), 0) ||
-            0),
+          0),
         0
       );
 
@@ -90,7 +119,7 @@ const Dashboard = () => {
       const level =
         totalYears === 1 && currentYear === 1
           ? 3
-          : processedMarksData.levels?.level || "1"; // Default level if not available
+          : processedMarksData.levels?.level || "1";
 
       const performanceData = levels.map((level, idx) => ({
         label: `Year ${idx + 1}`,
@@ -105,7 +134,7 @@ const Dashboard = () => {
 
       setPerformanceData(performanceData);
 
-      setStudentDetails({
+      const updatedStudentDetails = {
         name: user?.success.user.name || "Student",
         level,
         completedSubjects,
@@ -115,24 +144,14 @@ const Dashboard = () => {
         passedSubjects,
         failedSubjects,
         status: failedSubjects === 0 ? "Good" : "Needs Improvement",
-      });
-    } else {
-      // If no data, show the default values without error message
-      setStudentDetails({
-        name: user?.success.user.name || "Student",
-        level: "1", // Default level 1
-        completedSubjects: 0,
-        totalYears: 4,
-        currentYear: 1,
-        progressYear: 0,
-        passedSubjects: 0,
-        failedSubjects: 0,
-        status: "Pending",
-      });
-      setPerformanceData([]);
+      };
+
+      setStudentDetails(updatedStudentDetails);
+      saveData(); // Save updated data to the API
     }
   }, [processedMarksData, user]);
 
+  // Render chart data
   const renderChart = (percentage, color) => ({
     labels: ["Completed", "Remaining"],
     datasets: [
@@ -145,12 +164,11 @@ const Dashboard = () => {
     ],
   });
 
-  if (loading) return <LoadingModal isOpen={loading} />; // Display loading modal when data is loading
+  // Display loading modal if data is being fetched
+  if (loading) return <LoadingModal isOpen={loading} />;
 
   return (
     <div className="w-full min-h-screen p-8 bg-gray-100">
-      {/* Header Section */}
-
       {/* Student Info Section */}
       <div className="flex flex-col items-center p-6 mt-16 mb-6 bg-white rounded-lg shadow lg:flex-row lg:justify-between lg:space-x-6">
         <div className="flex items-center space-x-4">

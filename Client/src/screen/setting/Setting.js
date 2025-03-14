@@ -1,7 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext.js";
+import { fetchStudentDetails, updateStudentDetails } from "../../API/API.js";
 
 const Setting = () => {
   const [activeTab, setActiveTab] = useState("general");
+  const { user } = UseDataContexts();
+  const [studentDetails, setStudentDetails] = useState({
+    name: "Student",
+    level: "1",
+    currentYear: 1,
+  });
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    console.log("User Object:", user); // Log the user object
+    const fetchData = async () => {
+      if (user?.success?.user?.id) {
+        const studentId = user.success.user.id;
+        console.log("Fetching details for student ID:", studentId); // Log the student ID
+        try {
+          const data = await fetchStudentDetails(studentId);
+          console.log("Fetched Student Details:", data); // Log the fetched data
+          if (data) {
+            setStudentDetails(data);
+          }
+        } catch (error) {
+          console.error("Error fetching student data:", error);
+        }
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setStudentDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (user?.success?.user?.id) {
+      const studentId = user.success.user.id;
+      console.log("Updating details for student ID:", studentId); // Log the student ID
+      console.log("Updated Details:", studentDetails); // Log the updated details
+      try {
+        await updateStudentDetails(studentId, studentDetails);
+        setIsEditing(false);
+        alert("Details updated successfully!");
+      } catch (error) {
+        console.error("Error updating student details:", error);
+        alert("Failed to update details. Please try again.");
+      }
+    }
+  };
 
   const tabs = [
     { id: "general", label: "General Settings" },
@@ -41,71 +96,75 @@ const Setting = () => {
 
           {/* Content */}
           <main className="flex-1 p-8">
-            {/* General Settings */}
-            {activeTab === "general" && (
-              <section>
-                <h3 className="mb-4 text-2xl font-semibold">
-                  General Settings
-                </h3>
-                <div className="p-6 bg-white rounded-lg shadow">
-                  <label className="block mb-2 font-medium text-gray-700">
-                    System Name
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter system name"
-                    className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300"
-                  />
-                </div>
-              </section>
-            )}
-
-            {/* User Management */}
-            {activeTab === "user" && (
-              <section>
-                <h3 className="mb-4 text-2xl font-semibold">User Management</h3>
-                <div className="p-6 bg-white rounded-lg shadow">
-                  <label className="block mb-2 font-medium text-gray-700">
-                    Default Role
-                  </label>
-                  <select className="w-full p-3 border rounded-md focus:ring focus:ring-blue-300">
-                    <option>Student</option>
-                    <option>Teacher</option>
-                    <option>Admin</option>
-                  </select>
-                </div>
-              </section>
-            )}
-
-            {/* Other Tabs */}
+            {/* Academic Settings */}
             {activeTab === "academic" && (
               <section>
                 <h3 className="mb-4 text-2xl font-semibold">
                   Academic Settings
                 </h3>
-                <p>Configure subjects, classes, and grading systems here.</p>
-              </section>
-            )}
-            {activeTab === "progress" && (
-              <section>
-                <h3 className="mb-4 text-2xl font-semibold">
-                  Progress Tracking
-                </h3>
-                <p>Customize metrics and tracking options.</p>
-              </section>
-            )}
-            {activeTab === "security" && (
-              <section>
-                <h3 className="mb-4 text-2xl font-semibold">Security</h3>
-                <p>
-                  Manage security options such as 2FA and password policies.
-                </p>
-              </section>
-            )}
-            {activeTab === "integrations" && (
-              <section>
-                <h3 className="mb-4 text-2xl font-semibold">Integrations</h3>
-                <p>Configure third-party integrations like Google Classroom.</p>
+                <div className="p-6 bg-white rounded-lg shadow">
+                  {isEditing ? (
+                    <form onSubmit={handleSubmit}>
+                      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Level
+                          </label>
+                          <input
+                            type="text"
+                            name="level"
+                            value={studentDetails.level}
+                            onChange={handleInputChange}
+                            className="w-full p-2 mt-1 border rounded-lg"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700">
+                            Current Year
+                          </label>
+                          <input
+                            type="number"
+                            name="currentYear"
+                            value={studentDetails.currentYear}
+                            onChange={handleInputChange}
+                            className="w-full p-2 mt-1 border rounded-lg"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex justify-end mt-6 space-x-4">
+                        <button
+                          type="button"
+                          onClick={() => setIsEditing(false)}
+                          className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="px-4 py-2 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <div>
+                      <p>
+                        <strong>Level:</strong> {studentDetails.level}
+                      </p>
+                      <p>
+                        <strong>Current Year:</strong>{" "}
+                        {studentDetails.currentYear}
+                      </p>
+                      <button
+                        onClick={() => setIsEditing(true)}
+                        className="px-4 py-2 mt-4 text-sm font-medium text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+                      >
+                        Edit Academic Details
+                      </button>
+                    </div>
+                  )}
+                </div>
               </section>
             )}
           </main>
