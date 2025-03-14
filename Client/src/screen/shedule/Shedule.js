@@ -16,7 +16,19 @@ const Schedule = () => {
   const [eventName, setEventName] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [editEventId, setEditEventId] = useState(null);
-  const userID = sessionStorage.getItem("lms_user_id"); // Replace with the actual logged-in user's ID
+  const [userID, setUserID] = useState(sessionStorage.getItem("lms_user_id")); // Replace with the actual logged-in user's ID
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setUserID(sessionStorage.getItem("lms_user_id")); // Update userID when sessionStorage changes
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange); // Cleanup listener
+    };
+  }, []);
 
   // Fetch events when the component mounts
   useEffect(() => {

@@ -7,7 +7,7 @@ const StudentsTable = ({ students, isEditing, handleChange }) => {
       <table className="w-full border border-collapse border-gray-200 table-auto">
         <thead>
           <tr>
-            <th className="p-2 border">Student ID</th>{" "}
+            <th className="p-2 border">Student ID</th>
             {/* New column for Student ID */}
             <th className="p-2 border">Name</th>
             <th className="p-2 border">Mini Project</th>

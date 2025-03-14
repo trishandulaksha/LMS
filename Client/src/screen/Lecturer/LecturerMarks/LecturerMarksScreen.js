@@ -7,6 +7,7 @@ import {
   saveOrUpdateMarks,
 } from "../../../API/LecturerAPI";
 import { UseDataContexts } from "../../../ContextAPI/LoginAndMarksContext";
+import LoadingModal from "../LoadingModel";
 
 const LecturerDashboard = () => {
   const { marksData, user, setMarksData } = UseDataContexts();
@@ -16,9 +17,8 @@ const LecturerDashboard = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedMarks, setEditedMarks] = useState({});
   const [originalMarks, setOriginalMarks] = useState({});
-  const [finalMarks, setFinalMarks] = useState({});
-  const [eligibility, setEligibility] = useState({});
   const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false); // State for saving marks
 
   const isValidUser = () =>
     user &&
@@ -47,7 +47,7 @@ const LecturerDashboard = () => {
     };
 
     loadSubjectsAndStudents();
-  }, [user, setMarksData, marksData]);
+  }, [user, setMarksData]);
 
   useEffect(() => {
     if (selectedSubject && subjects.length > 0) {
@@ -66,39 +66,8 @@ const LecturerDashboard = () => {
 
       setEditedMarks(marks);
       setOriginalMarks(JSON.parse(JSON.stringify(marks)));
-
-      // Compute final marks and eligibility
-      computeFinalMarksAndEligibility(marks);
     }
   }, [selectedSubject, subjects, marksData]);
-
-  const computeFinalMarksAndEligibility = (marks) => {
-    const finalMarksObj = {};
-    const eligibilityObj = {};
-
-    Object.entries(marks).forEach(([studentId, studentMarks]) => {
-      // Example: Compute final mark as the average of all marks
-      const totalMarks = Object.values(studentMarks).reduce(
-        (sum, mark) => sum + (parseFloat(mark) || 0),
-        0
-      );
-      const numSubjects = Object.values(studentMarks).length;
-      const finalMark = numSubjects > 0 ? totalMarks / numSubjects : 0;
-
-      // Determine eligibility (e.g., final mark >= 50)
-      const isEligible = finalMark >= 50;
-
-      finalMarksObj[studentId] = finalMark;
-      eligibilityObj[studentId] = isEligible ? "Eligible" : "Not Eligible";
-    });
-
-    setFinalMarks(finalMarksObj);
-    setEligibility(eligibilityObj);
-  };
-
-  useEffect(() => {
-    computeFinalMarksAndEligibility(editedMarks);
-  }, [editedMarks, marksData]);
 
   const handleEdit = () => setIsEditing(true);
 
@@ -109,11 +78,12 @@ const LecturerDashboard = () => {
 
   const handleSave = async () => {
     if (!isValidUser()) {
-      alert("User validation failed. Cannot save marks.");
+      console.error("User validation failed. Cannot save marks.");
       return;
     }
 
     try {
+      setIsSaving(true); // Show the loading modal
       const studentMarks = Object.entries(editedMarks).map(([id, marks]) => ({
         studentId: id,
         marks,
@@ -123,10 +93,11 @@ const LecturerDashboard = () => {
       await saveOrUpdateMarks(_id, selectedSubject, studentMarks, setMarksData);
       setOriginalMarks(JSON.parse(JSON.stringify(editedMarks)));
       setIsEditing(false);
-      alert("Marks updated successfully!");
+      window.location.reload(); // Reload the page to reflect changes
     } catch (error) {
       console.error("Failed to save marks:", error);
-      alert("Failed to save marks. Please try again.");
+    } finally {
+      setIsSaving(false); // Hide the loading modal
     }
   };
 
@@ -165,8 +136,11 @@ const LecturerDashboard = () => {
                   id: s?.student?._id || "Unknown",
                   name: s?.student?.name || "Unknown Name",
                   marks: editedMarks[s?.student?._id] || {},
-                  finalMark: finalMarks[s?.student?._id] || 0,
-                  eligibility: eligibility[s?.student?._id] || "Not Available",
+                  finalMark: s?.marks?.finalMarks || 0,
+                  eligibility: s?.marks?.isEligibleForFinal
+                    ? "Eligible"
+                    : "Not Eligible",
+                  passed: s?.marks?.passed ? "Passed" : "Failed",
                 }))}
                 isEditing={isEditing}
                 handleChange={handleChange}
@@ -181,6 +155,8 @@ const LecturerDashboard = () => {
           )}
         </>
       )}
+      {/* Loading Modal */}
+      <LoadingModal isOpen={isSaving} />
     </div>
   );
 };
