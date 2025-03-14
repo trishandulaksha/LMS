@@ -165,40 +165,6 @@ const accessCodes = {
         },
       ],
     },
-    //pm
-    {
-      email: "champika@gmail.com",
-      role: "LECTURER",
-      accessCode: "L123450532022",
-      degreeProgram: "BSE",
-      teachingSubjects: [
-        {
-          courseCode: "EEX5563",
-          courseName: "Computer Architecture and Operating Systems",
-        },
-        {
-          courseCode: "EEW5811",
-          courseName: "Industrial Training - Software",
-        },
-        {
-          courseCode: "CVM5402",
-          courseName: "Accounting for Engineers",
-        },
-      ],
-    },
-    {
-      email: "susantha@gmail.com",
-      role: "STUDENT",
-      accessCode: "s456489526021",
-      degreeProgram: "BSE",
-    },
-    {
-      email: "upeksha@gmail.com",
-      role: "STUDENT",
-      accessCode: "s456489546835",
-      degreeProgram: "BSE",
-    },
-    //pm
     {
       email: "ravindu@gmail.com",
       role: "STUDENT",
@@ -245,6 +211,18 @@ const accessCodes = {
       email: "hasitha@gmail.com",
       role: "STUDENT",
       accessCode: "s456000072021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "malitha@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000122021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "madumal@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000152021",
       degreeProgram: "BSE",
     },
   ],

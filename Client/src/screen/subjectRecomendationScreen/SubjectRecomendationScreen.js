@@ -3,9 +3,11 @@ import SubjectRecomendation from "../../Component/SubjectRecomendation/SubjectRe
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 import { subjectEnrollment, SubjectRecomendeAPI } from "../../API/SubjectAPI"; // Import the API
 import "./recosub.css";
+import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
 
 function SubjectRecomendationScreen() {
   const { user } = UseDataContexts();
+  const { setLoading } = useMarksAndGrades();
   const [recommendedSubjects, setRecommendedSubjects] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Loading state
   console.log("SubjectRecomendationScreen user", user);
@@ -41,6 +43,7 @@ function SubjectRecomendationScreen() {
           prevSubjects.filter((subject) => subject.courseCode !== subjectCode)
         );
       }
+      setLoading(true);
     } catch (error) {
       console.error("Error enrolling subject:", error);
     } finally {

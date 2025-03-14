@@ -9,7 +9,7 @@ import {
 import { UseDataContexts } from "../../../ContextAPI/LoginAndMarksContext";
 
 const LecturerDashboard = () => {
-  const { user, setMarksData } = UseDataContexts();
+  const { marksData, user, setMarksData } = UseDataContexts();
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [students, setStudents] = useState([]);
@@ -70,11 +70,13 @@ const LecturerDashboard = () => {
       // Compute final marks and eligibility
       computeFinalMarksAndEligibility(marks);
     }
-  }, [selectedSubject, subjects]);
+  }, [selectedSubject, subjects, marksData]);
 
   const computeFinalMarksAndEligibility = (marks) => {
     const finalMarksObj = {};
     const eligibilityObj = {};
+
+    console.log(marks);
 
     Object.entries(marks).forEach(([studentId, studentMarks]) => {
       // Example: Compute final mark as the average of all marks
@@ -98,7 +100,7 @@ const LecturerDashboard = () => {
 
   useEffect(() => {
     computeFinalMarksAndEligibility(editedMarks);
-  }, [editedMarks]);
+  }, [editedMarks, marksData]);
 
   const handleEdit = () => setIsEditing(true);
 
@@ -123,6 +125,7 @@ const LecturerDashboard = () => {
       await saveOrUpdateMarks(_id, selectedSubject, studentMarks, setMarksData);
       setOriginalMarks(JSON.parse(JSON.stringify(editedMarks)));
       setIsEditing(false);
+      window.location.reload();
       alert("Marks updated successfully!");
     } catch (error) {
       console.error("Failed to save marks:", error);

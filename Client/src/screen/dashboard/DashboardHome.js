@@ -5,12 +5,9 @@ import { Link } from "react-router-dom";
 import ProgressBar from "../../Component/ProgressBar/ProgressBar";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
 import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
-import { saveStudentDetails, fetchStudentDetails } from "../../API/API.js";
+import userImage from ".././../assets/images/userIcon.jpeg";
 
-// Register Chart.js components
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-// Loading Modal Component
+// Modal for loading popup
 const LoadingModal = ({ isOpen }) => {
   return (
     isOpen && (
@@ -29,6 +26,8 @@ const LoadingModal = ({ isOpen }) => {
   );
 };
 
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 const Dashboard = () => {
   const { processedMarksData, loading, error } = useMarksAndGrades();
   const { user } = UseDataContexts();
@@ -36,51 +35,24 @@ const Dashboard = () => {
   const [performanceData, setPerformanceData] = useState([]);
   const [studentDetails, setStudentDetails] = useState({
     name: "Student",
-    level: "1",
+    level: "3", // Default level as 3
     completedSubjects: 0,
     totalYears: 4,
     currentYear: 1,
-    progressYear: 0,
+    progressYear: 1, // Default progress year as 1
     passedSubjects: 0,
     failedSubjects: 0,
     status: "Pending",
+    levelCredits: {}, // Track credits completed and registered per level
   });
   const [passedCreditAmount, setPassedCreditAmount] = useState(0);
+  const [progressBarTotalCredits, setProgressBarTotalCredits] = useState(28); // Default to 28 credits for Year 1
+  const [currentLevel, setCurrentLevel] = useState(3); // Track the currently displayed level
 
-  // Fetch student data from the API (only for students)
+  console.log(user);
+
   useEffect(() => {
-    const fetchData = async () => {
-      if (user?.success.user.role === "STUDENT") {
-        try {
-          const studentId = user?.success.user.id; // Assuming user ID is available
-          const data = await fetchStudentDetails(studentId);
-          if (data) {
-            setStudentDetails(data);
-          }
-        } catch (error) {
-          console.error("Error fetching student data:", error);
-        }
-      }
-    };
-
-    fetchData();
-  }, [user]);
-
-  // Save student data to the API (only for students)
-  const saveData = async () => {
-    if (user?.success.user.role === "STUDENT") {
-      try {
-        const studentId = user?.success.user.id;
-        await saveStudentDetails({ id: studentId, ...studentDetails });
-      } catch (error) {
-        console.error("Error saving student data:", error);
-      }
-    }
-  };
-
-  // Update student details when processedMarksData changes (only for students)
-  useEffect(() => {
-    if (processedMarksData && user?.success.user.role === "STUDENT") {
+    if (processedMarksData) {
       const levels = Object.values(processedMarksData.levels || {});
       const totalYears = 4;
       const completedSubjects = levels.reduce(
@@ -96,33 +68,61 @@ const Dashboard = () => {
       );
       const failedSubjects = completedSubjects - passedSubjects;
 
-      const totalPassedCredits = levels.reduce(
-        (acc, level) =>
-          acc +
-          (level.enrolledSubjects
-            ?.filter((subject) => subject.finalMarks >= 50)
-            .reduce((subAcc, subject) => subAcc + (subject.credits || 0), 0) ||
-          0),
-        0
+      // Calculate cumulative credits and level-wise credits
+      let cumulativeCredits = 0;
+      const levelCredits = {};
+      levels.forEach((level) => {
+        const passedCredits = level.enrolledSubjects
+          ?.filter((subject) => subject.finalMarks >= 50)
+          .reduce((acc, subject) => acc + (subject.credits || 0), 0);
+        const registeredCredits = level.enrolledSubjects?.reduce(
+          (acc, subject) => acc + (subject.credits || 0),
+          0
+        );
+        levelCredits[level.level] = {
+          passed: passedCredits || 0,
+          registered: registeredCredits || 0,
+        };
+        cumulativeCredits += passedCredits || 0;
+      });
+
+      // Determine the current level based on cumulative credits
+      let currentLevel;
+      if (cumulativeCredits <= 28) {
+        currentLevel = 3; // Level 3: 0–28 credits
+      } else if (cumulativeCredits <= 56) {
+        currentLevel = 4; // Level 4: 29–56 credits
+      } else if (cumulativeCredits <= 84) {
+        currentLevel = 5; // Level 5: 57–84 credits
+      } else {
+        currentLevel = 6; // Level 6: 85+ credits
+      }
+
+      // Calculate progress year based on cumulative credits
+      const creditsPerYear = 28; // 28 credits per year
+      const progressYear = Math.min(
+        Math.floor(cumulativeCredits / creditsPerYear) + 1,
+        totalYears
       );
 
-      setPassedCreditAmount(totalPassedCredits);
+      // Set the total credits for the progress bar based on the progress year
+      let progressBarTotal;
+      if (progressYear === 1) {
+        progressBarTotal = 28; // Year 1: 0–28 credits
+      } else if (progressYear === 2) {
+        progressBarTotal = 56; // Year 2: 29–56 credits
+      } else if (progressYear === 3) {
+        progressBarTotal = 84; // Year 3: 57–84 credits
+      } else if (progressYear === 4) {
+        progressBarTotal =
+          processedMarksData?.registerSubjectFullCreditAmount || 130; // Year 4: 85+ credits
+      }
 
-      const currentYear =
-        processedMarksData.currentYear ||
-        levels.findIndex((level) =>
-          level.enrolledSubjects?.some((s) => s.finalMarks < 50)
-        ) + 1;
-
-      const progressYear = failedSubjects === 0 ? totalYears : currentYear;
-
-      const level =
-        totalYears === 1 && currentYear === 1
-          ? 3
-          : processedMarksData.levels?.level || "1";
+      setProgressBarTotalCredits(progressBarTotal);
+      setPassedCreditAmount(cumulativeCredits);
 
       const performanceData = levels.map((level, idx) => ({
-        label: `Year ${idx + 1}`,
+        label: `Level ${level.level}`,
         percentage: Math.round(
           ((level.enrolledSubjects?.filter((s) => s.finalMarks >= 50).length ||
             0) /
@@ -134,24 +134,52 @@ const Dashboard = () => {
 
       setPerformanceData(performanceData);
 
-      const updatedStudentDetails = {
+      setStudentDetails({
         name: user?.success.user.name || "Student",
-        level,
+        level: currentLevel,
         completedSubjects,
         totalYears,
-        currentYear,
+        currentYear: progressYear, // Current year is the same as progress year
         progressYear,
         passedSubjects,
         failedSubjects,
         status: failedSubjects === 0 ? "Good" : "Needs Improvement",
-      };
-
-      setStudentDetails(updatedStudentDetails);
-      saveData(); // Save updated data to the API
+        levelCredits, // Store level-wise credits
+      });
+    } else {
+      // If no data, show the default values without error message
+      setStudentDetails({
+        name: user?.success.user.name || "Student",
+        level: 3, // Default level 3
+        completedSubjects: 0,
+        totalYears: 4,
+        currentYear: 1,
+        progressYear: 1, // Default progress year as 1
+        passedSubjects: 0,
+        failedSubjects: 0,
+        status: "Pending",
+        levelCredits: {}, // Default empty level credits
+      });
+      setPerformanceData([]);
+      setProgressBarTotalCredits(28); // Default to 28 credits for Year 1
     }
   }, [processedMarksData, user]);
 
-  // Render chart data
+  // Function to handle level navigation
+  const handleLevelChange = (direction) => {
+    const levels = [3, 4, 5, 6];
+    const currentIndex = levels.indexOf(currentLevel);
+    let newLevel;
+    if (direction === "prev" && currentIndex > 0) {
+      newLevel = levels[currentIndex - 1];
+    } else if (direction === "next" && currentIndex < levels.length - 1) {
+      newLevel = levels[currentIndex + 1];
+    } else {
+      return; // Do nothing if at the first or last level
+    }
+    setCurrentLevel(newLevel);
+  };
+
   const renderChart = (percentage, color) => ({
     labels: ["Completed", "Remaining"],
     datasets: [
@@ -164,16 +192,17 @@ const Dashboard = () => {
     ],
   });
 
-  // Display loading modal if data is being fetched
-  if (loading) return <LoadingModal isOpen={loading} />;
+  if (loading) return <LoadingModal isOpen={loading} />; // Display loading modal when data is loading
 
   return (
     <div className="w-full min-h-screen p-8 bg-gray-100">
+      {/* Header Section */}
+
       {/* Student Info Section */}
-      <div className="flex flex-col items-center p-6 mt-16 mb-6 bg-white rounded-lg shadow lg:flex-row lg:justify-between lg:space-x-6">
+      <div className="flex flex-col items-center p-6 mt-1 mb-6 bg-white rounded-lg shadow lg:flex-row lg:justify-between lg:space-x-6">
         <div className="flex items-center space-x-4">
           <img
-            src="https://via.placeholder.com/80"
+            src={userImage}
             alt="Profile"
             className="w-16 h-16 rounded-full"
           />
@@ -184,12 +213,33 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="pl-11">
-            <ProgressBar
-              currentCredits={passedCreditAmount}
-              totalCredits={
-                processedMarksData?.registerSubjectFullCreditAmount || 130
-              }
-            />
+            <div className="text-center">
+              <ProgressBar
+                currentCredits={
+                  studentDetails.levelCredits[currentLevel]?.passed || 0
+                }
+                totalCredits={
+                  studentDetails.levelCredits[currentLevel]?.registered || 0
+                }
+              />
+              <p className="mt-2 text-sm font-semibold text-gray-700">
+                Level {currentLevel}
+              </p>
+            </div>
+            <div className="flex justify-center mt-2 space-x-4">
+              <button
+                onClick={() => handleLevelChange("prev")}
+                className="px-1 py-0.5 text-white bg-gray-600 rounded-full hover:text-gray-900"
+              >
+                {"<"}
+              </button>
+              <button
+                onClick={() => handleLevelChange("next")}
+                className="px-1 py-0.5 text-white bg-gray-600 rounded-full hover:text-gray-900"
+              >
+                {">"}
+              </button>
+            </div>
           </div>
         </div>
         <div className="mt-4 lg:mt-0">
@@ -205,7 +255,7 @@ const Dashboard = () => {
                 </Link>
               </p>
               <p>Level: {studentDetails.level}</p>
-              <p>Year: {studentDetails.currentYear}</p>
+              <p>Year: {studentDetails.progressYear}</p>
               <p>Total Years: {studentDetails.totalYears}</p>
             </div>
 

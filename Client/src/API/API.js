@@ -18,6 +18,10 @@ export const userLoginAPI = async (
     const response = await axios.post(`${API_URL}/${endpoint}`, userData);
     setDbResponse(response);
     setUser(response.data);
+    sessionStorage.setItem("dbResponse", response);
+
+    sessionStorage.setItem("lms_user_id", response.data.success.user._id);
+    console.log(response.data);
   } catch (error) {
     setDbResponse(error);
   }
@@ -49,43 +53,5 @@ export const userRegisterApi = async (
     setDbResponse(response);
   } catch (error) {
     setDbResponse(error);
-  }
-};
-
-// Save student details
-export const saveStudentDetails = async (studentDetails) => {
-  try {
-    const response = await axios.post(`${API_URL}/student/details`, studentDetails);
-    return response.data;
-  } catch (error) {
-    console.error("Error saving student details:", error);
-    throw error;
-  }
-};
-
-// Fetch student details
-export const fetchStudentDetails = async (studentId) => {
-  try {
-    const response = await axios.get(
-      `${API_URL}/student/details/${studentId}` // Ensure this matches the backend route
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching student details:", error);
-    throw error;
-  }
-};
-
-// Update students Detials
-export const updateStudentDetails = async (studentId, updatedDetails) => {
-  try {
-    const response = await axios.put(
-      `${API_URL}/student/details/${studentId}`, // Ensure this matches the backend route
-      updatedDetails
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Error updating student details:", error);
-    throw error;
   }
 };

@@ -21,7 +21,7 @@ import { ClipLoader } from "react-spinners";
 // Login and Register Screen
 // ///////////
 function LoginScreen() {
-  const [checkClicked, setCheckCliked] = useState(false);
+  const [checkClicked, setCheckCliked] = useState(true);
   const [checkAlert, setCheckAlert] = useState({});
   console.log(checkAlert.Success);
   console.log(checkAlert.Error);
@@ -128,7 +128,7 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
         fetchMarksAndGrades(success?.user._id);
       }
     }
-  }, [error, success, setCheckAlert, navigate, fetchMarksAndGrades]);
+  }, [error, success, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

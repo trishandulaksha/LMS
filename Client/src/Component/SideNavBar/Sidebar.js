@@ -62,7 +62,7 @@ const Sidebar = () => {
   const icons = role === "LECTURER" ? lecturerIcons : studentIcons;
 
   return (
-    <div className="fixed flex flex-col justify-between h-screen py-10 sm:ml-10 ml-7">
+    <div className="fixed flex flex-col justify-between h-screen py-4 pr-2 ml-2 bg-white sm:ml-10 sm:pr-0">
       {/* Top Menu */}
       <div className="flex flex-col gap-5">
         {icons.map(({ icon, name, path }) => (
