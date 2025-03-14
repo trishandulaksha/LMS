@@ -43,10 +43,11 @@ const Dashboard = () => {
     passedSubjects: 0,
     failedSubjects: 0,
     status: "Pending",
-    levelCredits: {}, // Track credits completed per level
+    levelCredits: {}, // Track credits completed and registered per level
   });
   const [passedCreditAmount, setPassedCreditAmount] = useState(0);
   const [progressBarTotalCredits, setProgressBarTotalCredits] = useState(28); // Default to 28 credits for Year 1
+  const [currentLevel, setCurrentLevel] = useState(3); // Track the currently displayed level
 
   console.log(user);
 
@@ -67,29 +68,40 @@ const Dashboard = () => {
       );
       const failedSubjects = completedSubjects - passedSubjects;
 
-      // Calculate passed credits level-wise
-      const creditsPerLevel = 28; // Minimum credits required per level
+      // Calculate cumulative credits and level-wise credits
       let cumulativeCredits = 0;
-      let currentLevel = 3; // Starting level
       const levelCredits = {};
-
-      for (const level of levels) {
+      levels.forEach((level) => {
         const passedCredits = level.enrolledSubjects
           ?.filter((subject) => subject.finalMarks >= 50)
           .reduce((acc, subject) => acc + (subject.credits || 0), 0);
-
+        const registeredCredits = level.enrolledSubjects?.reduce(
+          (acc, subject) => acc + (subject.credits || 0),
+          0
+        );
+        levelCredits[level.level] = {
+          passed: passedCredits || 0,
+          registered: registeredCredits || 0,
+        };
         cumulativeCredits += passedCredits || 0;
-        levelCredits[level.level] = cumulativeCredits;
+      });
 
-        // Move to the next level if the student has completed at least 28 credits in the current level
-        if (cumulativeCredits >= creditsPerLevel * (level.level - 2)) {
-          currentLevel = level.level + 1;
-        }
+      // Determine the current level based on cumulative credits
+      let currentLevel;
+      if (cumulativeCredits <= 28) {
+        currentLevel = 3; // Level 3: 0–28 credits
+      } else if (cumulativeCredits <= 56) {
+        currentLevel = 4; // Level 4: 29–56 credits
+      } else if (cumulativeCredits <= 84) {
+        currentLevel = 5; // Level 5: 57–84 credits
+      } else {
+        currentLevel = 6; // Level 6: 85+ credits
       }
 
       // Calculate progress year based on cumulative credits
+      const creditsPerYear = 28; // 28 credits per year
       const progressYear = Math.min(
-        Math.floor(cumulativeCredits / creditsPerLevel) + 1,
+        Math.floor(cumulativeCredits / creditsPerYear) + 1,
         totalYears
       );
 
@@ -127,18 +139,18 @@ const Dashboard = () => {
         level: currentLevel,
         completedSubjects,
         totalYears,
-        currentYear: Math.floor((currentLevel - 3) / 1) + 1, // Calculate current year based on level
-        progressYear, // Update progress year based on cumulative credits
+        currentYear: progressYear, // Current year is the same as progress year
+        progressYear,
         passedSubjects,
         failedSubjects,
         status: failedSubjects === 0 ? "Good" : "Needs Improvement",
-        levelCredits, // Include level-wise credits in student details
+        levelCredits, // Store level-wise credits
       });
     } else {
       // If no data, show the default values without error message
       setStudentDetails({
         name: user?.success.user.name || "Student",
-        level: "3", // Default level 3
+        level: 3, // Default level 3
         completedSubjects: 0,
         totalYears: 4,
         currentYear: 1,
@@ -152,6 +164,21 @@ const Dashboard = () => {
       setProgressBarTotalCredits(28); // Default to 28 credits for Year 1
     }
   }, [processedMarksData, user]);
+
+  // Function to handle level navigation
+  const handleLevelChange = (direction) => {
+    const levels = [3, 4, 5, 6];
+    const currentIndex = levels.indexOf(currentLevel);
+    let newLevel;
+    if (direction === "prev" && currentIndex > 0) {
+      newLevel = levels[currentIndex - 1];
+    } else if (direction === "next" && currentIndex < levels.length - 1) {
+      newLevel = levels[currentIndex + 1];
+    } else {
+      return; // Do nothing if at the first or last level
+    }
+    setCurrentLevel(newLevel);
+  };
 
   const renderChart = (percentage, color) => ({
     labels: ["Completed", "Remaining"],
@@ -186,10 +213,33 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="pl-11">
-            <ProgressBar
-              currentCredits={passedCreditAmount}
-              totalCredits={progressBarTotalCredits} // Dynamically set total credits based on progress year
-            />
+            <div className="text-center">
+              <ProgressBar
+                currentCredits={
+                  studentDetails.levelCredits[currentLevel]?.passed || 0
+                }
+                totalCredits={
+                  studentDetails.levelCredits[currentLevel]?.registered || 0
+                }
+              />
+              <p className="mt-2 text-sm font-semibold text-gray-700">
+                Level {currentLevel}
+              </p>
+            </div>
+            <div className="flex justify-center mt-2 space-x-4">
+              <button
+                onClick={() => handleLevelChange("prev")}
+                className="px-1 py-0.5 text-white bg-gray-600 rounded-full hover:text-gray-900"
+              >
+                {"<"}
+              </button>
+              <button
+                onClick={() => handleLevelChange("next")}
+                className="px-1 py-0.5 text-white bg-gray-600 rounded-full hover:text-gray-900"
+              >
+                {">"}
+              </button>
+            </div>
           </div>
         </div>
         <div className="mt-4 lg:mt-0">
@@ -205,7 +255,7 @@ const Dashboard = () => {
                 </Link>
               </p>
               <p>Level: {studentDetails.level}</p>
-              <p>Year: {studentDetails.currentYear}</p>
+              <p>Year: {studentDetails.progressYear}</p>
               <p>Total Years: {studentDetails.totalYears}</p>
             </div>
 
