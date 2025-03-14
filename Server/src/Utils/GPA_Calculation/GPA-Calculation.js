@@ -6,7 +6,7 @@ export const calculateGPA = async (userId) => {
   try {
     // Fetch marks for the user
     const userMarks = await Marks.find({ student: userId });
-    console.log("GPA Calculation Data:", userMarks);
+    // console.log("GPA Calculation Data:", userMarks);
 
     if (!userMarks.length) {
       console.log("No subjects found for GPA calculation.");
@@ -31,13 +31,16 @@ export const calculateGPA = async (userId) => {
           continue;
         }
 
-        // Skip only level 3 subjects
-        if (course.level === 3) {
-          console.log(`Skipping subject ${mark.subject} (Level 3)`);
+        // Skip both Level 3 and Level 4 subjects
+        if (course.subjectLevel === 3 || course.subjectLevel === 4) {
+          console.log(
+            `Skipping subject ${mark.subject} (Level ${course.subjectLevel})`
+          );
           continue;
         }
+        console.log("GPA CALCULATED COURSES", course);
 
-        const subjectCredits = mark.subjectCredits || course.credits; // Fallback to course credits if missing
+        const subjectCredits = mark.subjectCredits || course.credits;
 
         if (!subjectCredits) {
           console.warn("No credits found for subject, skipping:", mark.subject);

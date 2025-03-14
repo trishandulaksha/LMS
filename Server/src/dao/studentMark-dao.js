@@ -15,7 +15,7 @@ const processMarksData = async (marksData, studentID) => {
 
   // Iterate through all subjects in the marksData
   for (const subjectData of marksData) {
-    console.log("All Subjects Data", subjectData.marks);
+    // console.log("All Subjects Data", subjectData.marks);
 
     // Check if there are multiple subjects
     if (subjectData.marks && subjectData.marks.length > 0) {
@@ -52,7 +52,7 @@ const processMarksData = async (marksData, studentID) => {
         const credits = parseInt(courseDetails.credits, 10) || 3; // Use credits from the course
         const semesters = courseDetails.semesters || [1]; // Get the semesters array (e.g., [1, 2, 3])
 
-        console.log(courseCode, level, credits, semesters);
+        // console.log(courseCode, level, credits, semesters);
 
         registerSubjectFullCreditAmount += credits;
 

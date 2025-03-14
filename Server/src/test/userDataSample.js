@@ -17,6 +17,42 @@ const accessCodes = {
       ],
     },
     {
+      email: "sriyananda@gmail.com",
+      role: "LECTURER",
+      accessCode: "L123000152021",
+      degreeProgram: "BSE",
+      teachingSubjects: [
+        
+        {
+          courseCode: "EEY6389",
+          courseName: "Cyber Security Essentials",
+        },
+        {
+          courseCode: "EEY6261",
+          courseName: "Advanced Cloud Computing",
+        }
+      ],
+    },
+    {
+      email: "kumari@gmail.com",
+      role: "LECTURER",
+      accessCode: "L123000162021",
+      degreeProgram: "BSE",
+      teachingSubjects: [
+        {
+          courseCode: "EEI6293",
+          courseName: "Blockchain and Distributed Ledger Technology",
+        },
+       
+        {
+          courseCode: "EEY5267",
+          courseName: "Software Project Management",
+        }
+
+      ],
+    },
+    
+    {
       email: "bimal@gmail.com",
       role: "LECTURER",
       accessCode: "L123000882021",
@@ -211,6 +247,42 @@ const accessCodes = {
       email: "hasitha@gmail.com",
       role: "STUDENT",
       accessCode: "s456000072021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "malitha@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000122021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "madumal@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000152021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "sahashrika@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000162021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "gayan@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000172021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "dasuni@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000182021",
+      degreeProgram: "BSE",
+    },
+    {
+      email: "prasadika@gmail.com",
+      role: "STUDENT",
+      accessCode: "s456000192021",
       degreeProgram: "BSE",
     },
   ],

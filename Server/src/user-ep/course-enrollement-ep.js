@@ -7,7 +7,7 @@ export const courseEnrollementEP = async (req, res) => {
   try {
     const { userId, courseCode } = req.body;
 
-    console.log("backend function called", userId, courseCode);
+    // console.log("backend function called", userId, courseCode);
     // Validate required fields
     if (!userId || !Array.isArray(courseCode)) {
       return res
