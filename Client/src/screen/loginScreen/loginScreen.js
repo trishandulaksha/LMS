@@ -116,8 +116,8 @@ const LoginUnit = ({ setCheckAlert, navigate }) => {
       setIsLoading(false); // Stop loading when there's an error
     }
     if (success && success.token) {
-      sessionStorage.setItem("jwtToken", success.token);
       setCheckAlert({ Success: "Login Successful" });
+      sessionStorage.setItem("jwtToken", success.token);
       setIsLoading(false); // Stop loading when login is successful
       if (success.user.role === "STUDENT") {
         navigate("/");

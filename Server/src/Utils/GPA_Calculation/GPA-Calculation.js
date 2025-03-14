@@ -16,6 +16,8 @@ export const calculateGPA = async (userId) => {
     let totalWeightedGPV = 0;
     let totalCredits = 0;
 
+    // console.log(userMarks);
+
     for (const entry of userMarks) {
       for (const mark of entry.marks) {
         // Ensure the necessary fields are present
@@ -38,7 +40,7 @@ export const calculateGPA = async (userId) => {
           );
           continue;
         }
-        console.log("GPA CALCULATED COURSES", course);
+        // console.log("GPA CALCULATED COURSES", course);
 
         const subjectCredits = mark.subjectCredits || course.credits;
 
