@@ -1,0 +1,169 @@
+/* Base Styles for All Screens */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f3f4f6;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.bg-gray-100 {
+  background-color: #f7fafc;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.text-gray-700 {
+  color: #4a5568;
+}
+
+.text-gray-800 {
+  color: #2d3748;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.p-8 {
+  padding: 2rem;
+}
+
+.border-b {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.focus\:ring {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
+}
+
+.focus\:ring-blue-300 {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(167, 192, 255, 0.5);
+}
+
+.transition {
+  transition: all 0.2s ease-in-out;
+}
+
+.hover\:bg-blue-100:hover {
+  background-color: #ebf8ff;
+}
+
+.bg-blue-500 {
+  background-color: #4299e1;
+}
+
+.text-white {
+  color: white;
+}
+
+.mt-10 {
+  margin-top: 2.5rem;
+}
+
+/* Responsive Styles for max-width: 400px */
+@media (max-width: 400px) {
+  .w-64 {
+    width: 100%;
+  }
+
+  .h-screen {
+    height: auto;
+  }
+
+  .flex {
+    flex-direction: column;
+  }
+
+  .p-8 {
+    padding: 1rem;
+  }
+
+  .p-6 {
+    padding: 1rem;
+  }
+
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+
+  aside {
+    margin-bottom: 1rem;
+  }
+
+  .text-left {
+    text-align: left;
+  }
+
+  .min-h-screen {
+    min-height: auto;
+  }
+
+  .bg-gray-100 {
+    background-color: #f7fafc;
+  }
+
+  .border-b {
+    border-bottom: none;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: column;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+
+  main {
+    padding: 1rem;
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+  }
+
+  label {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+}
