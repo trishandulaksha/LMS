@@ -39,6 +39,7 @@ const ErrorModal = ({ isOpen, onClose }) => {
 
 function GradeScreen() {
   const { processedMarksData, loading, error } = useMarksAndGrades();
+  const { marksData } = UseDataContexts();
   const { user } = UseDataContexts();
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedSemester, setSelectedSemester] = useState("");
@@ -55,7 +56,7 @@ function GradeScreen() {
       setSelectedYear(firstLevel.enrolledSubjects[0]?.studentYear || "");
       setSelectedSemester(firstLevel.enrolledSubjects[0]?.semester || "");
     }
-  }, [processedMarksData]);
+  }, [processedMarksData, marksData]);
 
   useEffect(() => {
     // Show error modal if there's an error fetching data

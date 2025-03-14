@@ -2,9 +2,11 @@ import React, { useEffect, useState, useRef } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useMarksAndGrades } from "../../ContextAPI/getMarksAndGradeContext";
+import { UseDataContexts } from "../../ContextAPI/LoginAndMarksContext";
 
 const StudentProgress = () => {
   const { processedMarksData, loading, error } = useMarksAndGrades();
+  const { marksData } = UseDataContexts();
   const [enrolledSubjects, setEnrolledSubjects] = useState([]);
   const [passedSubjects, setPassedSubjects] = useState([]);
   const [pendingSubjects, setPendingSubjects] = useState([]);
@@ -33,7 +35,7 @@ const StudentProgress = () => {
       setPassedSubjects(passed);
       setPendingSubjects(pending);
     }
-  }, [processedMarksData]);
+  }, [processedMarksData, marksData]);
 
   const downloadPDF = () => {
     const input = reportRef.current;

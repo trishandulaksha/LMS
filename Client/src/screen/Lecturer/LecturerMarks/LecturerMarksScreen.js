@@ -9,7 +9,7 @@ import {
 import { UseDataContexts } from "../../../ContextAPI/LoginAndMarksContext";
 
 const LecturerDashboard = () => {
-  const { user, setMarksData } = UseDataContexts();
+  const { marksData, user, setMarksData } = UseDataContexts();
   const [subjects, setSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [students, setStudents] = useState([]);
@@ -47,7 +47,7 @@ const LecturerDashboard = () => {
     };
 
     loadSubjectsAndStudents();
-  }, [user, setMarksData]);
+  }, [user, setMarksData, marksData]);
 
   useEffect(() => {
     if (selectedSubject && subjects.length > 0) {
@@ -70,7 +70,7 @@ const LecturerDashboard = () => {
       // Compute final marks and eligibility
       computeFinalMarksAndEligibility(marks);
     }
-  }, [selectedSubject, subjects]);
+  }, [selectedSubject, subjects, marksData]);
 
   const computeFinalMarksAndEligibility = (marks) => {
     const finalMarksObj = {};
@@ -98,7 +98,7 @@ const LecturerDashboard = () => {
 
   useEffect(() => {
     computeFinalMarksAndEligibility(editedMarks);
-  }, [editedMarks]);
+  }, [editedMarks, marksData]);
 
   const handleEdit = () => setIsEditing(true);
 
