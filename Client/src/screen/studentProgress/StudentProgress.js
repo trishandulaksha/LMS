@@ -8,7 +8,7 @@ const StudentProgress = () => {
   const [enrolledSubjects, setEnrolledSubjects] = useState([]);
   const [passedSubjects, setPassedSubjects] = useState([]);
   const [pendingSubjects, setPendingSubjects] = useState([]);
-  const reportRef = useRef(); // Reference for the report section
+  const reportRef = useRef();
 
   useEffect(() => {
     if (processedMarksData) {

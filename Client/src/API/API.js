@@ -16,10 +16,12 @@ export const userLoginAPI = async (
       password,
     };
     const response = await axios.post(`${API_URL}/${endpoint}`, userData);
-    sessionStorage.setItem("dbResponse", response);
-    console.log(response);
     setDbResponse(response);
     setUser(response.data);
+    sessionStorage.setItem("dbResponse", response);
+
+    sessionStorage.setItem("lms_user_id", response.data.success.user._id);
+    console.log(response.data);
   } catch (error) {
     setDbResponse(error);
   }

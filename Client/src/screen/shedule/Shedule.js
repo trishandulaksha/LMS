@@ -1,19 +1,45 @@
-import React, { useState } from "react";
+// components/Schedule.js
+import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+
 import "./schedule.css";
+import { fetchEvents } from "../../API/SheduleAPI";
+import { updateEvent } from "../../API/SheduleAPI";
+import { createEvent } from "../../API/SheduleAPI";
+import { deleteEvent } from "../../API/SheduleAPI";
 
 const Schedule = () => {
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [eventName, setEventName] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
-  const [editEventId, setEditEventId] = useState(null); // To track the event being edited
+  const [editEventId, setEditEventId] = useState(null);
+  const userID = sessionStorage.getItem("lms_user_id"); // Replace with the actual logged-in user's ID
+
+  // Fetch events when the component mounts
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const data = await fetchEvents(userID);
+        const mappedEvents = data.map((event) => ({
+          ...event,
+          id: event._id, // Ensure ID compatibility
+        }));
+        setEvents(mappedEvents);
+      } catch (error) {
+        console.error("Failed to load events:", error);
+      }
+    };
+    loadEvents();
+  }, [userID]);
 
   // Handle date click to open the modal
   const handleDateClick = (info) => {
     setSelectedDate(info.dateStr);
+    setEventName(""); // Reset event name for a new event
+    setEditEventId(null);
     setShowModal(true);
   };
 
@@ -22,47 +48,66 @@ const Schedule = () => {
     const event = events.find((e) => e.id === info.event.id);
     if (event) {
       setEventName(event.title);
+      setSelectedDate(event.start); // Ensure selectedDate is set correctly
       setEditEventId(event.id);
       setShowModal(true);
     }
   };
 
-  // Add or update an event
-  const handleSaveEvent = () => {
+  // Save or update an event
+  const handleSaveEvent = async () => {
     if (eventName.trim()) {
-      if (editEventId) {
-        // Update existing event
-        setEvents((prevEvents) =>
-          prevEvents.map((event) =>
-            event.id === editEventId ? { ...event, title: eventName } : event
-          )
-        );
-      } else {
-        // Add new event
-        const newEvent = {
-          id: String(events.length + 1), // Generate a unique ID
+      try {
+        const eventData = {
           title: eventName,
           start: selectedDate,
           allDay: true,
+          userID,
         };
-        setEvents([...events, newEvent]);
+
+        if (editEventId) {
+          // Update existing event
+          const updatedEvent = await updateEvent(editEventId, eventData);
+          setEvents((prevEvents) =>
+            prevEvents.map((event) =>
+              event.id === editEventId
+                ? { ...updatedEvent, id: updatedEvent._id }
+                : event
+            )
+          );
+        } else {
+          // Create new event
+          const newEvent = await createEvent(eventData);
+          setEvents((prevEvents) => [
+            ...prevEvents,
+            { ...newEvent, id: newEvent._id },
+          ]);
+        }
+
+        // Reset modal state
+        setShowModal(false);
+        setEventName("");
+        setEditEventId(null);
+      } catch (error) {
+        console.error("Failed to save event:", error);
       }
-      setShowModal(false);
-      setEventName("");
-      setEditEventId(null);
     }
   };
 
   // Delete an event
-  const handleDeleteEvent = () => {
-    setEvents((prevEvents) =>
-      prevEvents.filter((event) => event.id !== editEventId)
-    );
-    setShowModal(false);
-    setEventName("");
-    setEditEventId(null);
+  const handleDeleteEvent = async () => {
+    try {
+      await deleteEvent(editEventId, userID);
+      setEvents((prevEvents) =>
+        prevEvents.filter((event) => event.id !== editEventId)
+      );
+      setShowModal(false);
+      setEventName("");
+      setEditEventId(null);
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
   };
-
   return (
     <div className="z-10 min-h-screen p-8 bg-gray-100">
       <div className="container z-10 mx-auto">

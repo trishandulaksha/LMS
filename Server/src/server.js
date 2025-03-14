@@ -9,6 +9,7 @@ import lecturerRouter from "./router/lecturerRouter.js";
 import courseEnrollementRouter from "./router/course-enrollementRouter.js";
 import studentMarksRouter from "./router/studentMarksRouter.js";
 import RecomendedSubjectRouter from "./router/subject-RecomendtaionRouter.js";
+import SheduleControllerRouter from "./router/SheduleRouter.js";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/api/user/lecturer", lecturerRouter);
 app.use("/api/user/student", studentMarksRouter);
 app.use("/api/user/student", RecomendedSubjectRouter);
 app.use("/api/user/subjectenrollement", courseEnrollementRouter);
+app.use("/api/user/shedule", SheduleControllerRouter);
 
 databaseSetup()
   .then(() => {
