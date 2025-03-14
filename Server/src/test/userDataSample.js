@@ -17,6 +17,38 @@ const accessCodes = {
       ],
     },
     {
+      email: "nawagamuwa@gmail.com",
+      role: "LECTURER",
+      accessCode: "L123000602022",
+      degreeProgram: "BSE",
+      teachingSubjects: [
+        {
+          courseCode: "EEI6293",
+          courseName: "Blockchain and Distributed Ledger Technology",
+        },
+        {
+          courseCode: "EEI5375",
+          courseName: "Advanced Data Structures",
+        },
+        {
+          courseCode: "EEI5368",
+          courseName: "Big Data and Analytics",
+        },
+        {
+          courseCode: "EEY6389",
+          courseName: "Cyber Security Essentials",
+        },
+        {
+          courseCode: "EEI5270",
+          courseName: "Advanced Database Systems",
+        },
+        {
+          courseCode: "EEY6261",
+          courseName: "Advanced Cloud Computing",
+        },
+      ],
+    },
+    {
       email: "bimal@gmail.com",
       role: "LECTURER",
       accessCode: "L123000882021",
